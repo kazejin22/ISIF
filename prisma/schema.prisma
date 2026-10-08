@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL") // Commonly needed for Supabase/Vercel
+}
+
+// ──────────────────────────────────────────────────
+// 1. GLOBAL THREAT MAP (Kasus Nyata Deepfake)
+// ──────────────────────────────────────────────────
+model ThreatCase {
+  id          String   @id @default(uuid())
+  title       String   // Judul kasus (e.g. CEO Voice Clone)
+  description String   @db.Text // Deskripsi cerita kejadian
+  newsLink    String   // Link URL berita asli
+  year        Int      // Tahun kejadian
+  country     String   // Negara
+  lat         Float    // Koordinat Latitude (Y)
+  lng         Float    // Koordinat Longitude (X)
+  createdAt   DateTime @default(now())
+
+  @@map("threat_cases")
+}
+
+// ──────────────────────────────────────────────────
+// 2. LEADERBOARD GAME (Skor Misi Interaktif)
+// ──────────────────────────────────────────────────
+model Leaderboard {
+  id          String   @id @default(uuid())
+  playerName  String   // Nama yang diinputkan di akhir misi
+  score       Int      // Skor akhir
+  completedAt DateTime @default(now()) // Waktu berhasil menyelesaikan
+
+  @@map("leaderboard")
+}
