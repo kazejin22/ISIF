@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
-import { analyzeWithFallback, AllModelsFailedError } from "@/lib/detect/llm";
+import { analyzeWithFallback, AllModelsFailedError, TEXT_MODELS } from "@/lib/detect/llm";
+import { computeFingerprint, countWords, MAX_CHARS, MIN_WORDS, splitSentences, type TextDetectionResponse } from "@/lib/detect/text";
 import {
-  buildTextUserPrompt, computeTextStats, countWords, normalizeTextResult,
-  MAX_CHARS, MIN_WORDS, TEXT_RESULT_SCHEMA, TEXT_RESULT_SCHEMA_TEXT, TEXT_SYSTEM_PROMPT,
-  type TextDetectionResponse,
-} from "@/lib/detect/text";
+  buildTextUserPrompt, isUsableTextResult, normalizeTextResult, statisticalTextResult,
+  TEXT_RESULT_SCHEMA, TEXT_RESULT_SCHEMA_TEXT, TEXT_SYSTEM_PROMPT,
+} from "@/lib/detect/textAnalysis";
 import { rateLimit } from "@/lib/rateLimit";
 
-export const maxDuration = 90;
+export const maxDuration = 120;
 
 function fail(error: string, status: number, headers?: HeadersInit) {
   return NextResponse.json<TextDetectionResponse>({ success: false, error }, { status, headers });
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
   let text: string;
   try {
     const body = await request.json();
-    text = typeof body?.text === "string" ? body.text.trim() : "";
+    text = typeof body?.text === "string" ? body.text.replace(/\r\n?/g, "\n").trim() : "";
   } catch {
     return fail("Invalid request body.", 400);
   }
@@ -32,8 +32,9 @@ export async function POST(request: Request) {
   if (words < MIN_WORDS) return fail(`Please enter at least ${MIN_WORDS} words (you entered ${words}).`, 400);
   if (text.length > MAX_CHARS) return fail(`Text is too long. The limit is ${MAX_CHARS.toLocaleString("en-US")} characters.`, 413);
 
-  const stats = computeTextStats(text);
-  const userPrompt = buildTextUserPrompt(text, stats);
+  const sentences = splitSentences(text);
+  const fingerprint = computeFingerprint(text, sentences);
+  const userPrompt = buildTextUserPrompt(sentences, fingerprint);
 
   try {
     const { raw, model } = await analyzeWithFallback({
@@ -43,13 +44,19 @@ export async function POST(request: Request) {
       schema: TEXT_RESULT_SCHEMA,
       schemaText: TEXT_RESULT_SCHEMA_TEXT,
       budgetMs: (maxDuration - 10) * 1000,
+      models: TEXT_MODELS,
+      thinking: "low",
+      maxOutputTokens: 16_384,
+      validate: (r) => isUsableTextResult(r, sentences.length),
     });
-    return NextResponse.json<TextDetectionResponse>(normalizeTextResult(raw, model, text, stats));
+    return NextResponse.json<TextDetectionResponse>(normalizeTextResult(raw, model, sentences, fingerprint));
   } catch (e) {
-    if (e instanceof AllModelsFailedError && !e.configured) {
-      return fail("The text detector is not configured: no AI API key is set on the server.", 503);
-    }
-    console.error("[detect-text] all models failed", e instanceof AllModelsFailedError ? e.attempts : e);
-    return fail("All analysis models are busy or unavailable right now. Please try again in a minute.", 502);
+    if (!(e instanceof AllModelsFailedError)) throw e;
+    console.error("[detect-text] all models failed", e.attempts);
+    // Still give the user something useful — clearly labeled as a rough estimate.
+    const reason = e.configured
+      ? "all AI analysis models are busy or out of quota right now."
+      : "no AI API key is configured on the server.";
+    return NextResponse.json<TextDetectionResponse>(statisticalTextResult(sentences, fingerprint, reason));
   }
 }

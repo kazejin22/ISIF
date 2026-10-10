@@ -289,7 +289,7 @@ export default function LearningPage() {
             </div>
             <h2 className="text-2xl sm:text-3xl font-black font-[family-name:var(--font-orbitron)] mb-3">AI Text Detector</h2>
             <p className="text-sm text-foreground/60 leading-relaxed">
-              Paste any text to see whether it reads like a human or a language model wrote it. You&apos;ll get the passages that look machine-written and the evidence on both sides. Works with English, Indonesian, and other languages.
+              Paste text or upload a .docx / .pdf to see how much of it reads as AI-generated, AI-refined, or human-written — sentence by sentence, with the evidence on both sides. Works with English, Indonesian, and other languages.
             </p>
           </div>
           <TextDetector />

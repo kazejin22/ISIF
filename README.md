@@ -47,13 +47,18 @@ AI detection is probabilistic — the UI says so, and failures are shown as erro
 
 ## How the text detector works
 
-`POST /api/detect-text` (see `src/lib/detect/text.ts`) takes `{ text }` (40 words to 20,000 characters, any language):
+`POST /api/detect-text` (see `src/lib/detect/text.ts` and `textAnalysis.ts`) takes `{ text }` (40 words to 20,000 characters, any language). The UI also accepts `.txt`, `.docx` and `.pdf` files, which are read in the browser.
 
-1. Computes simple writing statistics (sentence-length variation, vocabulary diversity) and passes them to the model as weak hints.
-2. Asks the model for HUMAN / AI-GENERATED / MIXED / UNCERTAIN, with fairness rules: formal writing, non-native writing and translated text are not evidence of AI on their own.
-3. Keeps only flagged quotes that really occur in the submitted text, downgrades self-contradicting verdicts to UNCERTAIN, and caps confidence at 50% for texts under 150 words.
+1. Splits the text into sentences (`Intl.Segmenter` plus abbreviation fixes) and computes a local **writing fingerprint**: burstiness, stock AI phrases (English + Indonesian), personal voice, and vocabulary diversity.
+2. Asks Gemini to label **every sentence** as `ai`, `refined` (human ideas, AI paraphrasing) or `human`, with a probability. The prompt has fairness rules: formal, non-native and translated writing are not evidence of AI on their own.
+3. Derives the word-weighted breakdown (AI-generated / AI-refined / Human) and the verdict (HUMAN, AI-GENERATED, AI-REFINED, MIXED, UNCERTAIN) from those labels, so the numbers always agree. Confidence is capped at 50% for texts under 150 words.
+4. If every model is unavailable, it returns a clearly labeled **statistical estimate** from the fingerprint instead of an error.
 
-The analysis is written in the same language as the submitted text. Never use the result alone to accuse someone of using AI.
+### Model reliability
+
+Free-tier Gemini quotas are **per model, per day**. The text detector therefore tries a chain of models (`GEMINI_TEXT_MODELS` to override) with low "thinking" for speed. Models that run out of daily quota are skipped until they reset, and overload (503) and per-minute limits (429) are retried once.
+
+Never use the result alone to accuse someone of using AI.
 
 ## Data
 
