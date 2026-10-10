@@ -333,7 +333,7 @@ export default function ForensicLab() {
               <meshBasicMaterial color={COLORS.panel} transparent opacity={0.85} toneMapped={false} />
             </RoundedBox>
             <Text position={[0, 0, 0.008]} fontSize={0.032} color={COLORS.text} anchorX="center" anchorY="middle" font={FONT_BOLD}>
-              {`EVIDENCE ${index + 1}/${LAB_EVIDENCE.length}   ·   SCORE ${score}   ·   ${scanned ? "SCANNED ✓" : "NOT SCANNED"}`}
+              {`EVIDENCE ${index + 1}/${LAB_EVIDENCE.length}   ·   SCORE ${score}   ·   ${scanned ? "SCANNED" : "NOT SCANNED YET"}`}
             </Text>
           </group>
         </>

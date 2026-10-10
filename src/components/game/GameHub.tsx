@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ShieldAlert, Trophy, MapPin, ArrowRight, CheckCircle2, UserRound, LogOut, Crown, Mail, Image as ImageIcon, PhoneCall, Vote } from "lucide-react";
+import { ShieldAlert, Trophy, MapPin, ArrowRight, CheckCircle2, UserRound, LogOut, Crown, Mail, Image as ImageIcon, PhoneCall, Vote, Glasses, ScanSearch, Swords } from "lucide-react";
 import { MISSIONS, MAX_MISSION_SCORE, rankFor } from "@/game/missions";
 import { leaderboard, signIn, signOut, totalScore, useGameState } from "@/game/progress";
 import { useMounted } from "@/lib/useMounted";
@@ -10,6 +10,11 @@ import { panel } from "./ui";
 
 const ICONS = [Mail, ImageIcon, PhoneCall, Vote];
 const MAX_TOTAL = MISSIONS.length * MAX_MISSION_SCORE;
+
+const VR_MODES = [
+  { id: "vr-forensic-lab", href: "/game/vr/lab", title: "Forensic Lab", text: "Grab evidence with your controllers and sweep the AI Scanner over it to reveal hidden clues.", Icon: ScanSearch },
+  { id: "vr-firewall", href: "/game/vr/firewall", title: "Misinformation Firewall", text: "Posts fly at you. Slash the fakes with laser sabers and let credible news pass.", Icon: Swords },
+];
 
 export default function GameHub() {
   const mounted = useMounted();
@@ -64,8 +69,32 @@ export default function GameHub() {
           })}
         </div>
 
+        {/* VR missions */}
+        <div className="sm:col-span-2 lg:col-span-1 lg:row-start-2">
+          <div className="flex items-center gap-2 mb-3 mt-2">
+            <Glasses size={18} className="text-primary" />
+            <h2 className="font-black">VR Missions</h2>
+            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary">Meta Quest</span>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-4">
+            {VR_MODES.map(({ id, href, title, text, Icon }) => {
+              const best = mounted ? agent?.best[id] : undefined;
+              return (
+                <Link key={id} href={href} className={`${panel} group p-5 flex gap-4 hover:border-primary/50 transition-all`}>
+                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-primary/30 to-secondary/30 text-primary flex items-center justify-center shrink-0"><Icon size={22} /></div>
+                  <div className="min-w-0">
+                    <div className="font-black group-hover:text-primary transition-colors">{title}</div>
+                    <p className="text-xs text-foreground/60 leading-relaxed mt-1">{text}</p>
+                    <div className="text-[11px] mt-2 font-bold">{best !== undefined ? <span className="text-emerald-500 font-mono">Best {best}</span> : <span className="text-primary">Play in VR or with a mouse →</span>}</div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Agent + leaderboard */}
-        <div className="flex flex-col gap-4 lg:sticky lg:top-24">
+        <div className="flex flex-col gap-4 lg:sticky lg:top-24 lg:row-span-2 lg:col-start-2 lg:row-start-1">
           <div className={`${panel} p-5`}>
             {!mounted ? (
               <div className="h-28" />

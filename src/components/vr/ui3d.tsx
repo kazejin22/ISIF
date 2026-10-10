@@ -53,9 +53,9 @@ export function Button3D({
 
 /** Dark rounded panel with a title and optional body text. */
 export function Panel3D({
-  position, rotation = [0, 0, 0], width = 1, height = 0.6, title, body, titleColor = COLORS.cyan, children,
+  position, rotation = [0, 0, 0], width = 1, height = 0.6, title, body, titleColor = COLORS.cyan, bodySize = 0.032, children,
 }: {
-  position: Vec3; rotation?: Vec3; width?: number; height?: number; title?: string; body?: string; titleColor?: string; children?: React.ReactNode;
+  position: Vec3; rotation?: Vec3; width?: number; height?: number; title?: string; body?: string; titleColor?: string; bodySize?: number; children?: React.ReactNode;
 }) {
   return (
     <group position={position} rotation={rotation}>
@@ -68,7 +68,7 @@ export function Panel3D({
         </Text>
       )}
       {body && (
-        <Text position={[0, title ? height / 2 - 0.17 : height / 2 - 0.06, 0.012]} fontSize={0.032} color={COLORS.text} anchorX="center" anchorY="top" font={FONT} maxWidth={width * 0.88} lineHeight={1.35} textAlign="center">
+        <Text position={[0, title ? height / 2 - 0.17 : height / 2 - 0.06, 0.012]} fontSize={bodySize} color={COLORS.text} anchorX="center" anchorY="top" font={FONT} maxWidth={width * 0.88} lineHeight={1.35} textAlign="center">
           {body}
         </Text>
       )}
