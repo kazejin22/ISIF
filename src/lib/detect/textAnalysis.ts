@@ -26,10 +26,18 @@ SIGNALS OF AI WRITING
 - Template structure: definition → balanced points → tidy summarizing conclusion; lists of three; hedged "on one hand / on the other" with no real stance.
 - Confident claims without concrete, verifiable specifics, or specifics that look invented.
 - Polished, error-free prose with no personal voice.
-SIGNALS OF HUMAN WRITING
-- Varied sentence length, digressions, abrupt shifts, strong or idiosyncratic opinions, humour.
-- Personal experiences with concrete situational details; local or inside references.
-- Natural typos, informal grammar, slang, code-mixing (e.g. Indonesian–English), regional expressions.
+MODERN AI IMITATING HUMANS — the most common miss, check it carefully
+Today's models are routinely asked to "sound human", so casual tone, first person, anecdotes and slang do NOT prove a human wrote the text. Signs of AI wearing a human costume:
+- Generic, plausible-but-unverifiable anecdotes (the alarm at 5am, the cup of coffee, "my grandmother used to say", "a friend of mine") with a neat arc and a tidy lesson at the end.
+- Casual markers sprinkled evenly ("Honestly,", "Here's the thing:", "Let's be real", "Turns out", "game-changer", "And that's okay.", rhetorical question immediately answered), while grammar, spelling and punctuation stay flawless.
+- Indonesian casual AI: "Jujur aja,", "Nah,", "Bayangin aja", "Gimana nggak", "Pokoknya", slang words dropped into otherwise standard, well-formed sentences; paragraphs that each make one clean point; a motivational closing ("Semangat buat kalian…", "Percaya deh…").
+- AI fiction: stock sensory imagery (salt-tinged air, weathered hands, a flickering lamp, whispered secrets), names like Elias, Silas, Elara, Kael, Mira, a quiet epiphany ending.
+- Every paragraph is roughly the same size and the piece is a well-formed answer to an obvious prompt ("write a blog post about…").
+SIGNALS OF HUMAN WRITING (look for things models rarely produce)
+- Genuinely uneven rhythm: fragments next to long rambling sentences, digressions that go nowhere, abrupt topic shifts.
+- Specific, idiosyncratic, checkable details (real names of places, products, people, dates) and opinions that are strong or unpopular.
+- Real errors and inconsistencies: typos, missing words, inconsistent spelling or tense, non-standard punctuation, unfinished thoughts.
+- Text that is not a polished "answer" — notes, messy arguments, inside jokes.
 SIGNALS OF AI REFINEMENT (paraphrasing tools such as QuillBot, "rewrite this", "make it more formal")
 Paraphrased text keeps a human's content — concrete details, structure, even anecdotes — so concrete details alone do NOT make a sentence human. Look at the WORDING:
 - Register mismatch: vivid, quirky, old-fashioned, or personal content expressed in smooth, neutral, modern-formal phrasing.
@@ -38,12 +46,12 @@ Paraphrased text keeps a human's content — concrete details, structure, even a
 - Explanatory padding a writer wouldn't add ("This feeling was shared by…", "which served to…", "making its way…").
 When several of these appear together, label the sentences "refined" (or "ai" if the result reads fully machine-written), even though the ideas are human.
 
-FAIRNESS RULES — these matter more than anything else
-- Formal, academic, or very correct writing is NOT evidence of AI by itself. Neither is simple vocabulary.
-- Writing by non-native speakers, students, or people using translation tools must not be flagged just for sounding stiff or repetitive.
-- False accusations seriously harm students and writers. Only label a sentence "ai" when the evidence supports it; otherwise prefer "human" or "refined" with a moderate p.
+CALIBRATION
+- First decide the document's overall origin, then label sentences consistently with it. When a document is AI-generated from start to finish, label it "ai" decisively with high p — do not hedge sentence by sentence.
+- Formal, academic, or very correct writing is NOT evidence of AI by itself, and stiff writing by non-native speakers, students, or translation users is not either. Look for the AI patterns above, not for correctness.
+- Do not default to "human" just because a sentence is plausible; ask whether a language model, given the obvious prompt, would produce this exact wording.
 - Short documents carry little signal; lower your confidence for them.
-- The writing statistics provided are weak hints, not proof.
+- The writing statistics provided (including the language-model predictability measurement, when present) are supporting evidence, not proof.
 
 OUTPUT (JSON only, following the schema)
 - "sentences": one entry per input sentence, with its number "i", "label", "p", and — only for "ai" or "refined" — a short "reason" (max 15 words) in the document's language.
@@ -161,6 +169,9 @@ export function normalizeTextResult(
     };
   });
   if (missing) notes.push(`${missing} sentence(s) were not scored by the model and are counted as human.`);
+  if (/lite|fallback/i.test(model)) {
+    notes.push("The main models are out of daily quota, so a lighter backup model was used. It misses more AI text (especially casual or paraphrased writing) — scan again later for a stronger check.");
+  }
 
   const breakdown = computeBreakdown(scored);
   let conclusion = verdictFor(breakdown);
