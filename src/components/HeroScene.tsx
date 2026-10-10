@@ -1,28 +1,31 @@
 "use client";
 
-import { useRef, useMemo } from "react";
+import { useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Points, PointMaterial } from "@react-three/drei";
 import * as THREE from "three";
 
+const PARTICLE_COUNT = 4000;
+
+// Random sphere distribution, generated once at module load (not during render).
+function makeParticles() {
+  const p = new Float32Array(PARTICLE_COUNT * 3);
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    const r = 10 * Math.cbrt(Math.random());
+    const theta = Math.random() * 2 * Math.PI;
+    const phi = Math.acos(2 * Math.random() - 1);
+    p[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+    p[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+    p[i * 3 + 2] = r * Math.cos(phi);
+  }
+  return p;
+}
+
+let particles: Float32Array | null = null;
+
 function ParticleSwarm() {
   const ref = useRef<THREE.Points>(null);
-  const particleCount = 4000;
-  
-  const positions = useMemo(() => {
-    const p = new Float32Array(particleCount * 3);
-    for (let i = 0; i < particleCount; i++) {
-      // Create a sphere distribution
-      const r = 10 * Math.cbrt(Math.random());
-      const theta = Math.random() * 2 * Math.PI;
-      const phi = Math.acos(2 * Math.random() - 1);
-      
-      p[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-      p[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-      p[i * 3 + 2] = r * Math.cos(phi);
-    }
-    return p;
-  }, [particleCount]);
+  const [positions] = useState(() => (particles ??= makeParticles()));
 
   useFrame((state, delta) => {
     if (ref.current) {

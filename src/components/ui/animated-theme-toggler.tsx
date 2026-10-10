@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { Moon, Sun } from "lucide-react"
 import { flushSync } from "react-dom"
 
-const cn = (...args: any[]) => args.filter(Boolean).join(" ");
+const cn = (...args: Array<string | false | null | undefined>) => args.filter(Boolean).join(" ");
 
 export type TransitionVariant =
   | "circle"
