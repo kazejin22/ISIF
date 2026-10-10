@@ -27,10 +27,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${orbitron.variable} h-full antialiased`}>
-      <head>
-        <link rel="preload" as="image" href="https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg" />
-        <link rel="preload" as="image" href="https://unpkg.com/three-globe/example/img/earth-night.jpg" />
-      </head>
       <body className="min-h-full flex flex-col">
         <ThemeProvider
           attribute="class"

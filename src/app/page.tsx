@@ -1,6 +1,9 @@
 import HeroScene from "@/components/HeroScene";
 import Link from "next/link";
 import { ArrowRight, Globe, ShieldAlert, Users } from "lucide-react";
+import { deepfakeStats } from "@/data/stats";
+
+const homeStats = [deepfakeStats.fraudAttempts, deepfakeStats.fraudForecast];
 
 export default function Home() {
   return (
@@ -14,7 +17,7 @@ export default function Home() {
             <span className="text-sm font-medium tracking-wide">Exposing the Illusion of AI</span>
           </div>
           
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/50">
+          <h1 className="text-[2.75rem] leading-[1.05] sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/50">
             Can You Trust <br /> Your Own Eyes?
           </h1>
           
@@ -35,33 +38,34 @@ export default function Home() {
               href="/detector" 
               className="px-8 py-4 rounded-lg bg-background/50 backdrop-blur-md border border-foreground/20 text-foreground font-bold text-lg hover:border-primary/50 transition-all flex items-center justify-center gap-2"
             >
-              Test Detector API
+              Try the Detector
             </Link>
           </div>
         </div>
       </section>
 
       {/* Stats / Map Teaser Section */}
-      <section className="py-24 bg-background relative z-20 border-t border-foreground/5">
+      <section className="py-16 md:py-24 bg-background relative z-20 border-t border-foreground/5">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
             <div>
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-6">
                 A Global Epidemic of <span className="text-primary">Digital Forgery</span>
               </h2>
               <p className="text-lg text-foreground/70 mb-8 font-light">
-                AI-generated voice scams, political deepfakes, and synthetic identity theft are rising exponentially. The threat is not science fiction—it is happening right now, across the globe.
+                AI-generated voice scams, political deepfakes, and synthetic identity fraud are rising fast. The threat is not science fiction—it is happening right now, across the globe.
               </p>
               
-              <div className="grid grid-cols-2 gap-8 mb-8">
-                <div>
-                  <div className="text-4xl font-black text-secondary mb-2">+3000%</div>
-                  <div className="text-sm text-foreground/60">Increase in deepfake fraud attempts globally since 2022.</div>
-                </div>
-                <div>
-                  <div className="text-4xl font-black text-primary mb-2">$5.3B</div>
-                  <div className="text-sm text-foreground/60">Estimated financial loss due to AI voice cloning.</div>
-                </div>
+              <div className="grid grid-cols-2 gap-6 sm:gap-8 mb-8">
+                {homeStats.map((stat, i) => (
+                  <div key={stat.label}>
+                    <div className={`text-3xl sm:text-4xl font-black mb-2 ${i === 0 ? "text-secondary" : "text-primary"}`}>{stat.value}</div>
+                    <div className="text-sm text-foreground/60">{stat.label}</div>
+                    <a href={stat.href} target="_blank" rel="noopener noreferrer" className="text-[11px] text-foreground/40 hover:text-primary hover:underline">
+                      {stat.source} ↗
+                    </a>
+                  </div>
+                ))}
               </div>
               
               <Link href="/map" className="inline-flex items-center gap-2 text-primary hover:text-secondary font-medium transition-colors">
@@ -69,16 +73,15 @@ export default function Home() {
               </Link>
             </div>
             
-            <div className="relative rounded-2xl overflow-hidden aspect-square border border-foreground/10 bg-foreground/5 flex items-center justify-center group cursor-pointer">
-              {/* Dummy globe representation - will be actual 3D on /map */}
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/20 via-background to-background opacity-50" />
+            <Link href="/map" aria-label="Open the global deepfake case map" className="relative rounded-2xl overflow-hidden aspect-square border border-foreground/10 bg-foreground/5 flex items-center justify-center group">
+                            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/20 via-background to-background opacity-50" />
               <Globe size={120} className="text-primary/40 group-hover:scale-110 group-hover:text-primary transition-all duration-700" />
               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-background/40 backdrop-blur-sm">
                 <span className="px-6 py-3 rounded-full bg-foreground text-background font-bold shadow-2xl">
                   Open Global Map
                 </span>
               </div>
-            </div>
+            </Link>
           </div>
         </div>
       </section>
@@ -102,10 +105,10 @@ export default function Home() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_var(--tw-gradient-stops))] from-secondary/40 via-background to-background" />
         </div>
         <div className="container mx-auto px-4 text-center relative z-10">
-          <h2 className="text-4xl md:text-6xl font-black mb-8">Ready to Defend the Truth?</h2>
+          <h2 className="text-3xl sm:text-4xl md:text-6xl font-black mb-8">Ready to Defend the Truth?</h2>
           <Link 
             href="/learning" 
-            className="px-10 py-5 rounded-full bg-foreground text-background font-black text-xl hover:scale-105 transition-transform inline-block shadow-[0_0_40px_rgba(168,85,247,0.4)]"
+            className="px-8 sm:px-10 py-4 sm:py-5 rounded-full bg-foreground text-background font-black text-lg sm:text-xl hover:scale-105 transition-transform inline-block shadow-[0_0_40px_rgba(168,85,247,0.4)]"
           >
             Become a Cyber Defender
           </Link>
