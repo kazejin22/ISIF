@@ -1,12 +1,17 @@
-"use client";
-
 import Link from "next/link";
 import DeepfakeAnatomy from "@/components/DeepfakeAnatomy";
-import { 
-  Sparkles, ArrowRight, TrendingUp, AlertTriangle, 
-  DollarSign, Users, ChevronRight, PlayCircle,
+import CurriculumList from "@/components/CurriculumList";
+import { deepfakeStats } from "@/data/stats";
+import {
+  Sparkles, ArrowRight, PlayCircle,
   FileText, Download, ExternalLink, BookOpen, Play
 } from "lucide-react";
+
+const videos = [
+  { id: "s8IGWdkxM9E", title: "What is AI?" },
+  { id: "02rVRwovRow", title: "The Types of AI" },
+  { id: "ch-CU5VG1fs", title: "AI vs Human Works" },
+];
 
 const learningModules = [
   {
@@ -65,66 +70,45 @@ const learningModules = [
   }
 ];
 
-const stats = [
-  { value: "500%", label: "Deepfake increase since 2023", icon: TrendingUp },
-  { value: "96%", label: "Non-consensual content", icon: AlertTriangle },
-  { value: "$25B", label: "Estimated fraud by 2027", icon: DollarSign },
-  { value: "1 in 4", label: "Exposed unknowingly", icon: Users },
-];
-
-const curriculum = [
-  {
-    id: "01",
-    title: "The Architecture of Deception",
-    desc: "Understanding Generative Adversarial Networks (GANs) and how AI synthesizes hyper-realistic media from noise."
-  },
-  {
-    id: "02",
-    title: "Forensic Indicators",
-    desc: "Identifying micro-anomalies: unnatural blinking, erratic catchlights, and digital quantization artifacts."
-  },
-  {
-    id: "03",
-    title: "Defense & Verification",
-    desc: "Mastering digital hygiene, cryptographic watermarking, and reverse image search techniques."
-  },
-  {
-    id: "04",
-    title: "Legal & Ethical Framework",
-    desc: "Navigating international AI regulations, consent laws, and the future of digital identity."
-  }
-];
+const stats = [deepfakeStats.detectedDeepfakes, deepfakeStats.nonConsensual, deepfakeStats.fraudForecast, deepfakeStats.voiceScams];
 
 export default function LearningPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground selection:bg-primary/20">
 
       {/* ━━━ HERO & STATS ━━━ */}
-      <section className="pt-32 pb-16 relative">
+      <section className="pt-12 md:pt-24 pb-12 md:pb-16 relative">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-[300px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
         
-        <div className="container mx-auto px-6 relative z-10 flex flex-col items-center text-center">
+        <div className="container mx-auto px-4 sm:px-6 relative z-10 flex flex-col items-center text-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-foreground/[0.03] border border-foreground/[0.05] text-xs font-medium text-foreground/60 tracking-widest uppercase mb-6">
             <Sparkles size={14} className="text-primary" /> Learning Hub
           </div>
           
-          <h1 className="text-5xl md:text-7xl font-black mb-6 font-[family-name:var(--font-orbitron)] tracking-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-black mb-6 font-[family-name:var(--font-orbitron)] tracking-tight">
             Synthetics <span className="text-foreground/30">Mastery</span>
           </h1>
           
-          <p className="text-lg md:text-xl text-foreground/60 max-w-2xl font-light mb-16">
+          <p className="text-lg md:text-xl text-foreground/60 max-w-2xl font-light mb-10 md:mb-16">
             Arm yourself with the knowledge to navigate, analyze, and survive the era of generative media.
           </p>
 
           {/* Minimalist Stats */}
-          <div className="flex flex-wrap justify-center gap-x-12 gap-y-8 max-w-4xl border-y border-foreground/[0.05] py-8 w-full">
-            {stats.map((stat, i) => (
-              <div key={i} className="flex flex-col items-center text-center">
+          <div className="flex flex-wrap justify-center gap-x-8 sm:gap-x-12 gap-y-8 max-w-4xl border-y border-foreground/[0.05] py-8 w-full">
+            {stats.map((stat) => (
+              <a
+                key={stat.label}
+                href={stat.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex flex-col items-center text-center max-w-[180px]"
+              >
                 <span className="text-3xl font-black font-[family-name:var(--font-orbitron)] text-primary mb-1">
                   {stat.value}
                 </span>
-                <span className="text-xs text-foreground/50 tracking-wide uppercase">{stat.label}</span>
-              </div>
+                <span className="text-xs text-foreground/60 leading-snug">{stat.label}</span>
+                <span className="text-[10px] text-foreground/40 mt-1 group-hover:text-primary group-hover:underline">{stat.source} ↗</span>
+              </a>
             ))}
           </div>
         </div>
@@ -132,9 +116,9 @@ export default function LearningPage() {
 
       {/* ━━━ SPLIT LAYOUT: CURRICULUM & ANATOMY ━━━ */}
       <section className="py-16 md:py-24 relative">
-        <div className="container mx-auto px-6 max-w-7xl">
+        <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
           
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.2fr] gap-16 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.2fr] gap-10 lg:gap-16 items-start">
             
             {/* Left: Curriculum List */}
             <div className="flex flex-col">
@@ -142,37 +126,16 @@ export default function LearningPage() {
                 <span className="w-8 h-[2px] bg-primary"></span> Core Modules
               </h2>
               
-              <div className="flex flex-col">
-                {curriculum.map((item, i) => (
-                  <div key={i} className="group flex gap-6 py-6 border-b border-foreground/[0.05] hover:border-primary/30 transition-colors cursor-pointer">
-                    <span className="text-sm font-mono text-primary/50 group-hover:text-primary transition-colors pt-1">
-                      {item.id}
-                    </span>
-                    <div className="flex flex-col flex-1">
-                      <h3 className="text-lg font-bold mb-2 text-foreground/80 group-hover:text-foreground transition-colors">
-                        {item.title}
-                      </h3>
-                      <p className="text-sm text-foreground/50 leading-relaxed font-light">
-                        {item.desc}
-                      </p>
-                    </div>
-                    <div className="shrink-0 flex items-center justify-center opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all">
-                      <ChevronRight size={18} className="text-primary" />
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <CurriculumList />
             </div>
 
             {/* Right: Interactive Anatomy (Sticky on Desktop) */}
-            <div className="lg:sticky lg:top-24 flex flex-col bg-foreground/[0.02] border border-foreground/[0.05] rounded-3xl p-6 md:p-8">
-              <div className="mb-6">
+            <div className="lg:sticky lg:top-24 flex flex-col bg-foreground/[0.02] border border-foreground/[0.05] rounded-3xl p-4 sm:p-6 md:p-8">
+              <div className="mb-5">
                 <h3 className="text-xl font-bold font-[family-name:var(--font-orbitron)] mb-2">Anatomy of a Fake</h3>
-                <p className="text-sm text-foreground/50">Interact with the slider to reveal generative anomalies mapping over organic structures.</p>
+                <p className="text-sm text-foreground/50">Drag the slider (or use the arrow keys) to see the face the way a face-swap model does.</p>
               </div>
-              <div className="w-full shadow-2xl rounded-2xl overflow-hidden border border-foreground/[0.08]">
-                <DeepfakeAnatomy />
-              </div>
+              <DeepfakeAnatomy />
             </div>
 
           </div>
@@ -181,7 +144,7 @@ export default function LearningPage() {
 
       {/* ━━━ OFFICIAL CURATED MODULES & POLICY FRAMEWORKS ━━━ */}
       <section className="py-16 md:py-24 bg-foreground/[0.015] border-t border-foreground/[0.05]">
-        <div className="container mx-auto px-6 max-w-7xl">
+        <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-semibold text-primary mb-3">
@@ -195,7 +158,7 @@ export default function LearningPage() {
               </p>
             </div>
             <span className="text-xs font-mono text-foreground/40 mt-4 md:mt-0">
-              6 DOCUMENTS READY FOR REVIEW
+              {learningModules.length} DOCUMENTS READY FOR REVIEW
             </span>
           </div>
 
@@ -269,34 +232,18 @@ export default function LearningPage() {
 
       {/* ━━━ VIDEO RESOURCES WITH HD THUMBNAIL ━━━ */}
       <section className="py-16 md:py-24 border-t border-foreground/[0.05]">
-        <div className="container mx-auto px-6 max-w-7xl">
+        <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
           <div className="flex items-end justify-between mb-12">
             <div>
               <h2 className="text-2xl font-bold font-[family-name:var(--font-orbitron)] mb-2">Field Recordings</h2>
-              <p className="text-sm text-foreground/50">Essential visual studies on synthetic generation.</p>
+              <p className="text-sm text-foreground/50">Short explainers on AI basics, made by the AIVENTURE team.</p>
             </div>
             <PlayCircle className="text-foreground/20 w-12 h-12 hidden md:block" />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              {
-                id: "ch-CU5VG1fs",
-                title: "The Danger of Deepfakes",
-                channel: "Deepfake Explained"
-              },
-              {
-                id: "02rVRwovRow",
-                title: "How AI Clones Voices & Faces",
-                channel: "Forensic Investigation"
-              },
-              {
-                id: "s8IGWdkxM9E",
-                title: "Spotting AI Generated Media",
-                channel: "Verification Training"
-              },
-            ].map((vid, i) => (
-              <div key={i} className="flex flex-col group">
+            {videos.map((vid) => (
+              <div key={vid.id} className="flex flex-col group">
                 <div className="aspect-video w-full rounded-2xl bg-black border border-foreground/[0.08] overflow-hidden relative mb-4 group-hover:border-primary/50 transition-all shadow-md group-hover:shadow-primary/10">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -319,8 +266,8 @@ export default function LearningPage() {
                   </a>
 
                   <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] text-white/80 font-mono">
-                    <span className="truncate">{vid.channel}</span>
-                    <span className="px-2 py-0.5 rounded bg-black/60 border border-white/20 text-[10px]">YouTube HD</span>
+                    <span className="truncate">AIVENTURE</span>
+                    <span className="px-2 py-0.5 rounded bg-black/60 border border-white/20 text-[10px]">YouTube</span>
                   </div>
                 </div>
                 <h3 className="text-sm font-bold text-foreground/80 group-hover:text-primary transition-colors line-clamp-1">
@@ -334,7 +281,7 @@ export default function LearningPage() {
 
       {/* ━━━ CTA ━━━ */}
       <section className="py-24 relative border-t border-foreground/[0.05]">
-        <div className="container mx-auto px-6 text-center max-w-2xl">
+        <div className="container mx-auto px-4 sm:px-6 text-center max-w-2xl">
           <h2 className="text-3xl font-black mb-6 font-[family-name:var(--font-orbitron)]">
             Ready to apply your knowledge?
           </h2>
