@@ -1,24 +1,13 @@
 import { NextResponse } from "next/server";
 import { buildSystemPrompt, buildUserPrompt, RESULT_SCHEMA, RESULT_SCHEMA_TEXT, type MediaKind } from "@/lib/detect/prompts";
-import { scanProvenance, type ProvenanceReport } from "@/lib/detect/provenance";
-import { extractJson, normalizeResult } from "@/lib/detect/normalize";
+import { scanProvenance } from "@/lib/detect/provenance";
+import { normalizeResult } from "@/lib/detect/normalize";
+import { analyzeWithFallback, AllModelsFailedError } from "@/lib/detect/llm";
 import { ACCEPTED_MIME_TYPES, MAX_UPLOAD_MB, type DetectionResponse } from "@/lib/detect/types";
 import { rateLimit } from "@/lib/rateLimit";
 
 // Video analysis can take a while on the model side.
 export const maxDuration = 180;
-
-// Primary: Gemini (handles image, video and audio). Override with GEMINI_MODELS="a,b".
-// Overloaded models answer 503 quickly, so falling through the list is cheap.
-const GEMINI_MODELS = (process.env.GEMINI_MODELS ?? "gemini-3.5-flash,gemini-2.5-flash,gemini-flash-latest")
-  .split(",").map((m) => m.trim()).filter(Boolean);
-
-// Fallback: OpenRouter free vision models (images only). Override with OPENROUTER_MODELS="a,b".
-const OPENROUTER_MODELS = (process.env.OPENROUTER_MODELS ?? "google/gemma-4-31b-it:free,google/gemma-4-26b-a4b-it:free,openrouter/free")
-  .split(",").map((m) => m.trim()).filter(Boolean);
-
-const REQUEST_TIMEOUT_MS = 60_000;
-const DEADLINE_MS = (maxDuration - 15) * 1000;
 
 function fail(error: string, status: number, headers?: HeadersInit) {
   return NextResponse.json<DetectionResponse>({ success: false, error }, { status, headers });
@@ -30,70 +19,7 @@ function mediaKindOf(mime: string): MediaKind {
   return "image";
 }
 
-async function callGemini(model: string, kind: MediaKind, mime: string, base64: string, provenance: ProvenanceReport) {
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY! },
-    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-    body: JSON.stringify({
-      systemInstruction: { parts: [{ text: buildSystemPrompt(kind) }] },
-      contents: [{
-        role: "user",
-        parts: [
-          { inline_data: { mime_type: mime, data: base64 } },
-          { text: buildUserPrompt(kind, provenance.notes) },
-        ],
-      }],
-      generationConfig: {
-        responseMimeType: "application/json",
-        responseSchema: RESULT_SCHEMA,
-      },
-    }),
-  });
-
-  if (!res.ok) throw new Error(`${model} returned ${res.status}: ${(await res.text()).slice(0, 200)}`);
-  const data = await res.json();
-  const text: string | undefined = data.candidates?.[0]?.content?.parts
-    ?.map((p: { text?: string }) => p.text ?? "").join("");
-  const parsed = text ? extractJson(text) : null;
-  if (!parsed) throw new Error(`${model} returned no usable JSON (finishReason: ${data.candidates?.[0]?.finishReason ?? "unknown"})`);
-  return parsed;
-}
-
-async function callOpenRouter(model: string, mime: string, base64: string, provenance: ProvenanceReport) {
-  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-      "Content-Type": "application/json",
-      "X-Title": "AIVENTURE Forensic Scanner",
-    },
-    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-    body: JSON.stringify({
-      model,
-      messages: [
-        { role: "system", content: `${buildSystemPrompt("image")}\n\nReturn ONLY a JSON object with this shape:\n${RESULT_SCHEMA_TEXT}` },
-        {
-          role: "user",
-          content: [
-            { type: "image_url", image_url: { url: `data:${mime};base64,${base64}` } },
-            { type: "text", text: buildUserPrompt("image", provenance.notes) },
-          ],
-        },
-      ],
-    }),
-  });
-
-  if (!res.ok) throw new Error(`${model} returned ${res.status}: ${(await res.text()).slice(0, 200)}`);
-  const data = await res.json();
-  const text: string | undefined = data.choices?.[0]?.message?.content;
-  const parsed = text ? extractJson(text) : null;
-  if (!parsed) throw new Error(`${model} returned no usable JSON`);
-  return parsed;
-}
-
 export async function POST(request: Request) {
-  const started = Date.now();
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0].trim() || request.headers.get("x-real-ip") || "local";
   const limit = rateLimit(`detect:${ip}`, 8, 60_000);
   if (!limit.ok) {
@@ -121,47 +47,31 @@ export async function POST(request: Request) {
   const buffer = Buffer.from(await file.arrayBuffer());
   const base64 = buffer.toString("base64");
   const provenance = scanProvenance(buffer);
+  const userPrompt = buildUserPrompt(kind, provenance.notes);
 
-  const errors: string[] = [];
-  const timeLeft = () => DEADLINE_MS - (Date.now() - started);
-
-  if (process.env.GEMINI_API_KEY) {
-    for (const model of GEMINI_MODELS) {
-      if (timeLeft() < 20_000) break;
-      try {
-        const raw = await callGemini(model, kind, mime, base64, provenance);
-        return NextResponse.json<DetectionResponse>(normalizeResult(raw, model, provenance));
-      } catch (e) {
-        const msg = e instanceof Error ? e.message : String(e);
-        errors.push(msg);
-        console.warn(`[detect] ${msg}`);
-      }
+  try {
+    const { raw, model } = await analyzeWithFallback({
+      system: buildSystemPrompt(kind),
+      geminiParts: [{ inline_data: { mime_type: mime, data: base64 } }, { text: userPrompt }],
+      // OpenRouter's free models only accept images.
+      openRouterContent: kind === "image"
+        ? [{ type: "image_url", image_url: { url: `data:${mime};base64,${base64}` } }, { type: "text", text: userPrompt }]
+        : undefined,
+      schema: RESULT_SCHEMA,
+      schemaText: RESULT_SCHEMA_TEXT,
+      budgetMs: (maxDuration - 15) * 1000,
+    });
+    return NextResponse.json<DetectionResponse>(normalizeResult(raw, model, provenance));
+  } catch (e) {
+    if (e instanceof AllModelsFailedError && !e.configured) {
+      return fail("The scanner is not configured: no AI API key is set on the server.", 503);
     }
+    console.error("[detect] all models failed", e instanceof AllModelsFailedError ? e.attempts : e);
+    return fail(
+      kind === "image"
+        ? "All analysis models are busy or unavailable right now. Please try again in a minute."
+        : `The ${kind} analysis model is unavailable right now (only Gemini supports ${kind}). Please try again in a minute.`,
+      502,
+    );
   }
-
-  // OpenRouter's free models only accept images.
-  if (process.env.OPENROUTER_API_KEY && kind === "image") {
-    for (const model of OPENROUTER_MODELS) {
-      if (timeLeft() < 20_000) break;
-      try {
-        const raw = await callOpenRouter(model, mime, base64, provenance);
-        return NextResponse.json<DetectionResponse>(normalizeResult(raw, `${model} (fallback)`, provenance));
-      } catch (e) {
-        const msg = e instanceof Error ? e.message : String(e);
-        errors.push(msg);
-        console.warn(`[detect] ${msg}`);
-      }
-    }
-  }
-
-  if (!process.env.GEMINI_API_KEY && !process.env.OPENROUTER_API_KEY) {
-    return fail("The scanner is not configured: no AI API key is set on the server.", 503);
-  }
-  console.error("[detect] all models failed", errors);
-  return fail(
-    kind === "image"
-      ? "All analysis models are busy or unavailable right now. Please try again in a minute."
-      : `The ${kind} analysis model is unavailable right now (only Gemini supports ${kind}). Please try again in a minute.`,
-    502,
-  );
 }

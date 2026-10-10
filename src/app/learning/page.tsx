@@ -1,10 +1,11 @@
 import Link from "next/link";
 import DeepfakeAnatomy from "@/components/DeepfakeAnatomy";
 import CurriculumList from "@/components/CurriculumList";
+import TextDetector from "@/components/TextDetector";
 import { deepfakeStats } from "@/data/stats";
 import {
   Sparkles, ArrowRight, PlayCircle,
-  FileText, Download, ExternalLink, BookOpen, Play
+  FileText, Download, ExternalLink, BookOpen, Play, ScanText
 } from "lucide-react";
 
 const videos = [
@@ -276,6 +277,22 @@ export default function LearningPage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ━━━ AI TEXT DETECTOR ━━━ */}
+      <section id="text-detector" className="py-16 md:py-24 bg-foreground/[0.015] border-t border-foreground/[0.05] scroll-mt-16">
+        <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
+          <div className="mb-10 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-semibold text-primary mb-3">
+              <ScanText size={13} /> Hands-on Lab
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black font-[family-name:var(--font-orbitron)] mb-3">AI Text Detector</h2>
+            <p className="text-sm text-foreground/60 leading-relaxed">
+              Paste any text to see whether it reads like a human or a language model wrote it. You&apos;ll get the passages that look machine-written and the evidence on both sides. Works with English, Indonesian, and other languages.
+            </p>
+          </div>
+          <TextDetector />
         </div>
       </section>
 

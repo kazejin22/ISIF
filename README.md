@@ -5,7 +5,7 @@ A learning platform about AI-generated media and deepfakes, built for **ISIF 202
 | Page | What it does |
 |---|---|
 | `/` | Landing page |
-| `/learning` | Core modules, interactive "Anatomy of a Fake" slider, curated PDF modules, video explainers |
+| `/learning` | Core modules, interactive "Anatomy of a Fake" slider, curated PDF modules, video explainers, AI text detector |
 | `/detector` | Upload an image, video or audio clip; an AI model analyzes it and explains its evidence |
 | `/map` | 3D globe of documented deepfake incidents, each linked to a news report or fact-check |
 | `/game` | Interactive mission (coming soon) |
@@ -44,6 +44,16 @@ Open http://localhost:3000.
 4. Normalizes the result without inventing numbers: a verdict that contradicts its own score, or a "fake" verdict with no cited anomaly, is downgraded to UNCERTAIN; metadata that explicitly declares an AI generator overrides the visual verdict. Any adjustment is shown to the user.
 
 AI detection is probabilistic — the UI says so, and failures are shown as errors, never as a verdict.
+
+## How the text detector works
+
+`POST /api/detect-text` (see `src/lib/detect/text.ts`) takes `{ text }` (40 words to 20,000 characters, any language):
+
+1. Computes simple writing statistics (sentence-length variation, vocabulary diversity) and passes them to the model as weak hints.
+2. Asks the model for HUMAN / AI-GENERATED / MIXED / UNCERTAIN, with fairness rules: formal writing, non-native writing and translated text are not evidence of AI on their own.
+3. Keeps only flagged quotes that really occur in the submitted text, downgrades self-contradicting verdicts to UNCERTAIN, and caps confidence at 50% for texts under 150 words.
+
+The analysis is written in the same language as the submitted text. Never use the result alone to accuse someone of using AI.
 
 ## Data
 
