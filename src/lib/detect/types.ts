@@ -38,7 +38,9 @@ export interface DetectionError {
 
 export type DetectionResponse = DetectionResult | DetectionError;
 
-export const MAX_UPLOAD_MB = 12;
+// Set in next.config.ts: Vercel rejects request bodies over 4.5 MB, so deployed
+// builds accept a little less than that; local runs allow 12 MB.
+export const MAX_UPLOAD_MB = Number(process.env.MAX_UPLOAD_MB) || 12;
 
 export const ACCEPTED_MIME_TYPES = [
   "image/jpeg", "image/png", "image/webp", "image/heic", "image/heif", "image/gif",

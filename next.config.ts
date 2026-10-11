@@ -8,6 +8,10 @@ const nextConfig: NextConfig = {
   // can make browsers (notably Meta Quest Browser) block WebGL for the page.
   // Production builds are unaffected either way.
   reactStrictMode: false,
+  env: {
+    // Vercel Functions reject request bodies over 4.5 MB (VERCEL=1 during Vercel builds).
+    MAX_UPLOAD_MB: process.env.VERCEL ? "4.4" : "12",
+  },
 };
 
 export default nextConfig;

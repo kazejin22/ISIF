@@ -68,6 +68,32 @@ function validateFile(file: File, t: Translate): string | null {
   return null;
 }
 
+/**
+ * Re-encodes an oversized photo as a JPEG that fits the upload limit. This drops the
+ * file's metadata (EXIF / C2PA), so the UI tells the user. Returns null if it can't.
+ */
+async function shrinkImage(file: File, maxBytes: number): Promise<File | null> {
+  try {
+    const bitmap = await createImageBitmap(file);
+    for (const side of [3072, 2560, 2048, 1600]) {
+      const scale = Math.min(1, side / Math.max(bitmap.width, bitmap.height));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(bitmap.width * scale);
+      canvas.height = Math.round(bitmap.height * scale);
+      canvas.getContext("2d")!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.9));
+      if (blob && blob.size <= maxBytes) {
+        bitmap.close();
+        return new File([blob], file.name.replace(/\.[^.]+$/, "") + ".jpg", { type: "image/jpeg" });
+      }
+    }
+    bitmap.close();
+  } catch {
+    // Formats the browser can't decode (e.g. HEIC on most browsers) fall through.
+  }
+  return null;
+}
+
 const TypewriterText = ({ text }: { text: string }) => {
   const [count, setCount] = useState(0);
   useEffect(() => {
@@ -114,6 +140,7 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [glitch, setGlitch] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  const [resized, setResized] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const lang = useLang();
   const t = useT();
@@ -134,17 +161,27 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
     : file ? t("> Media loaded. Ready to scan.", "> Media dimuat. Siap dipindai.")
     : t("Awaiting media input...", "Menunggu media...");
 
-  const selectFile = (selected: File | undefined) => {
+  const selectFile = async (selected: File | undefined) => {
     if (!selected) return;
-    const problem = validateFile(selected, t);
     setResult(null);
+    setResized(false);
+    let chosen = selected;
+    const limit = MAX_UPLOAD_MB * 1024 * 1024;
+    if (selected.size > limit && selected.type.startsWith("image/")) {
+      const smaller = await shrinkImage(selected, limit);
+      if (smaller) {
+        chosen = smaller;
+        setResized(true);
+      }
+    }
+    const problem = validateFile(chosen, t);
     if (problem) {
       setError(problem);
       return;
     }
     setError(null);
-    setFile(selected);
-    setPreview(URL.createObjectURL(selected));
+    setFile(chosen);
+    setPreview(URL.createObjectURL(chosen));
   };
 
   const loadSample = async (sample: (typeof MEDIA_SAMPLES)[number]) => {
@@ -157,6 +194,7 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
   };
 
   const reset = () => {
+    setResized(false);
     setPreview(null);
     setFile(null);
     setResult(null);
@@ -290,6 +328,16 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
                     </button>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {resized && !error && (
+              <div className="flex items-start gap-3 p-4 rounded-2xl border border-amber-500/30 bg-amber-500/5 text-xs text-foreground/80">
+                <Info size={16} className="text-amber-500 shrink-0 mt-0.5" />
+                <p>{t(
+                  `This photo was larger than ${MAX_UPLOAD_MB} MB, so it was resized in your browser before scanning. Resizing removes the file's metadata (EXIF / content credentials), so only the image itself is analyzed.`,
+                  `Foto ini lebih dari ${MAX_UPLOAD_MB} MB, jadi diperkecil di browsermu sebelum dipindai. Pengecilan menghapus metadata file (EXIF / content credentials), jadi hanya gambarnya yang dianalisis.`,
+                )}</p>
               </div>
             )}
 
