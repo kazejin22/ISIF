@@ -12,7 +12,7 @@ export const COLORS = {
   green: "#34d399",
   red: "#ff4d4d",
   amber: "#fbbf24",
-  panel: "#0b1220",
+  panel: "#0f172a",
   text: "#e5e7eb",
 };
 
@@ -59,8 +59,11 @@ export function Panel3D({
 }) {
   return (
     <group position={position} rotation={rotation}>
+      <RoundedBox args={[width + 0.012, height + 0.012, 0.016]} radius={0.034} smoothness={2} position-z={-0.004}>
+        <meshBasicMaterial color="#7dd3fc" transparent opacity={0.28} toneMapped={false} />
+      </RoundedBox>
       <RoundedBox args={[width, height, 0.02]} radius={0.03} smoothness={2}>
-        <meshBasicMaterial color={COLORS.panel} transparent opacity={0.92} toneMapped={false} />
+        <meshBasicMaterial color={COLORS.panel} transparent opacity={0.9} toneMapped={false} />
       </RoundedBox>
       {title && (
         <Text position={[0, height / 2 - 0.07, 0.012]} fontSize={0.055} color={titleColor} anchorX="center" anchorY="top" font={FONT_BOLD} maxWidth={width * 0.9} textAlign="center">

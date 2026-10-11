@@ -5,27 +5,7 @@ import Link from "next/link";
 import { Canvas } from "@react-three/fiber";
 import { XR, noEvents, PointerEvents, useXR, type XRStore } from "@react-three/xr";
 import { ArrowLeft, Glasses, MousePointer2 } from "lucide-react";
-
-/** Dark lab room: floor grid, glowing ring and soft lights. Cheap enough for Quest 2. */
-function Room() {
-  return (
-    <>
-      <color attach="background" args={["#04060c"]} />
-      <fog attach="fog" args={["#04060c", 4, 14]} />
-      <ambientLight intensity={0.6} />
-      <directionalLight position={[1.5, 3, 1]} intensity={1.2} />
-      <mesh rotation-x={-Math.PI / 2} position-y={0}>
-        <circleGeometry args={[8, 48]} />
-        <meshStandardMaterial color="#0a1020" roughness={0.9} />
-      </mesh>
-      <gridHelper args={[16, 32, "#0e7490", "#10213a"]} position-y={0.002} />
-      <mesh rotation-x={-Math.PI / 2} position-y={0.004}>
-        <ringGeometry args={[2.9, 3, 64]} />
-        <meshBasicMaterial color="#00f3ff" transparent opacity={0.35} toneMapped={false} />
-      </mesh>
-    </>
-  );
-}
+import Environment from "./Environment";
 
 /** Reports whether an immersive session is running, so the page can adapt its DOM UI. */
 function SessionWatcher({ onChange }: { onChange: (inVR: boolean) => void }) {
@@ -65,7 +45,7 @@ export default function VRShell({
   };
 
   return (
-    <div className="relative w-full h-[calc(100dvh-4rem)] bg-[#04060c] overflow-hidden">
+    <div className="relative w-full h-[calc(100dvh-4rem)] bg-[#0b1324] overflow-hidden">
       <Canvas
         events={noEvents}
         camera={{ position: [0, 1.42, 0.85], fov: 60, near: 0.01, far: 40 }}
@@ -76,7 +56,7 @@ export default function VRShell({
         <PointerEvents />
         <XR store={store}>
           <SessionWatcher onChange={setInVR} />
-          <Room />
+          <Environment />
           {children}
         </XR>
       </Canvas>
