@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useSyncExternalStore } from "react";
+import TextDetector from "@/components/TextDetector";
 import {
   ScanLine, AlertTriangle, RefreshCw, Crosshair, Activity, ShieldAlert, ShieldCheck,
-  ShieldQuestion, Zap, Database, UploadCloud, FileAudio, CheckCircle2, Info, FileSearch, XCircle,
+  ShieldQuestion, Zap, Database, UploadCloud, FileAudio, CheckCircle2, Info, FileSearch, XCircle, ScanText, Images,
 } from "lucide-react";
 import {
   ACCEPTED_MIME_TYPES, MAX_UPLOAD_MB,
@@ -87,7 +88,7 @@ const GaugeMeter = ({ value, label, color }: { value: number; label: string; col
   );
 };
 
-export default function DetectorPage() {
+function MediaScanner({ header }: { header: React.ReactNode }) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState(false);
@@ -184,19 +185,7 @@ export default function DetectorPage() {
       </div>
 
       <div className="container mx-auto px-4 py-12 md:py-24 relative z-10 flex flex-col">
-        {/* Header */}
-        <div className="mb-8 md:mb-12 text-center max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-foreground/[0.03] border border-foreground/[0.08] backdrop-blur-md mb-6">
-            <Activity size={14} className="text-primary animate-pulse" />
-            <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-foreground/70">AIVENTURE FORENSICS</span>
-          </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-4 font-[family-name:var(--font-orbitron)] tracking-tight">
-            Neural <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-400 to-secondary">Scanner</span>
-          </h1>
-          <p className="text-sm md:text-base text-foreground/60">
-            Upload an image, video, or audio clip. An AI model inspects it for signs of generation or manipulation and explains its evidence.
-          </p>
-        </div>
+        {header}
 
         <div className={`w-full mx-auto transition-all duration-700 ${result ? "max-w-6xl grid grid-cols-1 lg:grid-cols-[1fr_440px] gap-6 lg:gap-8 items-start" : "max-w-3xl flex flex-col items-center"}`}>
           {/* LEFT: Upload & Preview */}
@@ -421,6 +410,83 @@ export default function DetectorPage() {
         }
         .animate-glitch { animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both 2; }
       `}</style>
+    </div>
+  );
+}
+
+// ─── Page: header with tabs for the media and text scanners ─────────
+
+type Tab = "media" | "text";
+
+function subscribeHash(cb: () => void) {
+  window.addEventListener("hashchange", cb);
+  return () => window.removeEventListener("hashchange", cb);
+}
+
+function useTab(): [Tab, (t: Tab) => void] {
+  const tab = useSyncExternalStore(subscribeHash, () => (window.location.hash === "#text" ? "text" : "media"), () => "media" as Tab);
+  const setTab = (t: Tab) => {
+    history.replaceState(null, "", t === "text" ? "#text" : window.location.pathname);
+    window.dispatchEvent(new HashChangeEvent("hashchange"));
+  };
+  return [tab, setTab];
+}
+
+const TABS: { id: Tab; label: string; sub: string; Icon: typeof Images }[] = [
+  { id: "media", label: "Media Scanner", sub: "Image · Video · Audio", Icon: Images },
+  { id: "text", label: "Text Scanner", sub: "AI-written text", Icon: ScanText },
+];
+
+function Header({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
+  return (
+    <div className="mb-8 md:mb-12 text-center max-w-2xl mx-auto">
+      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-foreground/[0.03] border border-foreground/[0.08] backdrop-blur-md mb-6">
+        <Activity size={14} className="text-primary animate-pulse" />
+        <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-foreground/70">AIVENTURE FORENSICS</span>
+      </div>
+      <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-4 font-[family-name:var(--font-orbitron)] tracking-tight">
+        Neural <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-400 to-secondary">Scanner</span>
+      </h1>
+      <p className="text-sm md:text-base text-foreground/60 mb-8">
+        {tab === "media"
+          ? "Upload an image, video, or audio clip. An AI model inspects it for signs of generation or manipulation and explains its evidence."
+          : "Paste text or upload a document to see how much of it reads as AI-generated, AI-refined, or human-written — sentence by sentence."}
+      </p>
+      <div role="tablist" aria-label="Scanner type" className="inline-grid grid-cols-2 gap-1 p-1 rounded-2xl bg-foreground/[0.04] border border-foreground/[0.08] w-full max-w-md">
+        {TABS.map(({ id, label, sub, Icon }) => (
+          <button
+            key={id}
+            role="tab"
+            aria-selected={tab === id}
+            onClick={() => setTab(id)}
+            className={`flex items-center justify-center gap-2.5 px-3 py-2.5 rounded-xl text-left transition-all ${tab === id ? "bg-primary text-white dark:text-black shadow-lg shadow-primary/20" : "text-foreground/60 hover:text-foreground hover:bg-foreground/5"}`}
+          >
+            <Icon size={18} className="shrink-0" />
+            <span className="leading-tight">
+              <span className="block text-sm font-bold">{label}</span>
+              <span className={`block text-[10px] ${tab === id ? "opacity-80" : "opacity-60"}`}>{sub}</span>
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function DetectorPage() {
+  const [tab, setTab] = useTab();
+  const header = <Header tab={tab} setTab={setTab} />;
+  if (tab === "media") return <MediaScanner header={header} />;
+  return (
+    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+      <div className="fixed inset-0 z-0 pointer-events-none opacity-40">
+        <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-primary/10 blur-[120px]" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-secondary/10 blur-[120px]" />
+      </div>
+      <div className="container mx-auto px-4 py-12 md:py-24 relative z-10 max-w-7xl">
+        {header}
+        <TextDetector />
+      </div>
     </div>
   );
 }

@@ -1,7 +1,6 @@
 import Link from "next/link";
 import DeepfakeAnatomy from "@/components/DeepfakeAnatomy";
 import CurriculumList from "@/components/CurriculumList";
-import TextDetector from "@/components/TextDetector";
 import { deepfakeStats } from "@/data/stats";
 import {
   Sparkles, ArrowRight, PlayCircle,
@@ -280,22 +279,6 @@ export default function LearningPage() {
         </div>
       </section>
 
-      {/* ━━━ AI TEXT DETECTOR ━━━ */}
-      <section id="text-detector" className="py-16 md:py-24 bg-foreground/[0.015] border-t border-foreground/[0.05] scroll-mt-16">
-        <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
-          <div className="mb-10 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-semibold text-primary mb-3">
-              <ScanText size={13} /> Hands-on Lab
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-black font-[family-name:var(--font-orbitron)] mb-3">AI Text Detector</h2>
-            <p className="text-sm text-foreground/60 leading-relaxed">
-              Paste text or upload a .docx / .pdf to see how much of it reads as AI-generated, AI-refined, or human-written — sentence by sentence, with the evidence on both sides. Works with English, Indonesian, and other languages.
-            </p>
-          </div>
-          <TextDetector />
-        </div>
-      </section>
-
       {/* ━━━ CTA ━━━ */}
       <section className="py-24 relative border-t border-foreground/[0.05]">
         <div className="container mx-auto px-4 sm:px-6 text-center max-w-2xl">
@@ -303,14 +286,16 @@ export default function LearningPage() {
             Ready to apply your knowledge?
           </h2>
           <p className="text-foreground/50 mb-10">
-            Switch from theory to practice. Use the forensic scanner to evaluate real media samples.
+            Switch from theory to practice. Scan photos, videos, audio — or check whether a text was written by AI.
           </p>
-          <Link
-            href="/detector"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-foreground text-background font-bold text-sm hover:scale-105 transition-transform"
-          >
-            Launch Scanner <ArrowRight size={16} />
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link href="/detector" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-foreground text-background font-bold text-sm hover:scale-105 transition-transform">
+              Media Scanner <ArrowRight size={16} />
+            </Link>
+            <Link href="/detector#text" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border border-foreground/20 font-bold text-sm hover:bg-foreground/5 transition-colors">
+              <ScanText size={16} /> AI Text Detector
+            </Link>
+          </div>
         </div>
       </section>
     </div>
