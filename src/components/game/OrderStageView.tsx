@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ArrowUp, ArrowDown } from "lucide-react";
 import type { OrderStage, StageResult } from "@/game/types";
 import { ContinueButton, PointsBadge, PrimaryButton, StageIntro, panel } from "./ui";
+import { useT } from "@/lib/i18n";
 
 /** Deterministic shuffle that never returns the solved order. */
 function shuffled<T>(items: T[]): T[] {
@@ -33,6 +34,7 @@ export default function OrderStageView({ stage, onDone }: { stage: OrderStage; o
   const [order, setOrder] = useState(() => shuffled(correct));
   const [submitted, setSubmitted] = useState(false);
   const byId = Object.fromEntries(stage.steps.map((s) => [s.id, s]));
+  const t = useT();
 
   const move = (index: number, delta: number) => {
     const target = index + delta;
@@ -47,7 +49,7 @@ export default function OrderStageView({ stage, onDone }: { stage: OrderStage; o
 
   return (
     <div className="max-w-3xl">
-      <StageIntro title={stage.title} brief="Use the arrows to put these steps in the best order, first to last." maxPoints={stage.maxPoints} />
+      <StageIntro title={stage.title} brief={t("Use the arrows to put these steps in the best order, first to last.", "Pakai tombol panah untuk menyusun langkah-langkah ini dalam urutan terbaik, dari pertama sampai terakhir.")} maxPoints={stage.maxPoints} />
       <ol className="space-y-2">
         {(submitted ? correct : order).map((id, i) => {
           const placedRight = order[i] === id;
@@ -56,12 +58,12 @@ export default function OrderStageView({ stage, onDone }: { stage: OrderStage; o
               <span className="w-7 h-7 rounded-full bg-primary/15 text-primary text-sm font-black flex items-center justify-center shrink-0">{i + 1}</span>
               <span className="flex-1 text-sm sm:text-base">
                 {byId[id].text}
-                {submitted && <span className="block text-xs text-foreground/60 mt-1">{byId[id].why}{!placedRight && " (you placed this elsewhere)"}</span>}
+                {submitted && <span className="block text-xs text-foreground/60 mt-1">{byId[id].why}{!placedRight && t(" (you placed this elsewhere)", " (kamu menaruhnya di posisi lain)")}</span>}
               </span>
               {!submitted && (
                 <span className="flex flex-col gap-1">
-                  <button type="button" aria-label="Move up" onClick={() => move(i, -1)} disabled={i === 0} className="p-1.5 rounded-lg hover:bg-foreground/10 disabled:opacity-20"><ArrowUp size={16} /></button>
-                  <button type="button" aria-label="Move down" onClick={() => move(i, 1)} disabled={i === order.length - 1} className="p-1.5 rounded-lg hover:bg-foreground/10 disabled:opacity-20"><ArrowDown size={16} /></button>
+                  <button type="button" aria-label={t("Move up", "Naikkan")} onClick={() => move(i, -1)} disabled={i === 0} className="p-1.5 rounded-lg hover:bg-foreground/10 disabled:opacity-20"><ArrowUp size={16} /></button>
+                  <button type="button" aria-label={t("Move down", "Turunkan")} onClick={() => move(i, 1)} disabled={i === order.length - 1} className="p-1.5 rounded-lg hover:bg-foreground/10 disabled:opacity-20"><ArrowDown size={16} /></button>
                 </span>
               )}
             </li>
@@ -71,15 +73,15 @@ export default function OrderStageView({ stage, onDone }: { stage: OrderStage; o
       <div className="mt-5 flex items-center justify-between gap-3 flex-wrap">
         {submitted ? (
           <>
-            <div className="flex items-center gap-3 text-sm text-foreground/60"><PointsBadge points={points} maxPoints={stage.maxPoints} /> {Math.round(accuracy * 100)}% of steps in the right relative order</div>
+            <div className="flex items-center gap-3 text-sm text-foreground/60"><PointsBadge points={points} maxPoints={stage.maxPoints} /> {Math.round(accuracy * 100)}% {t("of steps in the right relative order", "langkah sudah di urutan relatif yang benar")}</div>
             <ContinueButton onClick={() => onDone({
               points,
               maxPoints: stage.maxPoints,
-              feedback: [{ good: accuracy >= 0.8, text: `Correct order: ${correct.map((id) => byId[id].text.split(" — ")[0].replace(/\.$/, "")).join(" → ")}.` }],
+              feedback: [{ good: accuracy >= 0.8, text: `${t("Correct order", "Urutan yang benar")}: ${correct.map((id) => byId[id].text.split(" — ")[0].replace(/\.$/, "")).join(" → ")}.` }],
             })} />
           </>
         ) : (
-          <PrimaryButton onClick={() => setSubmitted(true)}>Lock in my plan</PrimaryButton>
+          <PrimaryButton onClick={() => setSubmitted(true)}>{t("Lock in my plan", "Kunci rencanaku")}</PrimaryButton>
         )}
       </div>
     </div>

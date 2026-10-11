@@ -3,11 +3,13 @@
 import { useState } from "react";
 import type { ChoiceStage, StageResult } from "@/game/types";
 import { ContinueButton, PointsBadge, StageIntro, panel } from "./ui";
+import { useT } from "@/lib/i18n";
 
 export default function ChoiceStageView({ stage, onDone }: { stage: ChoiceStage; onDone: (r: StageResult) => void }) {
   const [picked, setPicked] = useState<string | null>(null);
   const choice = stage.options.find((o) => o.id === picked);
   const best = stage.options.reduce((a, b) => (b.points > a.points ? b : a));
+  const t = useT();
 
   return (
     <div className="max-w-3xl">
@@ -30,7 +32,7 @@ export default function ChoiceStageView({ stage, onDone }: { stage: ChoiceStage;
             >
               {o.text}
               {picked && (o.id === picked || o.id === best.id) && (
-                <span className="block text-xs sm:text-sm mt-2 text-foreground/70">{o.id === best.id && o.id !== picked ? "Best answer — " : ""}{o.feedback}</span>
+                <span className="block text-xs sm:text-sm mt-2 text-foreground/70">{o.id === best.id && o.id !== picked ? t("Best answer — ", "Jawaban terbaik — ") : ""}{o.feedback}</span>
               )}
             </button>
           );

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Phone, PhoneOff, User, ShieldCheck, ShieldX } from "lucide-react";
 import type { DialogueChoice, DialogueStage, FeedbackEntry, StageResult } from "@/game/types";
 import { ContinueButton, PointsBadge, StageIntro, panel } from "./ui";
+import { useT } from "@/lib/i18n";
 
 /** Highest total achievable from a node (for normalising the score to maxPoints). */
 function bestFrom(stage: DialogueStage, id: string, seen = new Set<string>()): number {
@@ -45,11 +46,11 @@ function useRingtone(active: boolean) {
   }, [active]);
 }
 
-const SPEAKER: Record<string, { label: string; tone: string }> = {
-  voice: { label: "“Emma”", tone: "bg-pink-500/15 border-pink-500/30" },
-  caller: { label: "Unknown man", tone: "bg-red-500/15 border-red-500/30" },
-  daughter: { label: "Emma (her own phone)", tone: "bg-emerald-500/15 border-emerald-500/30" },
-  narrator: { label: "", tone: "bg-foreground/5 border-foreground/10 italic" },
+const SPEAKER: Record<string, { label: [string, string]; tone: string }> = {
+  voice: { label: ["“Emma”", "“Emma”"], tone: "bg-pink-500/15 border-pink-500/30" },
+  caller: { label: ["Unknown man", "Pria tak dikenal"], tone: "bg-red-500/15 border-red-500/30" },
+  daughter: { label: ["Emma (her own phone)", "Emma (dari ponselnya sendiri)"], tone: "bg-emerald-500/15 border-emerald-500/30" },
+  narrator: { label: ["", ""], tone: "bg-foreground/5 border-foreground/10 italic" },
 };
 
 export default function DialogueStageView({ stage, onDone }: { stage: DialogueStage; onDone: (r: StageResult) => void }) {
@@ -63,6 +64,7 @@ export default function DialogueStageView({ stage, onDone }: { stage: DialogueSt
   const feedback = useRef<FeedbackEntry[]>([]);
   const bottom = useRef<HTMLDivElement>(null);
   const node = stage.nodes[nodeId];
+  const t = useT();
 
   useRingtone(ringing);
 
@@ -111,21 +113,21 @@ export default function DialogueStageView({ stage, onDone }: { stage: DialogueSt
       <div className="max-w-sm mx-auto">
         <StageIntro title={stage.title} brief={stage.brief} maxPoints={stage.maxPoints} />
         <div className="rounded-[2.5rem] bg-neutral-950 text-white p-8 flex flex-col items-center gap-6 shadow-2xl border border-white/10">
-          <div className="text-xs uppercase tracking-[0.3em] text-white/50">Incoming call</div>
+          <div className="text-xs uppercase tracking-[0.3em] text-white/50">{t("Incoming call", "Panggilan masuk")}</div>
           <div className="w-24 h-24 rounded-full bg-white/10 flex items-center justify-center animate-pulse"><User size={44} /></div>
           <div className="text-center">
-            <div className="text-xl font-bold">Unknown number</div>
+            <div className="text-xl font-bold">{t("Unknown number", "Nomor tidak dikenal")}</div>
             <div className="text-sm text-white/50">+1 (520) 555-01··</div>
           </div>
           <div className="flex gap-10 pt-4">
-            <button type="button" onClick={() => setRinging(false)} className="w-16 h-16 rounded-full bg-red-500 flex items-center justify-center opacity-40 cursor-not-allowed" aria-label="Decline (disabled in this simulation)" disabled>
+            <button type="button" onClick={() => setRinging(false)} className="w-16 h-16 rounded-full bg-red-500 flex items-center justify-center opacity-40 cursor-not-allowed" aria-label={t("Decline (disabled in this simulation)", "Tolak (dinonaktifkan di simulasi ini)")} disabled>
               <PhoneOff size={26} />
             </button>
-            <button type="button" onClick={() => setRinging(false)} className="w-16 h-16 rounded-full bg-emerald-500 flex items-center justify-center animate-bounce" aria-label="Answer call">
+            <button type="button" onClick={() => setRinging(false)} className="w-16 h-16 rounded-full bg-emerald-500 flex items-center justify-center animate-bounce" aria-label={t("Answer call", "Angkat telepon")}>
               <Phone size={26} />
             </button>
           </div>
-          <p className="text-[11px] text-white/40 text-center">Tap the green button to answer.</p>
+          <p className="text-[11px] text-white/40 text-center">{t("Tap the green button to answer.", "Ketuk tombol hijau untuk mengangkat.")}</p>
         </div>
       </div>
     );
@@ -136,8 +138,8 @@ export default function DialogueStageView({ stage, onDone }: { stage: DialogueSt
       <StageIntro title={stage.title} brief={stage.brief} maxPoints={stage.maxPoints} />
       <div className={`${panel} p-4 sm:p-5`}>
         <div className="flex items-center justify-between text-xs text-foreground/50 mb-4">
-          <span className="inline-flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> Call in progress</span>
-          <span className="font-mono">Score {points}</span>
+          <span className="inline-flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> {t("Call in progress", "Panggilan berlangsung")}</span>
+          <span className="font-mono">{t("Score", "Skor")} {points}</span>
         </div>
 
         <div className="space-y-3 max-h-[55vh] overflow-y-auto pr-1">
@@ -148,14 +150,14 @@ export default function DialogueStageView({ stage, onDone }: { stage: DialogueSt
               <div key={li} className="space-y-2">
                 {visible.map((line, i) => (
                   <div key={i} className={`rounded-2xl border px-4 py-3 text-sm ${SPEAKER[line.speaker].tone}`}>
-                    {SPEAKER[line.speaker].label && <div className="text-[10px] font-bold uppercase tracking-wider text-foreground/50 mb-0.5">{SPEAKER[line.speaker].label}</div>}
+                    {SPEAKER[line.speaker].label[0] && <div className="text-[10px] font-bold uppercase tracking-wider text-foreground/50 mb-0.5">{t(...SPEAKER[line.speaker].label)}</div>}
                     {line.text}
                   </div>
                 ))}
                 {entry.picked && (
                   <div className="flex justify-end">
                     <div className="max-w-[85%] rounded-2xl bg-primary/15 border border-primary/30 px-4 py-3 text-sm">
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-primary mb-0.5">You</div>
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-primary mb-0.5">{t("You", "Kamu")}</div>
                       {entry.picked.text}
                       <div className="text-xs text-foreground/60 mt-1.5">{entry.picked.feedback}</div>
                     </div>
@@ -187,7 +189,7 @@ export default function DialogueStageView({ stage, onDone }: { stage: DialogueSt
             </div>
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <PointsBadge points={points} maxPoints={stage.maxPoints} />
-              <ContinueButton onClick={() => onDone({ points, maxPoints: stage.maxPoints, feedback: [{ good: node.ending!.good, text: `Ending: ${node.ending!.title}.` }, ...feedback.current] })} />
+              <ContinueButton onClick={() => onDone({ points, maxPoints: stage.maxPoints, feedback: [{ good: node.ending!.good, text: `${t("Ending", "Akhir")}: ${node.ending!.title}.` }, ...feedback.current] })} />
             </div>
           </div>
         )}

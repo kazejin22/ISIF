@@ -1,12 +1,16 @@
+"use client";
+
 import { ArrowRight, CheckCircle2, XCircle } from "lucide-react";
 import type { FeedbackEntry } from "@/game/types";
+import { useT } from "@/lib/i18n";
 
 export const panel = "rounded-3xl border border-foreground/10 bg-background/60 backdrop-blur-xl";
 
 export function StageIntro({ title, brief, maxPoints }: { title: string; brief: string; maxPoints: number }) {
+  const t = useT();
   return (
     <div className="mb-5">
-      <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-1">Up to {maxPoints} points</div>
+      <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-1">{t(`Up to ${maxPoints} points`, `Maksimal ${maxPoints} poin`)}</div>
       <h2 className="text-xl sm:text-2xl font-black font-[family-name:var(--font-orbitron)]">{title}</h2>
       <p className="text-sm text-foreground/60 mt-1">{brief}</p>
     </div>
@@ -26,10 +30,11 @@ export function PrimaryButton({ children, onClick, disabled }: { children: React
   );
 }
 
-export function ContinueButton({ onClick, label = "Continue" }: { onClick: () => void; label?: string }) {
+export function ContinueButton({ onClick, label }: { onClick: () => void; label?: string }) {
+  const t = useT();
   return (
     <PrimaryButton onClick={onClick}>
-      {label} <ArrowRight size={18} />
+      {label ?? t("Continue", "Lanjut")} <ArrowRight size={18} />
     </PrimaryButton>
   );
 }

@@ -1,4 +1,5 @@
 import type { Mission } from "./types";
+import { MISSIONS_ID } from "./missions.id";
 
 // Missions are inspired by real incidents (see src/data/crimeData.ts), but every
 // company, person and message in them is fictional.
@@ -350,12 +351,22 @@ export function getMission(id: string): Mission | undefined {
   return MISSIONS.find((m) => m.id === id);
 }
 
+/** The missions in the player's language (English or Indonesian). */
+export function missionsFor(lang: "en" | "id"): Mission[] {
+  return lang === "id" ? MISSIONS_ID : MISSIONS;
+}
+
+/** The same mission in another language (falls back to the given one). */
+export function localizeMission(mission: Mission, lang: "en" | "id"): Mission {
+  return missionsFor(lang).find((m) => m.id === mission.id) ?? mission;
+}
+
 export const RANKS = [
-  { min: 0, title: "Rookie Analyst" },
-  { min: 800, title: "Junior Investigator" },
-  { min: 1600, title: "Forensic Investigator" },
-  { min: 2400, title: "Senior Detective" },
-  { min: 3200, title: "Chief Forensic Officer" },
+  { min: 0, title: "Rookie Analyst", titleId: "Analis Pemula" },
+  { min: 800, title: "Junior Investigator", titleId: "Penyelidik Muda" },
+  { min: 1600, title: "Forensic Investigator", titleId: "Penyelidik Forensik" },
+  { min: 2400, title: "Senior Detective", titleId: "Detektif Senior" },
+  { min: 3200, title: "Chief Forensic Officer", titleId: "Kepala Forensik" },
 ];
 
 export function rankFor(total: number) {

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Camera, Bot, Flame, Timer } from "lucide-react";
 import type { RealOrFakeStage, StageResult, FeedbackEntry } from "@/game/types";
 import { ContinueButton, PointsBadge, StageIntro, panel } from "./ui";
+import { useT } from "@/lib/i18n";
 
 type Answer = "real" | "ai" | "timeout";
 
@@ -20,6 +21,7 @@ export default function RealOrFakeView({ stage, onDone }: { stage: RealOrFakeSta
   const [gained, setGained] = useState(0);
   const feedback = useRef<FeedbackEntry[]>([]);
   const round = stage.rounds[index];
+  const t = useT();
 
   const answerWith = (a: Answer, secondsLeft: number) => {
     const correct = a === round.answer;
@@ -28,7 +30,7 @@ export default function RealOrFakeView({ stage, onDone }: { stage: RealOrFakeSta
     setGained(gain);
     setPoints((p) => p + gain);
     setStreak((s) => (correct ? s + 1 : 0));
-    feedback.current.push({ good: correct, text: `Image ${index + 1}: ${round.explain}` });
+    feedback.current.push({ good: correct, text: `${t("Image", "Gambar")} ${index + 1}: ${round.explain}` });
   };
 
   // Countdown; a timeout counts as a wrong answer.
@@ -64,17 +66,17 @@ export default function RealOrFakeView({ stage, onDone }: { stage: RealOrFakeSta
       <StageIntro title={stage.title} brief={stage.brief} maxPoints={stage.maxPoints} />
 
       <div className="flex items-center justify-between gap-3 mb-3 text-sm">
-        <span className="font-bold">Image {index + 1} / {stage.rounds.length}</span>
+        <span className="font-bold">{t("Image", "Gambar")} {index + 1} / {stage.rounds.length}</span>
         <span className="flex items-center gap-4">
-          {streak >= 2 && <span className="inline-flex items-center gap-1 text-orange-500 font-bold"><Flame size={15} /> {streak} streak</span>}
-          <span className="font-mono font-black">{points} pts</span>
+          {streak >= 2 && <span className="inline-flex items-center gap-1 text-orange-500 font-bold"><Flame size={15} /> {streak} {t("streak", "beruntun")}</span>}
+          <span className="font-mono font-black">{points} {t("pts", "poin")}</span>
         </span>
       </div>
 
       <div className={`${panel} overflow-hidden`}>
         <div className="relative bg-black flex items-center justify-center aspect-[4/3] sm:aspect-[16/10]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img key={round.id} src={round.src} alt={`Evidence image ${index + 1}`} className="max-w-full max-h-full object-contain" draggable={false} />
+          <img key={round.id} src={round.src} alt={`${t("Evidence image", "Gambar bukti")} ${index + 1}`} className="max-w-full max-h-full object-contain" draggable={false} />
           {!answer && (
             <div className="absolute top-3 right-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/70 text-white text-xs font-mono">
               <Timer size={13} /> {Math.ceil(left)}s
@@ -82,7 +84,7 @@ export default function RealOrFakeView({ stage, onDone }: { stage: RealOrFakeSta
           )}
           {answer && (
             <div className={`absolute top-3 left-3 px-3 py-1.5 rounded-full text-sm font-black text-white ${correct ? "bg-emerald-500" : "bg-red-500"}`}>
-              {answer === "timeout" ? "Time's up!" : correct ? "Correct!" : "Wrong"} — it&apos;s {round.answer === "ai" ? "AI-generated" : "a real photo"}
+              {answer === "timeout" ? t("Time's up!", "Waktu habis!") : correct ? t("Correct!", "Benar!") : t("Wrong", "Salah")} — {round.answer === "ai" ? t("it's AI-generated", "ini buatan AI") : t("it's a real photo", "ini foto asli")}
             </div>
           )}
         </div>
@@ -94,10 +96,10 @@ export default function RealOrFakeView({ stage, onDone }: { stage: RealOrFakeSta
           {!answer ? (
             <div className="grid grid-cols-2 gap-3">
               <button type="button" onClick={() => answerWith("real", left)} className="flex items-center justify-center gap-2 py-4 rounded-2xl border border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 font-black text-emerald-600 dark:text-emerald-400 transition-colors">
-                <Camera size={20} /> REAL PHOTO
+                <Camera size={20} /> {t("REAL PHOTO", "FOTO ASLI")}
               </button>
               <button type="button" onClick={() => answerWith("ai", left)} className="flex items-center justify-center gap-2 py-4 rounded-2xl border border-red-500/40 bg-red-500/10 hover:bg-red-500/20 font-black text-red-600 dark:text-red-400 transition-colors">
-                <Bot size={20} /> AI-GENERATED
+                <Bot size={20} /> {t("AI-GENERATED", "BUATAN AI")}
               </button>
             </div>
           ) : (
@@ -106,7 +108,7 @@ export default function RealOrFakeView({ stage, onDone }: { stage: RealOrFakeSta
               <p className="text-[11px] text-foreground/40">{round.credit}</p>
               <div className="flex items-center justify-between gap-3 flex-wrap">
                 <PointsBadge points={gained} maxPoints={Math.round(perRound)} />
-                <ContinueButton onClick={next} label={index + 1 >= stage.rounds.length ? "Finish" : "Next image"} />
+                <ContinueButton onClick={next} label={index + 1 >= stage.rounds.length ? t("Finish", "Selesai") : t("Next image", "Gambar berikutnya")} />
               </div>
             </div>
           )}

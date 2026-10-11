@@ -4,29 +4,31 @@ import { useState } from "react";
 import { CheckSquare, Square, Video, MicOff, Heart, Repeat2, Play } from "lucide-react";
 import type { ObserveStage, StageResult } from "@/game/types";
 import { ContinueButton, FeedbackLine, PointsBadge, PrimaryButton, StageIntro, panel } from "./ui";
+import { useT } from "@/lib/i18n";
 
 function VideoCallScene() {
+  const t = useT();
   const tiles = [
     { name: "David Chen (CFO)", speaking: true },
-    { name: "Legal adviser", speaking: false },
-    { name: "Finance — London", speaking: false },
-    { name: "You", speaking: false, self: true },
+    { name: t("Legal adviser", "Penasihat hukum"), speaking: false },
+    { name: t("Finance — London", "Keuangan — London"), speaking: false },
+    { name: t("You", "Kamu"), speaking: false, self: true },
   ];
   return (
     <div className="rounded-2xl bg-neutral-950 p-2 grid grid-cols-2 gap-2">
-      {tiles.map((t) => (
-        <div key={t.name} className={`relative aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-slate-700 to-slate-900 ${t.speaking ? "ring-2 ring-emerald-400" : ""}`}>
+      {tiles.map((tile) => (
+        <div key={tile.name} className={`relative aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-slate-700 to-slate-900 ${tile.speaking ? "ring-2 ring-emerald-400" : ""}`}>
           {/* Stylised head; the remote ones are slightly blurred and jittery to hint at low-quality deepfake video */}
-          <div className={`absolute inset-0 flex items-end justify-center ${t.self ? "" : "blur-[1.5px]"}`}>
-            <div className={`relative w-[38%] aspect-[3/4] mb-[-6%] ${t.speaking ? "animate-[jitter_2.4s_steps(2)_infinite]" : ""}`}>
+          <div className={`absolute inset-0 flex items-end justify-center ${tile.self ? "" : "blur-[1.5px]"}`}>
+            <div className={`relative w-[38%] aspect-[3/4] mb-[-6%] ${tile.speaking ? "animate-[jitter_2.4s_steps(2)_infinite]" : ""}`}>
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[62%] aspect-square rounded-full bg-amber-200/80" />
               <div className="absolute bottom-0 inset-x-0 h-[48%] rounded-t-[45%] bg-slate-400/70" />
             </div>
           </div>
           <div className="absolute bottom-1.5 left-1.5 flex items-center gap-1 px-1.5 py-0.5 rounded bg-black/60 text-[10px] text-white">
-            {!t.speaking && !t.self && <MicOff size={10} className="text-red-400" />}{t.name}
+            {!tile.speaking && !tile.self && <MicOff size={10} className="text-red-400" />}{tile.name}
           </div>
-          {t.speaking && <div className="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded bg-black/60 text-[9px] text-amber-300">LOW QUALITY</div>}
+          {tile.speaking && <div className="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded bg-black/60 text-[9px] text-amber-300">{t("LOW QUALITY", "KUALITAS RENDAH")}</div>}
         </div>
       ))}
       <style>{`@keyframes jitter { 0%,100% { transform: translate(0,0) } 50% { transform: translate(0.6px,-0.6px) } }`}</style>
@@ -65,6 +67,7 @@ function SocialPostScene({ transcript }: { transcript: ObserveStage["transcript"
 export default function ObserveStageView({ stage, onDone }: { stage: ObserveStage; onDone: (r: StageResult) => void }) {
   const [ticked, setTicked] = useState<Record<string, boolean>>({});
   const [submitted, setSubmitted] = useState(false);
+  const t = useT();
 
   const suspicious = stage.items.filter((i) => i.suspicious);
   const unit = stage.maxPoints / suspicious.length;
@@ -87,20 +90,20 @@ export default function ObserveStageView({ stage, onDone }: { stage: ObserveStag
       <div className="grid lg:grid-cols-2 gap-5 items-start">
         <div className={`${panel} p-4 space-y-4`}>
           <div className="flex items-center gap-2 text-xs font-bold text-foreground/60">
-            <Video size={14} className="text-primary" /> {stage.scene === "video-call" ? "Video call · 15:00 HKT" : "Trending post"}
+            <Video size={14} className="text-primary" /> {stage.scene === "video-call" ? t("Video call · 15:00 HKT", "Panggilan video · 15.00 HKT") : t("Trending post", "Unggahan trending")}
           </div>
           {stage.scene === "video-call" ? <VideoCallScene /> : <SocialPostScene transcript={stage.transcript} />}
           {stage.scene === "video-call" && (
             <ul className="space-y-2 text-sm">
-              {stage.transcript.map((t, i) => (
-                <li key={i} className="flex gap-2"><b className="shrink-0 text-foreground/80">{t.speaker}:</b><span className="text-foreground/70">{t.line}</span></li>
+              {stage.transcript.map((line, i) => (
+                <li key={i} className="flex gap-2"><b className="shrink-0 text-foreground/80">{line.speaker}:</b><span className="text-foreground/70">{line.line}</span></li>
               ))}
             </ul>
           )}
         </div>
 
         <div className={`${panel} p-4 sm:p-5`}>
-          <div className="text-xs font-bold uppercase tracking-wider text-foreground/50 mb-3">What&apos;s suspicious?</div>
+          <div className="text-xs font-bold uppercase tracking-wider text-foreground/50 mb-3">{t("What's suspicious?", "Apa yang mencurigakan?")}</div>
           <ul className="space-y-2">
             {stage.items.map((item) => {
               const on = Boolean(ticked[item.id]);
@@ -118,7 +121,7 @@ export default function ObserveStageView({ stage, onDone }: { stage: ObserveStag
                     {on ? <CheckSquare size={18} className="text-primary shrink-0 mt-0.5" /> : <Square size={18} className="text-foreground/40 shrink-0 mt-0.5" />}
                     <span className="text-sm">
                       {item.text}
-                      {submitted && <span className={`block text-xs mt-1 ${verdict === "right" ? "text-emerald-600 dark:text-emerald-400" : "text-red-500"}`}>{item.suspicious ? "Suspicious — " : "Not evidence — "}{item.explain}</span>}
+                      {submitted && <span className={`block text-xs mt-1 ${verdict === "right" ? "text-emerald-600 dark:text-emerald-400" : "text-red-500"}`}>{item.suspicious ? t("Suspicious — ", "Mencurigakan — ") : t("Not evidence — ", "Bukan bukti — ")}{item.explain}</span>}
                     </span>
                   </button>
                 </li>
@@ -132,10 +135,10 @@ export default function ObserveStageView({ stage, onDone }: { stage: ObserveStag
                 <ContinueButton onClick={finish} />
               </>
             ) : (
-              <PrimaryButton onClick={() => setSubmitted(true)}>Submit observations</PrimaryButton>
+              <PrimaryButton onClick={() => setSubmitted(true)}>{t("Submit observations", "Kirim pengamatan")}</PrimaryButton>
             )}
           </div>
-          {submitted && wrongTicks > 0 && <ul className="mt-3"><FeedbackLine entry={{ good: false, text: `${wrongTicks} item(s) ticked that aren't real evidence (−${Math.round(unit / 2)} each).` }} /></ul>}
+          {submitted && wrongTicks > 0 && <ul className="mt-3"><FeedbackLine entry={{ good: false, text: t(`${wrongTicks} item(s) ticked that aren't real evidence (−${Math.round(unit / 2)} each).`, `${wrongTicks} pilihan dicentang padahal bukan bukti (−${Math.round(unit / 2)} per pilihan).`) }} /></ul>}
         </div>
       </div>
     </div>
