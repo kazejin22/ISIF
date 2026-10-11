@@ -1,22 +1,23 @@
 import Link from "next/link";
+import { T } from "@/lib/i18n";
 import { Activity, ShieldCheck, ExternalLink } from "lucide-react";
 
 const PLATFORM_LINKS = [
-  { name: "Forensic Scanner", href: "/detector" },
-  { name: "Learning Hub", href: "/learning" },
-  { name: "Global Case Map", href: "/map" },
-  { name: "Interactive Mission", href: "/game" },
+  { name: "Forensic Scanner", id: "Pemindai Forensik", href: "/detector" },
+  { name: "Learning Hub", id: "Pusat Belajar", href: "/learning" },
+  { name: "Global Case Map", id: "Peta Kasus Global", href: "/map" },
+  { name: "Interactive Mission", id: "Misi Interaktif", href: "/game" },
 ];
 
 const VERIFY_LINKS = [
-  { name: "Content Credentials Verify", href: "https://contentcredentials.org/verify" },
-  { name: "Google Lens (reverse image search)", href: "https://lens.google/" },
-  { name: "TinEye (reverse image search)", href: "https://tineye.com/" },
+  { name: "Content Credentials Verify", id: "Content Credentials Verify", href: "https://contentcredentials.org/verify" },
+  { name: "Google Lens (reverse image search)", id: "Google Lens (pencarian gambar)", href: "https://lens.google/" },
+  { name: "TinEye (reverse image search)", id: "TinEye (pencarian gambar)", href: "https://tineye.com/" },
 ];
 
 const HELP_LINKS = [
-  { name: "StopNCII.org — intimate image abuse", href: "https://stopncii.org/" },
-  { name: "Take It Down — for under-18s", href: "https://takeitdown.ncmec.org/" },
+  { name: "StopNCII.org — intimate image abuse", id: "StopNCII.org — penyalahgunaan foto intim", href: "https://stopncii.org/" },
+  { name: "Take It Down — for under-18s", id: "Take It Down — untuk di bawah 18 tahun", href: "https://takeitdown.ncmec.org/" },
 ];
 
 const linkClass = "text-sm text-foreground/60 hover:text-primary transition-colors inline-flex items-center gap-1.5";
@@ -41,36 +42,42 @@ export default function Footer() {
               <span className="text-xl font-black font-[family-name:var(--font-orbitron)] tracking-widest">AIVENTURE</span>
             </Link>
             <p className="text-sm text-foreground/60 leading-relaxed max-w-xs">
-              A student project helping people recognize deepfakes, verify what they see, and stay safe in the era of synthetic media.
+              <T
+                en="A student project helping people recognize deepfakes, verify what they see, and stay safe in the era of synthetic media."
+                id="Proyek pelajar yang membantu orang mengenali deepfake, memverifikasi apa yang mereka lihat, dan tetap aman di era media sintetis."
+              />
             </p>
           </div>
 
-          <FooterColumn title="Platform">
+          <FooterColumn title={<T en="Platform" id="Platform" />}>
             {PLATFORM_LINKS.map((l) => (
-              <li key={l.href}><Link href={l.href} className={linkClass}>{l.name}</Link></li>
+              <li key={l.href}><Link href={l.href} className={linkClass}><T en={l.name} id={l.id} /></Link></li>
             ))}
           </FooterColumn>
 
-          <FooterColumn title="Verify Media">
+          <FooterColumn title={<T en="Verify Media" id="Verifikasi Media" />}>
             {VERIFY_LINKS.map((l) => (
               <li key={l.href}>
                 <a href={l.href} target="_blank" rel="noopener noreferrer" className={linkClass}>
-                  {l.name} <ExternalLink size={12} className="shrink-0" />
+                  <T en={l.name} id={l.id} /> <ExternalLink size={12} className="shrink-0" />
                 </a>
               </li>
             ))}
           </FooterColumn>
 
-          <FooterColumn title="Get Help">
+          <FooterColumn title={<T en="Get Help" id="Cari Bantuan" />}>
             {HELP_LINKS.map((l) => (
               <li key={l.href}>
                 <a href={l.href} target="_blank" rel="noopener noreferrer" className={linkClass}>
-                  {l.name} <ExternalLink size={12} className="shrink-0" />
+                  <T en={l.name} id={l.id} /> <ExternalLink size={12} className="shrink-0" />
                 </a>
               </li>
             ))}
             <li className="text-xs text-foreground/40 leading-relaxed pt-1">
-              Targeted by a deepfake? Save the evidence, report it to the platform, and tell someone you trust or the police.
+              <T
+                en="Targeted by a deepfake? Save the evidence, report it to the platform, and tell someone you trust or the police."
+                id="Jadi korban deepfake? Simpan buktinya, laporkan ke platform, dan ceritakan ke orang yang kamu percaya atau ke polisi."
+              />
             </li>
           </FooterColumn>
         </div>
@@ -79,7 +86,7 @@ export default function Footer() {
           <span className="text-xs text-foreground/50">© {currentYear} AIVENTURE.</span>
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-foreground/[0.03] border border-foreground/[0.08]">
             <ShieldCheck size={14} className="text-emerald-500" />
-            <span className="text-[10px] font-bold tracking-wider uppercase text-foreground/70">Built for ISIF 2026</span>
+            <span className="text-[10px] font-bold tracking-wider uppercase text-foreground/70"><T en="Built for ISIF 2026" id="Dibuat untuk ISIF 2026" /></span>
           </div>
         </div>
       </div>
@@ -87,7 +94,7 @@ export default function Footer() {
   );
 }
 
-function FooterColumn({ title, children }: { title: string; children: React.ReactNode }) {
+function FooterColumn({ title, children }: { title: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-5">
       <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-foreground/90 font-[family-name:var(--font-orbitron)]">{title}</h4>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { useT } from "@/lib/i18n";
 
 const curriculum = [
   {
@@ -53,6 +54,7 @@ const curriculum = [
 
 export default function CurriculumList() {
   const [open, setOpen] = useState<string | null>(null);
+  const t = useT();
 
   return (
     <div className="flex flex-col">
@@ -71,9 +73,9 @@ export default function CurriculumList() {
               </span>
               <span className="flex flex-col flex-1">
                 <span className={`text-lg font-bold mb-1.5 transition-colors ${isOpen ? "text-foreground" : "text-foreground/80 group-hover:text-foreground"}`}>
-                  {item.title}
+                  {t(item.title)}
                 </span>
-                <span className="text-sm text-foreground/50 leading-relaxed font-light">{item.desc}</span>
+                <span className="text-sm text-foreground/50 leading-relaxed font-light">{t(item.desc)}</span>
               </span>
               <ChevronDown size={18} className={`shrink-0 mt-1.5 text-primary transition-transform ${isOpen ? "rotate-180" : ""}`} />
             </button>
@@ -82,7 +84,7 @@ export default function CurriculumList() {
                 {item.points.map((point) => (
                   <li key={point} className="flex gap-3 text-sm text-foreground/70 leading-relaxed last:pb-6">
                     <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0 mt-2" />
-                    {point}
+                    {t(point)}
                   </li>
                 ))}
               </ul>

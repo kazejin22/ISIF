@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useT } from "@/lib/i18n";
 
 // Landmark coordinates in the 1200×800 space of /images/anatomy-portrait.jpg.
 type Pt = [number, number];
@@ -43,6 +44,7 @@ const HOTSPOTS = [
 const toPoints = (pts: Pt[]) => pts.map((p) => p.join(",")).join(" ");
 
 export default function DeepfakeAnatomy() {
+  const t = useT();
   const [position, setPosition] = useState(50);
   const containerRef = useRef<HTMLDivElement>(null);
   const dragging = useRef(false);
@@ -69,9 +71,9 @@ export default function DeepfakeAnatomy() {
       >
         {/* Layer 1: the original photo */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/images/anatomy-portrait.jpg" alt="Portrait of a smiling man" className="absolute inset-0 w-full h-full object-cover" draggable={false} />
+        <img src="/images/anatomy-portrait.jpg" alt={t("Portrait of a smiling man", "Potret pria yang tersenyum")} className="absolute inset-0 w-full h-full object-cover" draggable={false} />
         <span className="absolute top-3 left-3 px-2.5 py-1 bg-black/60 backdrop-blur-md rounded-full font-bold text-[10px] sm:text-xs text-white border border-white/20">
-          Original photo
+          {t("Original photo", "Foto asli")}
         </span>
 
         {/* Layer 2: what a face-swap model "sees", revealed right of the handle */}
@@ -95,12 +97,12 @@ export default function DeepfakeAnatomy() {
             <div key={h.label} className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center" style={{ left: `${h.x}%`, top: `${h.y}%` }}>
               <span className="w-3 h-3 rounded-full bg-red-500 ring-4 ring-red-500/30 animate-pulse" />
               <span className="hidden sm:block mt-1 px-2 py-1 rounded-md bg-black/75 text-[10px] leading-tight text-white text-center whitespace-nowrap">
-                <b className="text-red-400">{h.label}</b><br />{h.note}
+                <b className="text-red-400">{t(h.label)}</b><br />{t(h.note)}
               </span>
             </div>
           ))}
           <span className="absolute top-3 right-3 px-2.5 py-1 bg-black/60 backdrop-blur-md rounded-full font-bold text-[10px] sm:text-xs text-cyan-300 border border-cyan-300/30">
-            Face-swap model&apos;s view
+            {t("Face-swap model's view", "Pandangan model face-swap")}
           </span>
         </div>
 
@@ -108,7 +110,7 @@ export default function DeepfakeAnatomy() {
         <div
           role="slider"
           tabIndex={0}
-          aria-label="Reveal the face-swap landmark mesh"
+          aria-label={t("Reveal the face-swap landmark mesh", "Tampilkan jaring titik wajah face-swap")}
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={Math.round(position)}
@@ -131,15 +133,17 @@ export default function DeepfakeAnatomy() {
         {HOTSPOTS.map((h) => (
           <li key={h.label} className="flex items-start gap-1.5 text-foreground/70">
             <span className="w-2 h-2 rounded-full bg-red-500 mt-1 shrink-0" />
-            <span><b className="text-foreground/90">{h.label}:</b> {h.note}</span>
+            <span><b className="text-foreground/90">{t(h.label)}:</b> {t(h.note)}</span>
           </li>
         ))}
       </ul>
 
       <p className="text-xs text-foreground/50 leading-relaxed">
-        Face-swap tools first detect facial landmarks like these, then warp a generated face onto the mesh and blend the edges.
-        The red markers show where that process most often leaves visible artifacts — the places to look first.
-        <span className="block mt-1 text-foreground/40">Photo: Unsplash.</span>
+        {t(
+          "Face-swap tools first detect facial landmarks like these, then warp a generated face onto the mesh and blend the edges. The red markers show where that process most often leaves visible artifacts — the places to look first.",
+          "Alat face-swap pertama-tama mendeteksi titik-titik wajah seperti ini, lalu menempelkan wajah buatan ke jaring tersebut dan menghaluskan tepinya. Penanda merah menunjukkan bagian yang paling sering meninggalkan jejak — tempat pertama yang perlu dicek.",
+        )}
+        <span className="block mt-1 text-foreground/40">{t("Photo: Unsplash.", "Foto: Unsplash.")}</span>
       </p>
     </div>
   );

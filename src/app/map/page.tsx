@@ -6,6 +6,7 @@ import StrokeText from "@/components/StrokeText";
 import { crimeData, CrimeData } from "@/data/crimeData";
 import { Search, AlertTriangle, Globe, Filter, BarChart3, ExternalLink, Radio } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { useT } from "@/lib/i18n";
 
 // Cases in this dataset per year — computed, not invented.
 const casesByYear = Object.entries(
@@ -23,17 +24,18 @@ export default function MapPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedContinent, setSelectedContinent] = useState("All");
   const detailsRef = useRef<HTMLDivElement>(null);
+  const t = useT();
 
   const filteredCrimes = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     return crimeData
       .filter((crime) => {
-        const matchesSearch = !q || [crime.country, crime.type, crime.title].some((f) => f.toLowerCase().includes(q));
+        const matchesSearch = !q || [crime.country, crime.type, crime.title].some((f) => f.toLowerCase().includes(q) || t(f).toLowerCase().includes(q));
         const matchesContinent = selectedContinent === "All" || crime.continent === selectedContinent;
         return matchesSearch && matchesContinent;
       })
       .sort((a, b) => b.year - a.year);
-  }, [searchQuery, selectedContinent]);
+  }, [searchQuery, selectedContinent, t]);
 
   const select = (crime: CrimeData) => {
     setSelectedCrime(crime);
@@ -56,8 +58,8 @@ export default function MapPage() {
 
       {/* Mobile heading */}
       <div className="lg:hidden relative z-20 px-4 pt-8 text-center">
-        <h1 className="text-3xl font-black font-[family-name:var(--font-orbitron)] tracking-tight">Deepfake Case Map</h1>
-        <p className="text-sm text-foreground/60 mt-2">{crimeData.length} documented incidents. Tap a pin or pick a case below.</p>
+        <h1 className="text-3xl font-black font-[family-name:var(--font-orbitron)] tracking-tight">{t("Deepfake Case Map", "Peta Kasus Deepfake")}</h1>
+        <p className="text-sm text-foreground/60 mt-2">{crimeData.length} {t("documented incidents. Tap a pin or pick a case below.", "kasus terdokumentasi. Ketuk pin atau pilih kasus di bawah.")}</p>
       </div>
 
       {/* Globe — square in flow on mobile, oversized and cropped on desktop */}
@@ -79,29 +81,29 @@ export default function MapPage() {
                 <Globe className="text-primary" size={20} />
               </div>
               <div className="min-w-0">
-                <h2 className="text-xl font-black text-slate-800 dark:text-white truncate">{selectedCrime.country}</h2>
-                <div className="text-xs font-bold text-slate-600 dark:text-foreground/50">{selectedCrime.continent} · {selectedCrime.year}</div>
+                <h2 className="text-xl font-black text-slate-800 dark:text-white truncate">{t(selectedCrime.country)}</h2>
+                <div className="text-xs font-bold text-slate-600 dark:text-foreground/50">{t(selectedCrime.continent)} · {selectedCrime.year}</div>
               </div>
             </div>
 
             <div className="relative z-10 flex-1 overflow-y-auto pr-1 space-y-4 mb-4">
               <div>
-                <h3 className="font-bold text-sm text-primary mb-2 leading-snug">{selectedCrime.title}</h3>
-                <p className="text-slate-700 dark:text-foreground/80 leading-relaxed text-xs">{selectedCrime.description}</p>
+                <h3 className="font-bold text-sm text-primary mb-2 leading-snug">{t(selectedCrime.title)}</h3>
+                <p className="text-slate-700 dark:text-foreground/80 leading-relaxed text-xs">{t(selectedCrime.description)}</p>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-3 bg-white/40 dark:bg-white/5 rounded-2xl border border-white/40 dark:border-white/10">
-                  <div className="text-[10px] text-slate-500 dark:text-foreground/50 font-bold mb-1 uppercase tracking-wider">Category</div>
+                  <div className="text-[10px] text-slate-500 dark:text-foreground/50 font-bold mb-1 uppercase tracking-wider">{t("Category", "Kategori")}</div>
                   <div className="font-bold text-xs flex items-center gap-1.5 text-slate-800 dark:text-white">
                     <AlertTriangle size={12} className="text-red-500 shrink-0" />
-                    <span>{selectedCrime.type}</span>
+                    <span>{t(selectedCrime.type)}</span>
                   </div>
                 </div>
                 <div className="p-3 bg-white/40 dark:bg-white/5 rounded-2xl border border-white/40 dark:border-white/10">
-                  <div className="text-[10px] text-slate-500 dark:text-foreground/50 font-bold mb-1 uppercase tracking-wider">Medium</div>
+                  <div className="text-[10px] text-slate-500 dark:text-foreground/50 font-bold mb-1 uppercase tracking-wider">{t("Medium", "Media")}</div>
                   <div className="font-bold text-xs flex items-center gap-1.5 text-slate-800 dark:text-white">
                     <Radio size={12} className="text-primary shrink-0" />
-                    <span>{selectedCrime.medium}</span>
+                    <span>{t(selectedCrime.medium)}</span>
                   </div>
                 </div>
               </div>
@@ -113,7 +115,7 @@ export default function MapPage() {
               rel="noopener noreferrer"
               className="relative z-10 shrink-0 w-full py-2.5 px-4 rounded-xl bg-primary/10 hover:bg-primary/20 border border-primary/20 text-primary text-xs font-bold flex items-center justify-center gap-2 transition-colors"
             >
-              Read report · {selectedCrime.source} <ExternalLink size={14} />
+              {t("Read report", "Baca laporan")} · {selectedCrime.source} <ExternalLink size={14} />
             </a>
           </div>
         </div>
@@ -123,7 +125,7 @@ export default function MapPage() {
           <div className={`${panel} h-[60vh] lg:h-full flex flex-col overflow-hidden`}>
             <div className="p-4 border-b border-white/20 dark:border-white/10 bg-white/20 dark:bg-white/5 shrink-0">
               <h3 className="text-lg font-black mb-4 flex items-center gap-2 text-slate-800 dark:text-white">
-                <Filter size={18} className="text-primary" /> Global Cases
+                <Filter size={18} className="text-primary" /> {t("Global Cases", "Kasus Global")}
                 <span className="ml-auto text-xs font-mono font-normal text-slate-500 dark:text-foreground/50">{filteredCrimes.length}/{crimeData.length}</span>
               </h3>
               <div className="flex flex-col gap-3">
@@ -131,8 +133,8 @@ export default function MapPage() {
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-foreground/40" size={16} />
                   <input
                     type="search"
-                    placeholder="Search country, title, category..."
-                    aria-label="Search cases"
+                    placeholder={t("Search country, title, category...", "Cari negara, judul, kategori...")}
+                    aria-label={t("Search cases", "Cari kasus")}
                     className="w-full pl-9 pr-4 py-2 text-base sm:text-sm rounded-xl bg-white/50 dark:bg-black/40 border border-white/40 dark:border-white/10 text-slate-800 dark:text-white focus:outline-none focus:border-primary transition-colors"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -149,7 +151,7 @@ export default function MapPage() {
                           : "bg-white/50 dark:bg-white/5 text-slate-600 dark:text-foreground/60 border border-white/40 dark:border-transparent hover:bg-white dark:hover:bg-white/10"
                       }`}
                     >
-                      {cont}
+                      {t(cont)}
                     </button>
                   ))}
                 </div>
@@ -158,7 +160,7 @@ export default function MapPage() {
 
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
               {filteredCrimes.length === 0 ? (
-                <div className="text-center p-8 text-slate-500 dark:text-foreground/40 text-sm">No cases found.</div>
+                <div className="text-center p-8 text-slate-500 dark:text-foreground/40 text-sm">{t("No cases found.", "Tidak ada kasus.")}</div>
               ) : (
                 filteredCrimes.map((crime) => (
                   <button
@@ -171,11 +173,11 @@ export default function MapPage() {
                     }`}
                   >
                     <div className="flex-1 min-w-0">
-                      <div className="font-black text-sm text-slate-800 dark:text-white">{crime.country}</div>
+                      <div className="font-black text-sm text-slate-800 dark:text-white">{t(crime.country)}</div>
                       <div className={`font-medium text-xs truncate ${selectedCrime.id === crime.id ? "text-primary" : "text-slate-600 dark:text-foreground/60"}`}>
-                        {crime.title}
+                        {t(crime.title)}
                       </div>
-                      <div className="text-[10px] text-slate-500 dark:text-foreground/40 mt-1">{crime.type}</div>
+                      <div className="text-[10px] text-slate-500 dark:text-foreground/40 mt-1">{t(crime.type)}</div>
                     </div>
                     <div className="text-[10px] font-bold px-2 py-1 rounded bg-slate-200/50 dark:bg-white/10 text-slate-600 dark:text-foreground/50 whitespace-nowrap">
                       {crime.year}
@@ -191,7 +193,7 @@ export default function MapPage() {
         <div className={`${panel} p-4 lg:z-20 lg:absolute lg:left-8 lg:bottom-6 lg:w-[320px]`}>
           <div className="flex items-center gap-2 mb-2 px-1">
             <BarChart3 size={14} className="text-primary" />
-            <h3 className="text-[10px] font-bold uppercase tracking-wider text-slate-700 dark:text-foreground/70">Cases in this map by year</h3>
+            <h3 className="text-[10px] font-bold uppercase tracking-wider text-slate-700 dark:text-foreground/70">{t("Cases in this map by year", "Kasus di peta ini per tahun")}</h3>
           </div>
           <div className="w-full h-[120px] text-slate-500 dark:text-foreground/50">
             <ResponsiveContainer width="100%" height="100%">
@@ -207,7 +209,7 @@ export default function MapPage() {
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <p className="text-[10px] text-slate-500 dark:text-foreground/40 px-1 mt-1">A curated sample of reported incidents, not a global total.</p>
+          <p className="text-[10px] text-slate-500 dark:text-foreground/40 px-1 mt-1">{t("A curated sample of reported incidents, not a global total.", "Contoh pilihan dari kasus yang dilaporkan, bukan total global.")}</p>
         </div>
       </div>
     </div>

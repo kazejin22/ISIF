@@ -6,17 +6,7 @@ import { Canvas } from "@react-three/fiber";
 import { XR, noEvents, PointerEvents, useXR, type XRStore } from "@react-three/xr";
 import { ArrowLeft, Glasses, MousePointer2, RotateCcw, TriangleAlert } from "lucide-react";
 import Environment from "./Environment";
-
-// @react-three/fiber (up to 9.8.x) still creates a THREE.Clock, which three r185
-// reports as deprecated on every load. It's harmless library noise, so drop only
-// that one message instead of letting it pile up as a dev "issue".
-if (typeof window !== "undefined") {
-  const warn = console.warn.bind(console);
-  console.warn = (...args: unknown[]) => {
-    if (typeof args[0] === "string" && args[0].startsWith("THREE.Clock: This module has been deprecated")) return;
-    warn(...args);
-  };
-}
+import "@/lib/quietThree";
 
 /** Can this browser create a WebGL context right now? (False when it has blocked 3D for the page.) */
 function canUseWebGL() {

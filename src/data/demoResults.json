@@ -115,6 +115,116 @@
    "provenance": [],
    "adjustment": null,
    "model": "gemini-2.5-flash"
+  },
+  "9d8ffc9327e7bf2a5645d3de0d18ef4f84ca733e9a9b2a0f00519f9ae0a59245:id": {
+   "success": true,
+   "conclusion": "REAL",
+   "isReal": true,
+   "authenticityScore": 95,
+   "confidence": 92,
+   "riskLevel": "Low",
+   "mediaDescription": "Sebuah foto dokumenter yang memperlihatkan seorang warga mengenakan topi caping dan masker sedang menyapu lapisan abu vulkanik di jalan raya Indonesia. Di latar belakang terlihat becak, kendaraan, serta karung beras dan peralatan kerja.",
+   "analysis": "Foto ini merupakan dokumentasi nyata dari kegiatan pembersihan abu vulkanik di Indonesia. Seluruh elemen visual, mulai dari teks 'BERAS BULOG' pada karung hingga detail tekstur abu di jalanan dan bentuk kendaraan di latar belakang, sangat konsisten dan akurat. Tidak ditemukan tanda-tanda manipulasi AI atau sintesis gambar seperti keanehan pada struktur bentuk, garis bergelombang, atau teks garbled. Oleh karena itu, foto ini dipastikan sebagai media yang asli.",
+   "anomalies": [],
+   "authenticSignals": [
+    "Teks dan logo pada karung 'BERAS BULOG' terlihat sangat presisi, akurat, dan terbaca jelas tanpa adanya distorsi khas AI.",
+    "Jejak roda kendaraan pada lapisan abu vulkanik di permukaan jalan menunjukkan interaksi fisik yang sangat alami dan realistis.",
+    "Pencahayaan alami yang terhambur oleh partikel debu di udara konsisten pada seluruh subjek dan objek latar belakang.",
+    "Detail arsitektur, tiang listrik, kendaraan becak, dan objek di sekitar lokasi memiliki struktur geometris yang logis dan konsisten."
+   ],
+   "provenance": [
+    "Ada metadata EXIF, tetapi merek/model kamera tidak dikenali."
+   ],
+   "adjustment": null,
+   "model": "gemini-3.5-flash"
+  },
+  "172fac66208d36c7dda144c3fc0727f4727aeeb926085091ffc7f039c0531fe6:id": {
+   "success": true,
+   "conclusion": "AI-GENERATED",
+   "isReal": false,
+   "authenticityScore": 5,
+   "confidence": 95,
+   "riskLevel": "High",
+   "mediaDescription": "Ilustrasi lanskap digital bergaya 3D render yang menampilkan pegunungan dramatis, danau, rumah kabin kayu, dan awan badai melingkar di atas puncak gunung utama.",
+   "analysis": "Gambar ini secara jelas merupakan hasil sintesis kecerdasan buatan (AI) berbasis gaya render 3D atau seni digital. Pencahayaan pada awan, garis-garis petir yang tegak lurus sempurna, serta tekstur lereng gunung tidak mencerminkan fenomena alam nyata maupun fotografi lanskap asli. Selain itu, tekstur pepohonan, bebatuan di tepi danau, serta wujud kabin kayu menunjukkan tingkat kehalusan simetris khas gambar buatan model generatif. Tidak ditemukan sinyal autentisitas fotografi pada media ini.",
+   "anomalies": [
+    {
+     "finding": "Awan badai melayang dengan bentuk bundar sempurna di atas puncak gunung, mengeluarkan garis-garis cahaya vertikal yang tidak sesuai dengan fisika petir alami.",
+     "location": "Awan badai di bagian atas tengah",
+     "severity": "strong"
+    },
+    {
+     "finding": "Lereng gunung memiliki tekstur serat garis-garis paralel yang seragam, menyerupai hasil lukisan digital atau pola rendering AI.",
+     "location": "Lereng gunung utama di tengah",
+     "severity": "strong"
+    },
+    {
+     "finding": "Bebatuan di tepi danau dan pepohonan pinus terlihat sangat halus dan tampak seperti aset pemodelan 3D berulang.",
+     "location": "Tepi danau kanan bawah dan barisan pohon pinus",
+     "severity": "moderate"
+    }
+   ],
+   "authenticSignals": [],
+   "provenance": [],
+   "adjustment": null,
+   "model": "gemini-3.5-flash"
+  },
+  "77f23333e96620b17c844f6ee7d156fda1d597328557e36ac07e3767e9b9f913:id": {
+   "success": true,
+   "conclusion": "AI-GENERATED",
+   "isReal": false,
+   "authenticityScore": 5,
+   "confidence": 98,
+   "riskLevel": "High",
+   "mediaDescription": "Gambar digital berkualitas tinggi yang menampilkan sosok menyerupai tokoh sejarah Abraham Lincoln berpakaian jas dan rompi abad ke-19, sedang duduk di sofa kulit dan menggunakan ponsel pintar modern.",
+   "analysis": "Gambar ini merupakan hasil generasi kecerdasan buatan (AI) secara penuh. Alasan utamanya adalah anakronisme sejarah yang jelas, di mana tokoh abad ke-19 Abraham Lincoln ditampilkan memegang dan menatap ponsel pintar modern. Selain subjek yang tidak mungkin ada dalam fotografi nyata, gaya pencahayaan, penghalusan tekstur kulit, serta detail kecil pada kancing dan rantai rompi menunjukkan ciri khas estetika render dari model generatif modern.",
+   "anomalies": [
+    {
+     "finding": "Anakronisme sejarah yang mustahil secara fisik, menampilkan Abraham Lincoln (wafat tahun 1865) menggunakan ponsel pintar modern.",
+     "location": "Seluruh subjek dan ponsel pintar di tangan",
+     "severity": "strong"
+    },
+    {
+     "finding": "Struktur kancing rompi memiliki pola geometris tidak wajar dan rantai jam saku tampak menyatu kurang alami dengan kain rompi.",
+     "location": "Bagian rompi di dada subjek",
+     "severity": "moderate"
+    },
+    {
+     "finding": "Tekstur kulit, lipatan pakaian, dan pencahayaan memiliki estetika pengerjaan halus yang sangat khas dari model AI generatif (seperti Midjourney).",
+     "location": "Seluruh area gambar",
+     "severity": "moderate"
+    }
+   ],
+   "authenticSignals": [],
+   "provenance": [],
+   "adjustment": null,
+   "model": "gemini-3.5-flash"
+  },
+  "be36221b355e3afa614e2d0481d3b3f0a5016bef35acd2724cfa85691f9572c1:id": {
+   "success": true,
+   "conclusion": "REAL",
+   "isReal": true,
+   "authenticityScore": 95,
+   "confidence": 95,
+   "riskLevel": "Low",
+   "mediaDescription": "Sebuah foto hitam-putih seorang pria tua yang tersenyum lebar, mengenakan topi baret dan kemeja kotak-kotak yang tidak dikancingkan, memperlihatkan rambut dada. Wajahnya dipenuhi kerutan, dan giginya memiliki celah alami. Latar belakangnya buram, memberikan fokus pada subjek.",
+   "analysis": "Saya menganalisis gambar seorang pria tua yang tersenyum lebar dan tidak menemukan tanda-tanda sintetik atau manipulasi AI. Gambar ini menunjukkan banyak detail autentik seperti kerutan wajah yang realistis, rambut dada alami, gigi yang tidak sempurna, dan pencahayaan yang konsisten. Tidak adanya anomali buatan dan kuatnya sinyal keaslian membuat saya sangat yakin bahwa ini adalah foto asli.",
+   "anomalies": [],
+   "authenticSignals": [
+    "Kebisingan sensor alami yang terlihat di seluruh gambar, khas fotografi.",
+    "Detail kerutan kulit dan tekstur pori-pori yang sangat realistis dan alami di wajah pria tersebut.",
+    "Rambut dada yang realistis dan bervariasi, tidak terlihat seperti gumpalan atau blok yang dilukis.",
+    "Gigi yang tidak sempurna secara alami, dengan celah dan bentuk yang bervariasi, menunjukkan keaslian.",
+    "Pencahayaan dunia nyata yang konsisten, dengan bayangan dan sorotan yang logis di wajah dan pakaian.",
+    "Latar belakang yang tampak alami, tidak direkayasa, dengan bokeh yang halus yang menunjukkan kedalaman bidang yang dangkal.",
+    "Pola kotak-kotak pada kemeja mengikuti lipatan kain secara alami.",
+    "Kehadiran metadata EXIF yang menunjukkan gambar diambil oleh kamera."
+   ],
+   "provenance": [
+    "Ada metadata EXIF, tetapi merek/model kamera tidak dikenali."
+   ],
+   "adjustment": null,
+   "model": "gemini-2.5-flash"
   }
  },
  "text": {
@@ -544,6 +654,432 @@
    },
    "adjustment": null,
    "model": "gemini-3.5-flash"
+  },
+  "71293852d0f61aaff8317accfd864a216be064e4f200979306fea4c25a9130ea:id": {
+   "success": true,
+   "mode": "model",
+   "conclusion": "AI-GENERATED",
+   "breakdown": {
+    "ai": 100,
+    "refined": 0,
+    "human": 0
+   },
+   "confidence": 98,
+   "language": "Indonesian",
+   "analysis": "Dokumen ini sepenuhnya dihasilkan oleh model AI. Struktur tulisannya mengikuti formula esai standar yang sangat dapat diprediksi: mengenalkan topik, memberikan sisi positif, beralih ke sisi negatif menggunakan transisi klasik, lalu diakhiri dengan kesimpulan yang berimbang beserta rekomendasi. Kosakata yang digunakan sangat rapi namun sarat dengan frasa klise AI seperti 'double-edged sword' dan 'navigate this complex landscape'. Selain itu, ritme antarkalimat sangat seragam dan tidak menunjukkan bukti gaya penulisan manusia yang alami.",
+   "sentences": [
+    {
+     "i": 1,
+     "text": "Social media has fundamentally transformed how teenagers interact, communicate, and perceive the world.",
+     "start": 0,
+     "end": 103,
+     "words": 13,
+     "label": "ai",
+     "p": 95,
+     "reason": "Kalimat pembuka standar AI dengan struktur umum tentang dampak media sosial."
+    },
+    {
+     "i": 2,
+     "text": "Platforms like Instagram, TikTok, and Snapchat provide young people with unprecedented opportunities for self-expression, global connectivity, and creative exploration.",
+     "start": 104,
+     "end": 272,
+     "words": 19,
+     "label": "ai",
+     "p": 95,
+     "reason": "Daftar tiga platform umum dan frasa klise AI seperti 'unprecedented opportunities'."
+    },
+    {
+     "i": 3,
+     "text": "Teenagers can easily discover supportive communities, stay informed about current events, and maintain friendships regardless of geographical boundaries.",
+     "start": 273,
+     "end": 426,
+     "words": 18,
+     "label": "ai",
+     "p": 90,
+     "reason": "Penggunaan tiga kata kerja paralel yang sangat umum dalam teks buatan AI."
+    },
+    {
+     "i": 4,
+     "text": "These digital spaces foster a sense of belonging and allow adolescents to explore their identities in diverse environments.",
+     "start": 427,
+     "end": 550,
+     "words": 18,
+     "label": "ai",
+     "p": 90,
+     "reason": "Gaya bahasa generik yang halus tanpa contoh konkret."
+    },
+    {
+     "i": 5,
+     "text": "However, the pervasive influence of social media also introduces significant challenges to teenage well-being.",
+     "start": 552,
+     "end": 662,
+     "words": 14,
+     "label": "ai",
+     "p": 95,
+     "reason": "Gaya transisi AI yang khas menggunakan 'However' untuk beralih ke poin berlawanan."
+    },
+    {
+     "i": 6,
+     "text": "Constant exposure to curated, idealized portrayals of life often leads to unhealthy social comparisons, triggering feelings of inadequacy, low self-esteem, and body image issues.",
+     "start": 663,
+     "end": 841,
+     "words": 24,
+     "label": "ai",
+     "p": 95,
+     "reason": "Kosakata AI yang umum seperti 'curated, idealized portrayals' dan rentetan dampak negatif."
+    },
+    {
+     "i": 7,
+     "text": "Furthermore, the addictive design of these platforms, driven by endless scrolling and notification loops, disrupts sleep patterns and distracts from academic responsibilities.",
+     "start": 842,
+     "end": 1017,
+     "words": 22,
+     "label": "ai",
+     "p": 95,
+     "reason": "Penggunaan kata transisi generik 'Furthermore' dan struktur penjelasan yang teratur."
+    },
+    {
+     "i": 8,
+     "text": "Cyberbullying represents another severe issue, exposing vulnerable youth to harassment that extends beyond the classroom and into their homes.",
+     "start": 1018,
+     "end": 1160,
+     "words": 19,
+     "label": "ai",
+     "p": 90,
+     "reason": "Penjelasan poin perisakan siber dengan retorika standar AI."
+    },
+    {
+     "i": 9,
+     "text": "Ultimately, social media acts as a double-edged sword for the modern adolescent.",
+     "start": 1162,
+     "end": 1242,
+     "words": 12,
+     "label": "ai",
+     "p": 95,
+     "reason": "Penggunaan frasa klise AI 'double-edged sword' dan 'Ultimately'."
+    },
+    {
+     "i": 10,
+     "text": "While it offers valuable tools for connection and learning, its potential to harm mental health cannot be overlooked.",
+     "start": 1243,
+     "end": 1360,
+     "words": 18,
+     "label": "ai",
+     "p": 90,
+     "reason": "Kalimat penyeimbang khas AI ('While it offers... cannot be overlooked')."
+    },
+    {
+     "i": 11,
+     "text": "To navigate this complex landscape, teenagers need guidance from parents and educators to develop digital literacy and healthy habits.",
+     "start": 1361,
+     "end": 1495,
+     "words": 19,
+     "label": "ai",
+     "p": 90,
+     "reason": "Penggunaan frasa generik 'navigate this complex landscape' dan saran solutif umum."
+    },
+    {
+     "i": 12,
+     "text": "By fostering mindfulness and setting boundaries, young users can maximize the benefits of social media while mitigating its negative effects on their personal development.",
+     "start": 1496,
+     "end": 1667,
+     "words": 24,
+     "label": "ai",
+     "p": 95,
+     "reason": "Kesimpulan normatif dan rapi yang menutup esai dengan nada positif-simpul."
+    }
+   ],
+   "aiSignals": [
+    "Struktur esai formulaic: pendahuluan, poin positif, poin negatif, dan kesimpulan bernada rekomendasi.",
+    "Banyak menggunakan kata transisi dan klise AI seperti 'Furthermore', 'Ultimately', 'double-edged sword', dan 'navigate this complex landscape'.",
+    "Variasi panjang kalimat sangat rendah (burstiness rendah) dengan nada bahasa yang sangat mulus dan resmi tanpa cela.",
+    "Tidak adanya opini pribadi, anekdot nyata, atau detail spesifik yang kontekstual."
+   ],
+   "humanSignals": [],
+   "fingerprint": {
+    "words": 220,
+    "sentences": 12,
+    "avgSentenceLength": 18.3,
+    "burstiness": 20,
+    "vocabularyDiversity": 0.9,
+    "firstPersonRate": 0,
+    "phraseDensity": 2.7,
+    "phraseHits": [
+     {
+      "phrase": "furthermore",
+      "count": 1
+     },
+     {
+      "phrase": "foster",
+      "count": 1
+     },
+     {
+      "phrase": "fostering",
+      "count": 1
+     },
+     {
+      "phrase": "ultimately,",
+      "count": 1
+     },
+     {
+      "phrase": "navigate",
+      "count": 1
+     },
+     {
+      "phrase": "a double-edged sword",
+      "count": 1
+     }
+    ]
+   },
+   "adjustment": null,
+   "model": "gemini-3.5-flash"
+  },
+  "f9fdbca456b34e4d04f5c8879e6896635cd633a24e5778ad2eec929bc363f0dc:id": {
+   "success": true,
+   "mode": "model",
+   "conclusion": "AI-GENERATED",
+   "breakdown": {
+    "ai": 100,
+    "refined": 0,
+    "human": 0
+   },
+   "confidence": 98,
+   "language": "Indonesian",
+   "analysis": "Seluruh teks menunjukkan karakteristik tulisan yang dihasilkan secara otomatis oleh kecerdasan buatan. Pola kalimatnya sangat berulang dan simetris, ditandai dengan penggunaan formula umum seperti 'Di era...', 'bukan sekadar... melainkan...', serta 'tidak hanya... tetapi juga...'. Struktur argumen bergerak dari pengantar umum, manfaat terprediksi, hingga kesimpulan normatif yang rapi tanpa variasi ritme yang lazim ditemui pada tulisan manusia.",
+   "sentences": [
+    {
+     "i": 1,
+     "text": "Di era transformasi digital yang masif, literasi digital menjadi salah satu kemampuan esensial yang harus dimiliki oleh pelajar Indonesia.",
+     "start": 0,
+     "end": 138,
+     "words": 19,
+     "label": "ai",
+     "p": 95,
+     "reason": "Pola pembuka klise AI: 'Di era transformasi digital yang masif'."
+    },
+    {
+     "i": 2,
+     "text": "Literasi digital bukan sekadar kemampuan mengoperasikan gawai atau mengakses internet, melainkan kecakapan dalam memahami, menganalisis, mengevaluasi, dan menggunakan informasi digital secara kritis, bijak, serta bertanggung jawab.",
+     "start": 139,
+     "end": 370,
+     "words": 26,
+     "label": "ai",
+     "p": 95,
+     "reason": "Frasa template khas AI: 'bukan sekadar... melainkan...' diikuti daftar panjang."
+    },
+    {
+     "i": 3,
+     "text": "Bagi pelajar, literasi digital berfungsi sebagai benteng pertahanan dari paparan informasi palsu atau hoaks yang marak beredar di media sosial.",
+     "start": 372,
+     "end": 515,
+     "words": 20,
+     "label": "ai",
+     "p": 90,
+     "reason": "Metafora umum 'benteng pertahanan' yang sering diproduksi AI."
+    },
+    {
+     "i": 4,
+     "text": "Dengan kemampuan analisis yang baik, pelajar dapat memilah informasi yang akurat dan bermanfaat untuk menunjang kegiatan belajar mereka.",
+     "start": 516,
+     "end": 652,
+     "words": 18,
+     "label": "ai",
+     "p": 85,
+     "reason": "Struktur normatif dan prediktif khas gaya bahasa model bahasa."
+    },
+    {
+     "i": 5,
+     "text": "Selain itu, pemahaman yang kuat tentang etika berinternet membantu menjaga kesehatan mental pelajar dari ancaman perundungan siber dan kejahatan digital.",
+     "start": 653,
+     "end": 806,
+     "words": 20,
+     "label": "ai",
+     "p": 90,
+     "reason": "Transisi klise 'Selain itu' dengan pembahasan umum etika dan siber."
+    },
+    {
+     "i": 6,
+     "text": "Penguasaan literasi digital juga membekali pelajar Indonesia dengan keterampilan abad ke-21 yang sangat dibutuhkan dalam dunia kerja masa depan.",
+     "start": 808,
+     "end": 952,
+     "words": 19,
+     "label": "ai",
+     "p": 92,
+     "reason": "Kompilasi frasa baku AI seperti 'keterampilan abad ke-21'."
+    },
+    {
+     "i": 7,
+     "text": "Pelajar yang literat secara digital cenderung lebih kreatif, inovatif, dan mampu berkolaborasi secara global tanpa terbatas oleh ruang dan waktu.",
+     "start": 953,
+     "end": 1098,
+     "words": 20,
+     "label": "ai",
+     "p": 90,
+     "reason": "Daftar tiga kata sifat 'kreatif, inovatif, dan mampu berkolaborasi'."
+    },
+    {
+     "i": 8,
+     "text": "Mereka tidak hanya menjadi konsumen informasi, tetapi juga mampu menjadi pencipta karya digital yang produktif.",
+     "start": 1099,
+     "end": 1210,
+     "words": 15,
+     "label": "ai",
+     "p": 92,
+     "reason": "Konstruksi paralel khas AI: 'tidak hanya... tetapi juga...'."
+    },
+    {
+     "i": 9,
+     "text": "Oleh karena itu, peningkatan literasi digital di lingkungan sekolah harus terus didorong.",
+     "start": 1212,
+     "end": 1301,
+     "words": 12,
+     "label": "ai",
+     "p": 95,
+     "reason": "Transisi kesimpulan formal standar AI: 'Oleh karena itu'."
+    },
+    {
+     "i": 10,
+     "text": "Hal ini penting demi mencetak generasi muda Indonesia yang tidak hanya cerdas secara akademis, tetapi juga berkarakter, beretika, dan siap bersaing di kancah internasional pada masa mendatang.",
+     "start": 1302,
+     "end": 1494,
+     "words": 27,
+     "label": "ai",
+     "p": 95,
+     "reason": "Penutup retoris normatif dengan formula 'tidak hanya... tetapi juga...'."
+    }
+   ],
+   "aiSignals": [
+    "Penggunaan frasa pembuka klise ('Di era transformasi digital yang masif')",
+    "Pengulangan struktur perbandingan 'tidak hanya... tetapi juga' dan 'bukan sekadar... melainkan'",
+    "Rangkaian daftar tiga serangkai klise ('kreatif, inovatif, dan mampu berkolaborasi')",
+    "Ritme kalimat yang sangat seragam dengan nilai burstiness sangat rendah (22%)",
+    "Gaya penulisan esai normatif tanpa suara personal atau data spesifik yang unik"
+   ],
+   "humanSignals": [],
+   "fingerprint": {
+    "words": 196,
+    "sentences": 10,
+    "avgSentenceLength": 19.6,
+    "burstiness": 22,
+    "vocabularyDiversity": 0.86,
+    "firstPersonRate": 0,
+    "phraseDensity": 4.6,
+    "phraseHits": [
+     {
+      "phrase": "tidak hanya",
+      "count": 2
+     },
+     {
+      "phrase": "di era",
+      "count": 1
+     },
+     {
+      "phrase": "selain itu",
+      "count": 1
+     },
+     {
+      "phrase": "oleh karena itu",
+      "count": 1
+     },
+     {
+      "phrase": "bukan sekadar",
+      "count": 1
+     },
+     {
+      "phrase": "esensial",
+      "count": 1
+     },
+     {
+      "phrase": "transformasi digital",
+      "count": 1
+     },
+     {
+      "phrase": "abad ke-21",
+      "count": 1
+     }
+    ]
+   },
+   "adjustment": null,
+   "model": "gemini-3.8-flash"
+  },
+  "9de0dc281f22d59160b4546f62339323afed7b601a575114bfcc544b0491b8ab:id": {
+   "success": true,
+   "mode": "model",
+   "conclusion": "HUMAN",
+   "breakdown": {
+    "ai": 0,
+    "refined": 0,
+    "human": 100
+   },
+   "confidence": 100,
+   "language": "Inggris",
+   "analysis": "Teks ini merupakan kutipan langsung dari karya klasik terkenal Mark Twain, 'Life on the Mississippi' (1883). Struktur kalimatnya sangat kaya dan memiliki ritme naratif khas sastra abad ke-19, terutama pada kalimat keempat yang panjang dengan rentetan visual yang memikat. Tidak ditemukan tanda-tanda penggunaan kecerdasan buatan, teks sepenuhnya murni tulisan manusia autentik.",
+   "sentences": [
+    {
+     "i": 1,
+     "text": "Once a day a cheap, gaudy packet arrived upward from St. Louis, and another downward from Keokuk.",
+     "start": 0,
+     "end": 97,
+     "words": 17,
+     "label": "human",
+     "p": 2,
+     "reason": ""
+    },
+    {
+     "i": 2,
+     "text": "Before these events, the day was glorious with expectancy; after them, the day was a dead and empty thing.",
+     "start": 98,
+     "end": 204,
+     "words": 19,
+     "label": "human",
+     "p": 3,
+     "reason": ""
+    },
+    {
+     "i": 3,
+     "text": "Not only the boys, but the whole village, felt this.",
+     "start": 205,
+     "end": 257,
+     "words": 10,
+     "label": "human",
+     "p": 5,
+     "reason": ""
+    },
+    {
+     "i": 4,
+     "text": "After all these years I can picture that old time to myself now, just as it was then: the white town drowsing in the sunshine of a summer's morning; the streets empty, or pretty nearly so; one or two clerks sitting in front of the Water Street stores, with their splint-bottomed chairs tilted back against the wall, chins on breasts, hats slouched over their faces, asleep—with shingle-shavings enough around to show what broke them down; a sow and a litter of pigs loafing along the sidewalk, doing a good business in watermelon rinds and seeds; two or three lonely little freight piles scattered about the 'levee;' a pile of 'skids' on the slope of the stone-paved wharf, and the fragrant town drunkard asleep in the shadow of them; two or three wood flats at the head of the wharf, but nobody to listen to the peaceful lapping of the wavelets against them; the great Mississippi, the majestic, the magnificent Mississippi, rolling its mile-wide tide along, shining in the sun; the dense forest away on the other side; the 'point' above the town, and the 'point' below, bounding the river-glimpse and turning it into a sort of sea, and withal a very still and brilliant and lonely one.",
+     "start": 258,
+     "end": 1445,
+     "words": 207,
+     "label": "human",
+     "p": 45,
+     "reason": ""
+    }
+   ],
+   "aiSignals": [],
+   "humanSignals": [
+    "Kutipan klasik karya sastra Mark Twain (Life on the Mississippi) yang sangat khas.",
+    "Kalimat keempat memiliki struktur deskriptif majemuk yang sangat panjang dan ritmis.",
+    "Detail historis dan lokalitas nyata yang sangat spesifik (St. Louis, Keokuk, Water Street, levee).",
+    "Gaya bahasa figuratif yang alami dan penuh karakter personal zaman abad ke-19."
+   ],
+   "fingerprint": {
+    "words": 255,
+    "sentences": 4,
+    "avgSentenceLength": 63.3,
+    "burstiness": 131,
+    "vocabularyDiversity": 0.8,
+    "firstPersonRate": 0.4,
+    "phraseDensity": 0.4,
+    "phraseHits": [
+     {
+      "phrase": "not only",
+      "count": 1
+     }
+    ]
+   },
+   "adjustment": null,
+   "model": "gemini-3.8-flash"
   }
  }
 }

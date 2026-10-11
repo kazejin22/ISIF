@@ -17,17 +17,21 @@ const MEDIA = [
 
 const out = JSON.parse(await readFile(OUT, "utf8"));
 
-for (const [path, type, expected] of MEDIA) {
+// English results use the bare hash; other languages add ":<lang>" (see the API routes).
+const LANGS = ["en", "id"];
+const keyOf = (hash, lang) => (lang === "en" ? hash : `${hash}:${lang}`);
+
+for (const lang of LANGS) for (const [path, type, expected] of MEDIA) {
   const bytes = await readFile(new URL(`../${path}`, import.meta.url));
-  const hash = sha(bytes);
-  if (out.media[hash]) { console.log("skip (saved)", path); continue; }
+  const hash = keyOf(sha(bytes), lang);
+  if (out.media[hash]) { console.log("skip (saved)", lang, path); continue; }
   const form = new FormData();
   form.append("file", new Blob([bytes], { type }), path.split("/").pop());
-  const r = await (await fetch(`${BASE}/api/detect`, { method: "POST", body: form })).json();
-  if (!r.success) { console.log("FAIL", path, r.error); continue; }
+  const r = await (await fetch(`${BASE}/api/detect?lang=${lang}`, { method: "POST", body: form })).json();
+  if (!r.success) { console.log("FAIL", lang, path, r.error); continue; }
   delete r.cached;
   const got = r.conclusion === "REAL" ? "real" : r.conclusion === "UNCERTAIN" ? "uncertain" : "ai";
-  console.log(got === expected ? "ok  " : "MISS", path, r.conclusion, r.authenticityScore, r.model);
+  console.log(got === expected ? "ok  " : "MISS", lang, path, r.conclusion, r.authenticityScore, r.model);
   out.media[hash] = r;
 }
 
@@ -37,16 +41,16 @@ const { TEXT_SAMPLES } = await import("../src/data/textSamples.ts").catch(async 
   return { TEXT_SAMPLES: Function(`return ${src.slice(src.indexOf("["), src.lastIndexOf("]") + 1)}`)() };
 });
 
-for (const s of TEXT_SAMPLES) {
+for (const lang of LANGS) for (const s of TEXT_SAMPLES) {
   const text = s.text.replace(/\r\n?/g, "\n").trim();
-  const hash = sha(text);
-  if (out.text[hash]) { console.log("skip (saved)", s.label); continue; }
-  const r = await (await fetch(`${BASE}/api/detect-text`, {
+  const hash = keyOf(sha(text), lang);
+  if (out.text[hash]) { console.log("skip (saved)", lang, s.label); continue; }
+  const r = await (await fetch(`${BASE}/api/detect-text?lang=${lang}`, {
     method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ text }),
   })).json();
-  if (!r.success || r.mode !== "model") { console.log("FAIL", s.label, r.error ?? "statistical fallback only"); continue; }
+  if (!r.success || r.mode !== "model") { console.log("FAIL", lang, s.label, r.error ?? "statistical fallback only"); continue; }
   delete r.cached;
-  console.log("done", s.label, r.conclusion, JSON.stringify(r.breakdown), r.model);
+  console.log("done", lang, s.label, r.conclusion, JSON.stringify(r.breakdown), r.model);
   out.text[hash] = r;
 }
 

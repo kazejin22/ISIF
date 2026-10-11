@@ -2,15 +2,16 @@ import Link from "next/link";
 import DeepfakeAnatomy from "@/components/DeepfakeAnatomy";
 import CurriculumList from "@/components/CurriculumList";
 import { deepfakeStats } from "@/data/stats";
+import { T } from "@/lib/i18n";
 import {
   Sparkles, ArrowRight, PlayCircle,
   FileText, Download, ExternalLink, BookOpen, Play, ScanText
 } from "lucide-react";
 
 const videos = [
-  { id: "s8IGWdkxM9E", title: "What is AI?" },
-  { id: "02rVRwovRow", title: "The Types of AI" },
-  { id: "ch-CU5VG1fs", title: "AI vs Human Works" },
+  { id: "s8IGWdkxM9E", title: "What is AI?", titleId: "Apa itu AI?" },
+  { id: "02rVRwovRow", title: "The Types of AI", titleId: "Jenis-Jenis AI" },
+  { id: "ch-CU5VG1fs", title: "AI vs Human Works", titleId: "Karya AI vs Karya Manusia" },
 ];
 
 const learningModules = [
@@ -19,6 +20,7 @@ const learningModules = [
     title: "AI Competency Framework for Students",
     organization: "UNESCO / Global Standard",
     description: "Pedagogical guidelines and core competencies needed by students to navigate artificial intelligence critically and safely.",
+    descriptionId: "Pedoman pedagogis dan kompetensi inti yang dibutuhkan pelajar untuk menghadapi kecerdasan buatan secara kritis dan aman.",
     filename: "/modules/ai-competency-framework.pdf",
     tag: "Competency",
     size: "563 KB"
@@ -28,6 +30,7 @@ const learningModules = [
     title: "AI and Education: Guidance for Policymakers",
     organization: "Policy & Strategy",
     description: "Strategic advice for educational leaders on mitigating deepfakes, ethical risks, and algorithmic manipulation in school environments.",
+    descriptionId: "Saran strategis bagi pemimpin pendidikan untuk menekan deepfake, risiko etis, dan manipulasi algoritma di lingkungan sekolah.",
     filename: "/modules/ai-education-policymakers.pdf",
     tag: "Policy",
     size: "1.1 MB"
@@ -37,6 +40,7 @@ const learningModules = [
     title: "AI Literacy Starter Pack",
     organization: "Practical Curriculum",
     description: "Hands-on fundamentals to deconstruct how deep generative models work, fact-checking workflows, and verification hygiene.",
+    descriptionId: "Dasar-dasar praktis untuk memahami cara kerja model generatif, alur cek fakta, dan kebiasaan verifikasi yang baik.",
     filename: "/modules/ai-literacy-starter-pack.pdf",
     tag: "Starter Pack",
     size: "1.7 MB"
@@ -46,6 +50,7 @@ const learningModules = [
     title: "A Mapping of Government-Endorsed AI",
     organization: "Global Governance",
     description: "A comprehensive comparative study on how international governments formulate laws against deceptive synthetics.",
+    descriptionId: "Studi perbandingan menyeluruh tentang cara pemerintah di berbagai negara menyusun hukum melawan konten sintetis yang menipu.",
     filename: "/modules/mapping-government-endorsed-ai.pdf",
     tag: "Governance",
     size: "3.6 MB"
@@ -55,6 +60,7 @@ const learningModules = [
     title: "Recommendation on the Ethics of AI",
     organization: "UNESCO Ethics Council",
     description: "The global normative instrument addressing human rights, digital integrity, and accountability in generative systems.",
+    descriptionId: "Instrumen normatif global tentang hak asasi manusia, integritas digital, dan akuntabilitas dalam sistem generatif.",
     filename: "/modules/ethics-artificial-intelligence.pdf",
     tag: "Ethics",
     size: "374 KB"
@@ -64,6 +70,7 @@ const learningModules = [
     title: "Guidance for Generative AI in Education & Research",
     organization: "Academic Research",
     description: "Standards for responsible deployment of AI, intellectual honesty, and combating synthetic misinformation in academia.",
+    descriptionId: "Standar penggunaan AI yang bertanggung jawab, kejujuran akademik, dan cara melawan misinformasi sintetis di dunia akademik.",
     filename: "/modules/generative-ai-education-research.pdf",
     tag: "Research",
     size: "1.7 MB"
@@ -82,15 +89,15 @@ export default function LearningPage() {
         
         <div className="container mx-auto px-4 sm:px-6 relative z-10 flex flex-col items-center text-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-foreground/[0.03] border border-foreground/[0.05] text-xs font-medium text-foreground/60 tracking-widest uppercase mb-6">
-            <Sparkles size={14} className="text-primary" /> Learning Hub
+            <Sparkles size={14} className="text-primary" /> <T en="Learning Hub" id="Pusat Belajar" />
           </div>
           
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-black mb-6 font-[family-name:var(--font-orbitron)] tracking-tight">
-            Synthetics <span className="text-foreground/30">Mastery</span>
+            <T en="Synthetics" id="Kuasai" /> <span className="text-foreground/30"><T en="Mastery" id="Media Sintetis" /></span>
           </h1>
           
           <p className="text-lg md:text-xl text-foreground/60 max-w-2xl font-light mb-10 md:mb-16">
-            Arm yourself with the knowledge to navigate, analyze, and survive the era of generative media.
+            <T en="Arm yourself with the knowledge to navigate, analyze, and survive the era of generative media." id="Bekali dirimu dengan pengetahuan untuk memahami, menganalisis, dan bertahan di era media generatif." />
           </p>
 
           {/* Minimalist Stats */}
@@ -106,7 +113,7 @@ export default function LearningPage() {
                 <span className="text-3xl font-black font-[family-name:var(--font-orbitron)] text-primary mb-1">
                   {stat.value}
                 </span>
-                <span className="text-xs text-foreground/60 leading-snug">{stat.label}</span>
+                <span className="text-xs text-foreground/60 leading-snug"><T en={stat.label} /></span>
                 <span className="text-[10px] text-foreground/40 mt-1 group-hover:text-primary group-hover:underline">{stat.source} ↗</span>
               </a>
             ))}
@@ -123,7 +130,7 @@ export default function LearningPage() {
             {/* Left: Curriculum List */}
             <div className="flex flex-col">
               <h2 className="text-2xl font-bold font-[family-name:var(--font-orbitron)] mb-8 flex items-center gap-3">
-                <span className="w-8 h-[2px] bg-primary"></span> Core Modules
+                <span className="w-8 h-[2px] bg-primary"></span> <T en="Core Modules" id="Modul Inti" />
               </h2>
               
               <CurriculumList />
@@ -132,8 +139,8 @@ export default function LearningPage() {
             {/* Right: Interactive Anatomy (Sticky on Desktop) */}
             <div className="lg:sticky lg:top-24 flex flex-col bg-foreground/[0.02] border border-foreground/[0.05] rounded-3xl p-4 sm:p-6 md:p-8">
               <div className="mb-5">
-                <h3 className="text-xl font-bold font-[family-name:var(--font-orbitron)] mb-2">Anatomy of a Fake</h3>
-                <p className="text-sm text-foreground/50">Drag the slider (or use the arrow keys) to see the face the way a face-swap model does.</p>
+                <h3 className="text-xl font-bold font-[family-name:var(--font-orbitron)] mb-2"><T en="Anatomy of a Fake" id="Anatomi Sebuah Palsu" /></h3>
+                <p className="text-sm text-foreground/50"><T en="Drag the slider (or use the arrow keys) to see the face the way a face-swap model does." id="Geser slider (atau pakai tombol panah) untuk melihat wajah seperti cara model face-swap melihatnya." /></p>
               </div>
               <DeepfakeAnatomy />
             </div>
@@ -148,17 +155,17 @@ export default function LearningPage() {
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-semibold text-primary mb-3">
-                <BookOpen size={13} /> Official Document Repository
+                <BookOpen size={13} /> <T en="Official Document Repository" id="Kumpulan Dokumen Resmi" />
               </div>
               <h2 className="text-3xl font-black font-[family-name:var(--font-orbitron)] mb-2">
-                Curated Modules & Research
+                <T en="Curated Modules & Research" id="Modul & Riset Pilihan" />
               </h2>
               <p className="text-sm text-foreground/50 max-w-xl">
-                Global policy guides, AI literacy curricula, and ethical frameworks published by leading institutions.
+                <T en="Global policy guides, AI literacy curricula, and ethical frameworks published by leading institutions." id="Panduan kebijakan global, kurikulum literasi AI, dan kerangka etika dari lembaga-lembaga terkemuka." />
               </p>
             </div>
             <span className="text-xs font-mono text-foreground/40 mt-4 md:mt-0">
-              {learningModules.length} DOCUMENTS READY FOR REVIEW
+              {learningModules.length} <T en="DOCUMENTS READY FOR REVIEW" id="DOKUMEN SIAP DIBACA" />
             </span>
           </div>
 
@@ -195,7 +202,7 @@ export default function LearningPage() {
                   </div>
 
                   <p className="text-xs text-foreground/60 leading-relaxed line-clamp-3 mb-6">
-                    {doc.description}
+                    <T en={doc.description} id={doc.descriptionId} />
                   </p>
                 </div>
 
@@ -219,7 +226,7 @@ export default function LearningPage() {
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary/90 transition-all shadow-sm hover:shadow-primary/20"
                     >
-                      <span>Read PDF</span>
+                      <span><T en="Read PDF" id="Baca PDF" /></span>
                       <ExternalLink size={13} />
                     </a>
                   </div>
@@ -235,8 +242,8 @@ export default function LearningPage() {
         <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
           <div className="flex items-end justify-between mb-12">
             <div>
-              <h2 className="text-2xl font-bold font-[family-name:var(--font-orbitron)] mb-2">Field Recordings</h2>
-              <p className="text-sm text-foreground/50">Short explainers on AI basics, made by the AIVENTURE team.</p>
+              <h2 className="text-2xl font-bold font-[family-name:var(--font-orbitron)] mb-2"><T en="Field Recordings" id="Video Penjelasan" /></h2>
+              <p className="text-sm text-foreground/50"><T en="Short explainers on AI basics, made by the AIVENTURE team." id="Video singkat tentang dasar-dasar AI, dibuat oleh tim AIVENTURE." /></p>
             </div>
             <PlayCircle className="text-foreground/20 w-12 h-12 hidden md:block" />
           </div>
@@ -271,7 +278,7 @@ export default function LearningPage() {
                   </div>
                 </div>
                 <h3 className="text-sm font-bold text-foreground/80 group-hover:text-primary transition-colors line-clamp-1">
-                  {vid.title}
+                  <T en={vid.title} id={vid.titleId} />
                 </h3>
               </div>
             ))}
@@ -283,17 +290,17 @@ export default function LearningPage() {
       <section className="py-24 relative border-t border-foreground/[0.05]">
         <div className="container mx-auto px-4 sm:px-6 text-center max-w-2xl">
           <h2 className="text-3xl font-black mb-6 font-[family-name:var(--font-orbitron)]">
-            Ready to apply your knowledge?
+            <T en="Ready to apply your knowledge?" id="Siap mempraktikkan ilmumu?" />
           </h2>
           <p className="text-foreground/50 mb-10">
-            Switch from theory to practice. Scan photos, videos, audio — or check whether a text was written by AI.
+            <T en="Switch from theory to practice. Scan photos, videos, audio — or check whether a text was written by AI." id="Dari teori ke praktik. Pindai foto, video, audio — atau cek apakah sebuah teks ditulis oleh AI." />
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link href="/detector" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-foreground text-background font-bold text-sm hover:scale-105 transition-transform">
-              Media Scanner <ArrowRight size={16} />
+              <T en="Media Scanner" id="Pemindai Media" /> <ArrowRight size={16} />
             </Link>
             <Link href="/detector#text" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border border-foreground/20 font-bold text-sm hover:bg-foreground/5 transition-colors">
-              <ScanText size={16} /> AI Text Detector
+              <ScanText size={16} /> <T en="AI Text Detector" id="Detektor Teks AI" />
             </Link>
           </div>
         </div>

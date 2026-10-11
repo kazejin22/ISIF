@@ -10,21 +10,22 @@ import {
   ACCEPTED_MIME_TYPES, MAX_UPLOAD_MB,
   type Conclusion, type DetectionResponse, type DetectionResult,
 } from "@/lib/detect/types";
+import { useLang, useT, type Translate } from "@/lib/i18n";
 
-const SCAN_STEPS = [
-  "> Uploading media to the analysis server...",
-  "> Reading file metadata & content credentials (C2PA / EXIF)...",
-  "> Sending media to the Gemini vision model...",
-  "> Inspecting anatomy, text, lighting & physics...",
-  "> Weighing evidence for and against authenticity...",
-  "> Compiling forensic verdict...",
+const SCAN_STEPS: [string, string][] = [
+  ["> Uploading media to the analysis server...", "> Mengunggah media ke server analisis..."],
+  ["> Reading file metadata & content credentials (C2PA / EXIF)...", "> Membaca metadata file & content credentials (C2PA / EXIF)..."],
+  ["> Sending media to the Gemini vision model...", "> Mengirim media ke model visi Gemini..."],
+  ["> Inspecting anatomy, text, lighting & physics...", "> Memeriksa anatomi, tulisan, cahaya & fisika..."],
+  ["> Weighing evidence for and against authenticity...", "> Menimbang bukti asli dan palsu..."],
+  ["> Compiling forensic verdict...", "> Menyusun kesimpulan forensik..."],
 ];
 
-const VERDICTS: Record<Conclusion, { label: string; text: string; bg: string; border: string; hex: string; Icon: typeof ShieldCheck }> = {
-  REAL: { label: "LIKELY AUTHENTIC", text: "text-emerald-500", bg: "bg-emerald-500", border: "border-emerald-500/30", hex: "#10b981", Icon: ShieldCheck },
-  "AI-GENERATED": { label: "AI-GENERATED", text: "text-red-500", bg: "bg-red-500", border: "border-red-500/30", hex: "#ef4444", Icon: AlertTriangle },
-  DEEPFAKE: { label: "DEEPFAKE DETECTED", text: "text-orange-500", bg: "bg-orange-500", border: "border-orange-500/30", hex: "#f97316", Icon: ShieldAlert },
-  UNCERTAIN: { label: "INCONCLUSIVE", text: "text-amber-500", bg: "bg-amber-500", border: "border-amber-500/30", hex: "#f59e0b", Icon: ShieldQuestion },
+const VERDICTS: Record<Conclusion, { label: [string, string]; text: string; bg: string; border: string; hex: string; Icon: typeof ShieldCheck }> = {
+  REAL: { label: ["LIKELY AUTHENTIC", "KEMUNGKINAN ASLI"], text: "text-emerald-500", bg: "bg-emerald-500", border: "border-emerald-500/30", hex: "#10b981", Icon: ShieldCheck },
+  "AI-GENERATED": { label: ["AI-GENERATED", "BUATAN AI"], text: "text-red-500", bg: "bg-red-500", border: "border-red-500/30", hex: "#ef4444", Icon: AlertTriangle },
+  DEEPFAKE: { label: ["DEEPFAKE DETECTED", "DEEPFAKE TERDETEKSI"], text: "text-orange-500", bg: "bg-orange-500", border: "border-orange-500/30", hex: "#f97316", Icon: ShieldAlert },
+  UNCERTAIN: { label: ["INCONCLUSIVE", "BELUM PASTI"], text: "text-amber-500", bg: "bg-amber-500", border: "border-amber-500/30", hex: "#f59e0b", Icon: ShieldQuestion },
 };
 
 const SEVERITY_STYLE = {
@@ -35,11 +36,11 @@ const SEVERITY_STYLE = {
 
 // Built-in demo images (the same verified photos as the "Real or Fake" mission).
 // Their results are saved in src/data/demoResults.json, so they scan instantly.
-const MEDIA_SAMPLES = [
-  { src: "/game/rof/e1.jpg", label: "Volcanic ash, Yogyakarta", type: "image/jpeg" },
-  { src: "/game/rof/e8.jpg", label: "Mountain cabins", type: "image/jpeg" },
-  { src: "/game/rof/e6.jpg", label: "Lincoln selfie", type: "image/jpeg" },
-  { src: "/game/rof/e7.jpg", label: "Fishmonger portrait", type: "image/jpeg" },
+const MEDIA_SAMPLES: { src: string; label: [string, string]; type: string }[] = [
+  { src: "/game/rof/e1.jpg", label: ["Volcanic ash, Yogyakarta", "Abu vulkanik, Yogyakarta"], type: "image/jpeg" },
+  { src: "/game/rof/e8.jpg", label: ["Mountain cabins", "Kabin gunung"], type: "image/jpeg" },
+  { src: "/game/rof/e6.jpg", label: ["Lincoln selfie", "Swafoto Lincoln"], type: "image/jpeg" },
+  { src: "/game/rof/e7.jpg", label: ["Fishmonger portrait", "Potret penjual ikan"], type: "image/jpeg" },
 ];
 
 type MediaKind = "image" | "video" | "audio";
@@ -50,12 +51,19 @@ function kindOf(file: File): MediaKind {
   return "image";
 }
 
-function validateFile(file: File): string | null {
+function validateFile(file: File, t: Translate): string | null {
   if (!(ACCEPTED_MIME_TYPES as readonly string[]).includes(file.type.toLowerCase())) {
-    return `Unsupported file type (${file.type || "unknown"}). Use an image, video or audio file.`;
+    return t(
+      `Unsupported file type (${file.type || "unknown"}). Use an image, video or audio file.`,
+      `Jenis file tidak didukung (${file.type || "tidak diketahui"}). Gunakan file gambar, video, atau audio.`,
+    );
   }
   if (file.size > MAX_UPLOAD_MB * 1024 * 1024) {
-    return `File is ${(file.size / 1024 / 1024).toFixed(1)} MB — the limit is ${MAX_UPLOAD_MB} MB. Please trim or compress it.`;
+    const mb = (file.size / 1024 / 1024).toFixed(1);
+    return t(
+      `File is ${mb} MB — the limit is ${MAX_UPLOAD_MB} MB. Please trim or compress it.`,
+      `File berukuran ${mb} MB — batasnya ${MAX_UPLOAD_MB} MB. Potong atau kompres dulu.`,
+    );
   }
   return null;
 }
@@ -107,6 +115,8 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
   const [glitch, setGlitch] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const lang = useLang();
+  const t = useT();
 
   // Release the object URL whenever the preview changes or the page unmounts.
   useEffect(() => () => { if (preview) URL.revokeObjectURL(preview); }, [preview]);
@@ -118,15 +128,15 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
   }, [isScanning]);
 
   const status = isScanning
-    ? SCAN_STEPS[stepIndex]
-    : error ? "> Scan failed. See the message below."
-    : result ? "> Analysis complete."
-    : file ? "> Media loaded. Ready to scan."
-    : "Awaiting media input...";
+    ? t(...SCAN_STEPS[stepIndex])
+    : error ? t("> Scan failed. See the message below.", "> Pemindaian gagal. Lihat pesan di bawah.")
+    : result ? t("> Analysis complete.", "> Analisis selesai.")
+    : file ? t("> Media loaded. Ready to scan.", "> Media dimuat. Siap dipindai.")
+    : t("Awaiting media input...", "Menunggu media...");
 
   const selectFile = (selected: File | undefined) => {
     if (!selected) return;
-    const problem = validateFile(selected);
+    const problem = validateFile(selected, t);
     setResult(null);
     if (problem) {
       setError(problem);
@@ -142,7 +152,7 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
       const blob = await (await fetch(sample.src)).blob();
       selectFile(new File([blob], sample.src.split("/").pop()!, { type: sample.type }));
     } catch {
-      setError("Could not load the sample image.");
+      setError(t("Could not load the sample image.", "Gambar contoh tidak bisa dimuat."));
     }
   };
 
@@ -164,7 +174,7 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const response = await fetch("/api/detect", { method: "POST", body: formData });
+      const response = await fetch(`/api/detect?lang=${lang}`, { method: "POST", body: formData });
 
       let data: DetectionResponse;
       try {
@@ -172,8 +182,8 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
       } catch {
         throw new Error(
           response.status === 413
-            ? "The file is too large for the server to accept. Please use a smaller file."
-            : `The server returned an unexpected response (HTTP ${response.status}).`,
+            ? t("The file is too large for the server to accept. Please use a smaller file.", "File terlalu besar untuk diterima server. Gunakan file yang lebih kecil.")
+            : t(`The server returned an unexpected response (HTTP ${response.status}).`, `Server memberi respons yang tidak terduga (HTTP ${response.status}).`),
         );
       }
       if (!data.success) throw new Error(data.error);
@@ -184,7 +194,7 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
         setTimeout(() => setGlitch(false), 800);
       }
     } catch (e) {
-      setError(e instanceof Error && e.message ? e.message : "Network error — could not reach the analysis server.");
+      setError(e instanceof Error && e.message ? e.message : t("Network error — could not reach the analysis server.", "Gangguan jaringan — tidak bisa terhubung ke server analisis."));
     } finally {
       setIsScanning(false);
     }
@@ -221,15 +231,15 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
                   <div className="w-20 h-20 md:w-24 md:h-24 mb-6 rounded-full bg-foreground/[0.03] border border-foreground/[0.08] flex items-center justify-center relative group-hover:scale-110 transition-transform duration-500">
                     <UploadCloud size={36} className="text-foreground/40 group-hover:text-primary transition-colors duration-500" />
                   </div>
-                  <span className="text-lg md:text-xl font-bold mb-2 font-[family-name:var(--font-orbitron)] text-foreground/80 group-hover:text-foreground transition-colors">Target Acquisition</span>
-                  <span className="text-foreground/50 text-sm max-w-[280px]">Tap to choose or drop a file here</span>
-                  <span className="text-foreground/40 text-xs mt-3">Image · Video · Audio — max {MAX_UPLOAD_MB} MB</span>
+                  <span className="text-lg md:text-xl font-bold mb-2 font-[family-name:var(--font-orbitron)] text-foreground/80 group-hover:text-foreground transition-colors">{t("Target Acquisition", "Pilih Target")}</span>
+                  <span className="text-foreground/50 text-sm max-w-[280px]">{t("Tap to choose or drop a file here", "Ketuk untuk memilih atau seret file ke sini")}</span>
+                  <span className="text-foreground/40 text-xs mt-3">{t("Image · Video · Audio", "Gambar · Video · Audio")} — max {MAX_UPLOAD_MB} MB</span>
                 </button>
               ) : (
                 <div className="relative w-full aspect-[4/3] rounded-2xl md:rounded-3xl overflow-hidden bg-black/80 flex items-center justify-center">
                   {kind === "image" && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={preview} alt="Uploaded media" className={mediaClass} />
+                    <img src={preview} alt={t("Uploaded media", "Media yang diunggah")} className={mediaClass} />
                   )}
                   {kind === "video" && <video src={preview} controls playsInline className={mediaClass} />}
                   {kind === "audio" && (
@@ -264,19 +274,19 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
 
             {!preview && (
               <div className="w-full">
-                <p className="text-xs text-foreground/50 mb-2 text-center">No file at hand? Try a sample:</p>
+                <p className="text-xs text-foreground/50 mb-2 text-center">{t("No file at hand? Try a sample:", "Tidak punya file? Coba contoh:")}</p>
                 <div className="grid grid-cols-4 gap-2">
                   {MEDIA_SAMPLES.map((s) => (
                     <button
                       key={s.src}
                       type="button"
                       onClick={() => loadSample(s)}
-                      title={s.label}
+                      title={t(...s.label)}
                       className="group relative aspect-square rounded-xl overflow-hidden border border-foreground/10 hover:border-primary/60 transition-colors"
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={s.src} alt={s.label} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                      <span className="absolute inset-x-0 bottom-0 bg-black/60 text-white text-[9px] sm:text-[10px] px-1 py-0.5 truncate">{s.label}</span>
+                      <img src={s.src} alt={t(...s.label)} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                      <span className="absolute inset-x-0 bottom-0 bg-black/60 text-white text-[9px] sm:text-[10px] px-1 py-0.5 truncate">{t(...s.label)}</span>
                     </button>
                   ))}
                 </div>
@@ -288,7 +298,7 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
               <div role="alert" className="flex items-start gap-3 p-4 rounded-2xl border border-red-500/30 bg-red-500/5 text-sm">
                 <XCircle size={18} className="text-red-500 shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-bold text-red-500 mb-0.5">Scan could not be completed</p>
+                  <p className="font-bold text-red-500 mb-0.5">{t("Scan could not be completed", "Pemindaian tidak bisa diselesaikan")}</p>
                   <p className="text-foreground/70">{error}</p>
                 </div>
               </div>
@@ -301,7 +311,7 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
                 disabled={isScanning}
                 className="px-5 md:px-6 py-4 rounded-2xl bg-foreground/[0.03] border border-foreground/[0.08] hover:bg-foreground/[0.08] font-bold transition-all text-sm disabled:opacity-50"
               >
-                Reset
+                {t("Reset", "Ulang")}
               </button>
               <button
                 onClick={startScan}
@@ -309,18 +319,22 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
                 className={`flex-1 py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-3 disabled:opacity-70 ${result ? "bg-foreground/5 border border-foreground/10 hover:bg-foreground/10 text-foreground/80" : "bg-primary text-white dark:text-black hover:bg-primary/90"}`}
               >
                 {isScanning ? (
-                  <><RefreshCw size={20} className="animate-spin" /><span>Analyzing…</span></>
+                  <><RefreshCw size={20} className="animate-spin" /><span>{t("Analyzing…", "Menganalisis…")}</span></>
                 ) : result ? (
-                  <><RefreshCw size={20} /> Rescan</>
+                  <><RefreshCw size={20} /> {t("Rescan", "Pindai ulang")}</>
                 ) : (
-                  <><ScanLine size={20} /><span className="font-[family-name:var(--font-orbitron)] tracking-wider">INITIATE SCAN</span></>
+                  <><ScanLine size={20} /><span className="font-[family-name:var(--font-orbitron)] tracking-wider">{t("INITIATE SCAN", "MULAI PINDAI")}</span></>
                 )}
               </button>
             </div>
 
             {isScanning && (
               <p className="text-xs text-center text-foreground/40">
-                {kind === "image" ? "This usually takes 10–30 seconds." : `${kind === "video" ? "Videos" : "Audio clips"} can take up to a minute or two.`}
+                {kind === "image"
+                  ? t("This usually takes 10–30 seconds.", "Biasanya butuh 10–30 detik.")
+                  : kind === "video"
+                    ? t("Videos can take up to a minute or two.", "Video bisa butuh satu sampai dua menit.")
+                    : t("Audio clips can take up to a minute or two.", "Klip audio bisa butuh satu sampai dua menit.")}
               </p>
             )}
           </div>
@@ -336,10 +350,10 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
                 </div>
                 <div className="min-w-0">
                   <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60 mb-1 flex items-center gap-2">
-                    System Verdict · Risk {result.riskLevel}
+                    {t("System Verdict · Risk", "Kesimpulan Sistem · Risiko")} {t(result.riskLevel, { Low: "Rendah", Medium: "Sedang", High: "Tinggi" }[result.riskLevel])}
                   </div>
                   <h2 className={`text-xl sm:text-2xl lg:text-3xl font-black font-[family-name:var(--font-orbitron)] tracking-tight ${verdict.text}`}>
-                    {verdict.label}
+                    {t(...verdict.label)}
                   </h2>
                 </div>
               </div>
@@ -347,10 +361,10 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
               {/* Gauges */}
               <div className="grid grid-cols-2 gap-3 md:gap-4">
                 <div className="bg-background/40 backdrop-blur-2xl border border-foreground/[0.08] rounded-3xl p-4 md:p-5 flex items-center justify-center">
-                  <GaugeMeter value={result.authenticityScore} label="Authenticity" color={verdict.hex} />
+                  <GaugeMeter value={result.authenticityScore} label={t("Authenticity", "Keaslian")} color={verdict.hex} />
                 </div>
                 <div className="bg-background/40 backdrop-blur-2xl border border-foreground/[0.08] rounded-3xl p-4 md:p-5 flex items-center justify-center">
-                  <GaugeMeter value={result.confidence} label="Evidence Strength" color="var(--primary)" />
+                  <GaugeMeter value={result.confidence} label={t("Evidence Strength", "Kekuatan Bukti")} color="var(--primary)" />
                 </div>
               </div>
 
@@ -365,7 +379,7 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
               {/* Analysis */}
               <div className="bg-background/40 backdrop-blur-2xl border border-foreground/[0.08] rounded-3xl p-5 md:p-6">
                 <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/50 flex items-center gap-2 mb-3">
-                  <Crosshair size={12} className="text-primary" /> Forensic Analysis Report
+                  <Crosshair size={12} className="text-primary" /> {t("Forensic Analysis Report", "Laporan Analisis Forensik")}
                 </div>
                 {result.mediaDescription && (
                   <p className="text-xs text-foreground/50 italic mb-3">{result.mediaDescription}</p>
@@ -377,13 +391,13 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
               {result.anomalies.length > 0 && (
                 <div className="bg-red-500/5 backdrop-blur-2xl border border-red-500/20 rounded-3xl p-5 md:p-6">
                   <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-500/80 flex items-center gap-2 mb-4">
-                    <Zap size={12} /> Suspicious Findings ({result.anomalies.length})
+                    <Zap size={12} /> {t("Suspicious Findings", "Temuan Mencurigakan")} ({result.anomalies.length})
                   </div>
                   <ul className="flex flex-col gap-3">
                     {result.anomalies.map((a, idx) => (
                       <li key={idx} className="flex items-start gap-3">
                         <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 mt-0.5 ${SEVERITY_STYLE[a.severity]}`}>
-                          {a.severity}
+                          {t(a.severity, { strong: "kuat", moderate: "sedang", weak: "lemah" }[a.severity])}
                         </span>
                         <div className="text-xs text-foreground/80 leading-relaxed">
                           {a.finding}
@@ -399,7 +413,7 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
               {result.authenticSignals.length > 0 && (
                 <div className="bg-emerald-500/5 backdrop-blur-2xl border border-emerald-500/20 rounded-3xl p-5 md:p-6">
                   <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-500/80 flex items-center gap-2 mb-4">
-                    <CheckCircle2 size={12} /> Signs of Authenticity ({result.authenticSignals.length})
+                    <CheckCircle2 size={12} /> {t("Signs of Authenticity", "Tanda Keaslian")} ({result.authenticSignals.length})
                   </div>
                   <ul className="flex flex-col gap-2.5">
                     {result.authenticSignals.map((s, idx) => (
@@ -415,21 +429,25 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
               {/* Provenance */}
               <div className="bg-background/40 backdrop-blur-2xl border border-foreground/[0.08] rounded-3xl p-5 md:p-6">
                 <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/50 flex items-center gap-2 mb-3">
-                  <FileSearch size={12} className="text-primary" /> File Metadata
+                  <FileSearch size={12} className="text-primary" /> {t("File Metadata", "Metadata File")}
                 </div>
                 {result.provenance.length > 0 ? (
                   <ul className="flex flex-col gap-2 text-xs text-foreground/70">
                     {result.provenance.map((p, idx) => <li key={idx}>• {p}</li>)}
                   </ul>
                 ) : (
-                  <p className="text-xs text-foreground/50">No provenance or camera metadata found. Most social apps strip it, so this alone proves nothing.</p>
+                  <p className="text-xs text-foreground/50">{t("No provenance or camera metadata found. Most social apps strip it, so this alone proves nothing.", "Tidak ada metadata asal-usul atau kamera. Kebanyakan aplikasi sosial menghapusnya, jadi ini saja tidak membuktikan apa pun.")}</p>
                 )}
               </div>
 
               <p className="text-[11px] text-foreground/40 leading-relaxed px-1">
-                Analyzed by <span className="font-mono">{result.model}</span>.
-                {result.cached === "demo" && " This is a saved result for a built-in sample, so it loaded instantly."}
-                {result.cached === "recent" && " This file was scanned recently, so the saved result was reused."} AI detection is probabilistic and can be wrong — treat this as one signal and verify important media with trusted sources.
+                {t("Analyzed by", "Dianalisis oleh")} <span className="font-mono">{result.model}</span>.
+                {result.cached === "demo" && t(" This is a saved result for a built-in sample, so it loaded instantly.", " Ini hasil tersimpan untuk contoh bawaan, jadi langsung muncul.")}
+                {result.cached === "recent" && t(" This file was scanned recently, so the saved result was reused.", " File ini baru saja dipindai, jadi hasil sebelumnya dipakai lagi.")}{" "}
+                {t(
+                  "AI detection is probabilistic and can be wrong — treat this as one signal and verify important media with trusted sources.",
+                  "Deteksi AI bersifat probabilistik dan bisa salah — anggap ini sebagai satu petunjuk dan verifikasi media penting dengan sumber tepercaya.",
+                )}
               </p>
             </div>
           )}
@@ -473,12 +491,13 @@ function useTab(): [Tab, (t: Tab) => void] {
   return [tab, setTab];
 }
 
-const TABS: { id: Tab; label: string; sub: string; Icon: typeof Images }[] = [
-  { id: "media", label: "Media Scanner", sub: "Image · Video · Audio", Icon: Images },
-  { id: "text", label: "Text Scanner", sub: "AI-written text", Icon: ScanText },
+const TABS: { id: Tab; label: [string, string]; sub: [string, string]; Icon: typeof Images }[] = [
+  { id: "media", label: ["Media Scanner", "Pemindai Media"], sub: ["Image · Video · Audio", "Gambar · Video · Audio"], Icon: Images },
+  { id: "text", label: ["Text Scanner", "Pemindai Teks"], sub: ["AI-written text", "Teks tulisan AI"], Icon: ScanText },
 ];
 
 function Header({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
+  const t = useT();
   return (
     <div className="mb-8 md:mb-12 text-center max-w-2xl mx-auto">
       <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-foreground/[0.03] border border-foreground/[0.08] backdrop-blur-md mb-6">
@@ -490,10 +509,16 @@ function Header({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
       </h1>
       <p className="text-sm md:text-base text-foreground/60 mb-8">
         {tab === "media"
-          ? "Upload an image, video, or audio clip. An AI model inspects it for signs of generation or manipulation and explains its evidence."
-          : "Paste text or upload a document to see how much of it reads as AI-generated, AI-refined, or human-written — sentence by sentence."}
+          ? t(
+            "Upload an image, video, or audio clip. An AI model inspects it for signs of generation or manipulation and explains its evidence.",
+            "Unggah gambar, video, atau klip audio. Model AI memeriksanya untuk mencari tanda buatan AI atau manipulasi, lalu menjelaskan buktinya.",
+          )
+          : t(
+            "Paste text or upload a document to see how much of it reads as AI-generated, AI-refined, or human-written — sentence by sentence.",
+            "Tempel teks atau unggah dokumen untuk melihat berapa banyak yang tampak buatan AI, dipoles AI, atau tulisan manusia — kalimat demi kalimat.",
+          )}
       </p>
-      <div role="tablist" aria-label="Scanner type" className="inline-grid grid-cols-2 gap-1 p-1 rounded-2xl bg-foreground/[0.04] border border-foreground/[0.08] w-full max-w-md">
+      <div role="tablist" aria-label={t("Scanner type", "Jenis pemindai")} className="inline-grid grid-cols-2 gap-1 p-1 rounded-2xl bg-foreground/[0.04] border border-foreground/[0.08] w-full max-w-md">
         {TABS.map(({ id, label, sub, Icon }) => (
           <button
             key={id}
@@ -504,8 +529,8 @@ function Header({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
           >
             <Icon size={18} className="shrink-0" />
             <span className="leading-tight">
-              <span className="block text-sm font-bold">{label}</span>
-              <span className={`block text-[10px] ${tab === id ? "opacity-80" : "opacity-60"}`}>{sub}</span>
+              <span className="block text-sm font-bold">{t(...label)}</span>
+              <span className={`block text-[10px] ${tab === id ? "opacity-80" : "opacity-60"}`}>{t(...sub)}</span>
             </span>
           </button>
         ))}

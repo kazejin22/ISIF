@@ -6,30 +6,32 @@ import { useTheme } from "next-themes";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import {
   Menu, X, ChevronDown, Globe2, GraduationCap, ScanSearch, Images, ScanText,
-  Gamepad2, Glasses, Swords, ArrowRight, type LucideIcon,
+  Gamepad2, Glasses, Swords, ArrowRight, Languages, type LucideIcon,
 } from "lucide-react";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import { useMounted } from "@/lib/useMounted";
+import { setLang, useLang, useT, type Translate } from "@/lib/i18n";
 
-interface SubLink { href: string; label: string; desc: string; Icon: LucideIcon }
-interface NavItem { label: string; href: string; Icon: LucideIcon; match: (path: string) => boolean; children?: SubLink[] }
+type Pair = [en: string, id: string];
+interface SubLink { href: string; label: Pair; desc: Pair; Icon: LucideIcon }
+interface NavItem { label: Pair; href: string; Icon: LucideIcon; match: (path: string) => boolean; children?: SubLink[] }
 
 const NAV: NavItem[] = [
-  { label: "Crime Map", href: "/map", Icon: Globe2, match: (p) => p.startsWith("/map") },
-  { label: "Learning", href: "/learning", Icon: GraduationCap, match: (p) => p.startsWith("/learning") },
+  { label: ["Crime Map", "Peta Kasus"], href: "/map", Icon: Globe2, match: (p) => p.startsWith("/map") },
+  { label: ["Learning", "Belajar"], href: "/learning", Icon: GraduationCap, match: (p) => p.startsWith("/learning") },
   {
-    label: "Detector", href: "/detector", Icon: ScanSearch, match: (p) => p.startsWith("/detector"),
+    label: ["Detector", "Detektor"], href: "/detector", Icon: ScanSearch, match: (p) => p.startsWith("/detector"),
     children: [
-      { href: "/detector", label: "Media Scanner", desc: "Check images, video and audio", Icon: Images },
-      { href: "/detector#text", label: "Text Scanner", desc: "Spot AI-written text, sentence by sentence", Icon: ScanText },
+      { href: "/detector", label: ["Media Scanner", "Pemindai Media"], desc: ["Check images, video and audio", "Cek gambar, video, dan audio"], Icon: Images },
+      { href: "/detector#text", label: ["Text Scanner", "Pemindai Teks"], desc: ["Spot AI-written text, sentence by sentence", "Temukan teks buatan AI, kalimat demi kalimat"], Icon: ScanText },
     ],
   },
   {
-    label: "Mission", href: "/game", Icon: Gamepad2, match: (p) => p.startsWith("/game"),
+    label: ["Mission", "Misi"], href: "/game", Icon: Gamepad2, match: (p) => p.startsWith("/game"),
     children: [
-      { href: "/game", label: "Detective HQ", desc: "Four cases inspired by real deepfake crimes", Icon: Gamepad2 },
-      { href: "/game/vr/lab", label: "Forensic Lab VR", desc: "Inspect evidence with an AI scanner", Icon: Glasses },
-      { href: "/game/vr/firewall", label: "Firewall VR", desc: "Slash fake posts with laser sabers", Icon: Swords },
+      { href: "/game", label: ["Detective HQ", "Markas Detektif"], desc: ["Four cases inspired by real deepfake crimes", "Empat kasus dari kejahatan deepfake nyata"], Icon: Gamepad2 },
+      { href: "/game/vr/lab", label: ["Forensic Lab VR", "Lab Forensik VR"], desc: ["Inspect evidence with an AI scanner", "Periksa barang bukti dengan pemindai AI"], Icon: Glasses },
+      { href: "/game/vr/firewall", label: ["Firewall VR", "Firewall VR"], desc: ["Slash fake posts with laser sabers", "Tebas unggahan palsu dengan pedang laser"], Icon: Swords },
     ],
   },
 ];
@@ -50,7 +52,7 @@ const scrollSnapshot = () => {
 };
 const scrolledSnapshot = () => window.scrollY > 8;
 
-function DesktopItem({ item, active }: { item: NavItem; active: boolean }) {
+function DesktopItem({ item, active, t }: { item: NavItem; active: boolean; t: Translate }) {
   const [open, setOpen] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const show = () => { clearTimeout(closeTimer.current); setOpen(true); };
@@ -62,7 +64,7 @@ function DesktopItem({ item, active }: { item: NavItem; active: boolean }) {
   if (!item.children) {
     return (
       <Link href={item.href} className={base} aria-current={active ? "page" : undefined}>
-        {pill}<item.Icon size={15} /> {item.label}
+        {pill}<item.Icon size={15} /> {t(...item.label)}
       </Link>
     );
   }
@@ -70,7 +72,7 @@ function DesktopItem({ item, active }: { item: NavItem; active: boolean }) {
   return (
     <div className="relative" onMouseEnter={show} onMouseLeave={hide} onFocus={show} onBlur={hide}>
       <Link href={item.href} className={base} aria-haspopup="true" aria-expanded={open} aria-current={active ? "page" : undefined}>
-        {pill}<item.Icon size={15} /> {item.label}
+        {pill}<item.Icon size={15} /> {t(...item.label)}
         <ChevronDown size={14} className={`transition-transform ${open ? "rotate-180" : ""}`} />
       </Link>
       <div className={`absolute left-1/2 -translate-x-1/2 top-full pt-3 transition-all duration-200 ${open ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-1 pointer-events-none"}`}>
@@ -79,8 +81,8 @@ function DesktopItem({ item, active }: { item: NavItem; active: boolean }) {
             <Link key={c.href} href={c.href} onClick={() => setOpen(false)} className="group flex items-start gap-3 rounded-xl p-3 hover:bg-foreground/5 transition-colors">
               <span className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white dark:group-hover:text-black transition-colors"><c.Icon size={18} /></span>
               <span>
-                <span className="block text-sm font-bold">{c.label}</span>
-                <span className="block text-xs text-foreground/55 leading-snug">{c.desc}</span>
+                <span className="block text-sm font-bold">{t(...c.label)}</span>
+                <span className="block text-xs text-foreground/55 leading-snug">{t(...c.desc)}</span>
               </span>
             </Link>
           ))}
@@ -98,6 +100,10 @@ export default function Navbar() {
   const open = openPath === pathname; // closes itself on navigation
   const scrolled = useSyncExternalStore(subscribeScroll, scrolledSnapshot, () => false);
   const progress = useSyncExternalStore(subscribeScroll, scrollSnapshot, () => 0);
+  const lang = useLang();
+  const t = useT();
+
+  useEffect(() => { document.documentElement.lang = lang; }, [lang]);
 
   useEffect(() => {
     if (!open) return;
@@ -114,7 +120,7 @@ export default function Navbar() {
     <AnimatedThemeToggler
       theme={resolvedTheme === "dark" ? "dark" : "light"}
       onThemeChange={setTheme}
-      aria-label="Toggle theme"
+      aria-label={t("Toggle theme", "Ganti tema")}
       className="w-9 h-9 rounded-full flex items-center justify-center text-foreground/70 hover:text-primary hover:bg-foreground/5 transition-colors [&_svg]:w-[18px] [&_svg]:h-[18px]"
     />
   );
@@ -126,7 +132,7 @@ export default function Navbar() {
 
       <div className="h-full px-3 sm:px-6 flex items-center">
         <nav
-          aria-label="Main"
+          aria-label={t("Main", "Utama")}
           data-scrolled={scrolled || open}
           className="nav-shell w-full max-w-6xl mx-auto h-12 flex items-center justify-between gap-3 rounded-full pl-5 pr-2"
         >
@@ -137,18 +143,30 @@ export default function Navbar() {
           </Link>
 
           <div className="hidden lg:flex items-center gap-0.5">
-            {NAV.map((item) => <DesktopItem key={item.label} item={item} active={item.match(pathname)} />)}
+            {NAV.map((item) => <DesktopItem key={item.href} item={item} active={item.match(pathname)} t={t} />)}
           </div>
 
           <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => setLang(lang === "id" ? "en" : "id")}
+              aria-label={lang === "id" ? "Switch to English" : "Ganti ke Bahasa Indonesia"}
+              title={lang === "id" ? "Switch to English" : "Ganti ke Bahasa Indonesia"}
+              className="h-9 px-2.5 rounded-full flex items-center gap-1 text-xs font-bold text-foreground/70 hover:text-primary hover:bg-foreground/5 transition-colors"
+            >
+              <Languages size={16} />
+              <span className={lang === "en" ? "text-primary" : ""}>EN</span>
+              <span className="opacity-30">/</span>
+              <span className={lang === "id" ? "text-primary" : ""}>ID</span>
+            </button>
             {toggler}
             <Link href="/detector" className="hidden sm:inline-flex items-center gap-1.5 px-4 h-9 rounded-full bg-primary text-white dark:text-black text-sm font-bold hover:brightness-110 shadow-md shadow-primary/30 transition-all">
-              <ScanSearch size={16} /> Scan now
+              <ScanSearch size={16} /> {t("Scan now", "Pindai")}
             </Link>
             <button
               type="button"
               onClick={() => setOpenPath(open ? null : pathname)}
-              aria-label={open ? "Close menu" : "Open menu"}
+              aria-label={open ? t("Close menu", "Tutup menu") : t("Open menu", "Buka menu")}
               aria-expanded={open}
               className="lg:hidden w-9 h-9 rounded-full flex items-center justify-center hover:bg-foreground/5"
             >
@@ -165,9 +183,9 @@ export default function Navbar() {
           {NAV.map((item) => {
             const active = item.match(pathname);
             return (
-              <div key={item.label} className="py-1">
+              <div key={item.href} className="py-1">
                 <Link href={item.href} className={`flex items-center gap-3 px-3 py-3 rounded-2xl font-bold ${active ? "bg-primary/10 text-primary" : "hover:bg-foreground/5"}`}>
-                  <item.Icon size={20} /> {item.label}
+                  <item.Icon size={20} /> {t(...item.label)}
                 </Link>
                 {item.children && (
                   <div className="grid gap-1 pl-4 mt-1">
@@ -175,8 +193,8 @@ export default function Navbar() {
                       <Link key={c.href} href={c.href} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-foreground/5">
                         <c.Icon size={17} className="text-primary shrink-0" />
                         <span>
-                          <span className="block text-sm font-semibold">{c.label}</span>
-                          <span className="block text-xs text-foreground/55">{c.desc}</span>
+                          <span className="block text-sm font-semibold">{t(...c.label)}</span>
+                          <span className="block text-xs text-foreground/55">{t(...c.desc)}</span>
                         </span>
                       </Link>
                     ))}
@@ -186,7 +204,7 @@ export default function Navbar() {
             );
           })}
           <Link href="/detector" className="mt-2 flex items-center justify-center gap-2 h-12 rounded-2xl bg-primary text-white dark:text-black font-bold">
-            <ScanSearch size={18} /> Scan media now <ArrowRight size={16} />
+            <ScanSearch size={18} /> {t("Scan media now", "Pindai media sekarang")} <ArrowRight size={16} />
           </Link>
         </div>
       </div>
