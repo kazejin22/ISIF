@@ -23,6 +23,7 @@ export default function LabExperience() {
   return (
     <VRShell
       store={store}
+      environment="lab"
       title="Forensic Lab VR"
       subtitle="Deepfake Detective · VR mission"
       desktopHint="No headset? Drag the photo and the scanner with your mouse, then click REAL or AI."

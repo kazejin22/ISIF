@@ -15,9 +15,9 @@ function SessionWatcher({ onChange }: { onChange: (inVR: boolean) => void }) {
 }
 
 export default function VRShell({
-  store, title, subtitle, desktopHint, children,
+  store, title, subtitle, desktopHint, environment, children,
 }: {
-  store: XRStore; title: string; subtitle: string; desktopHint: string; children: React.ReactNode;
+  store: XRStore; title: string; subtitle: string; desktopHint: string; environment: "lab" | "firewall"; children: React.ReactNode;
 }) {
   const [supported, setSupported] = useState<boolean | null>(null);
   const [inVR, setInVR] = useState(false);
@@ -56,7 +56,7 @@ export default function VRShell({
         <PointerEvents />
         <XR store={store}>
           <SessionWatcher onChange={setInVR} />
-          <Environment />
+          <Environment variant={environment} />
           {children}
         </XR>
       </Canvas>

@@ -5,7 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import { Text, RoundedBox } from "@react-three/drei";
 import { XRControllerModel, useXR, useXRInputSourceStateContext, useXRStore } from "@react-three/xr";
 import * as THREE from "three";
-import { FIREWALL_CARDS, FIREWALL_MAX_SCORE, FIREWALL_MISSION_ID, type FeedCard } from "@/game/vr/firewallData";
+import { FIREWALL_CARDS, FIREWALL_MAX_SCORE, FIREWALL_MISSION_ID, FIREWALL_RULES, TUTORIAL_CARDS, type FeedCard } from "@/game/vr/firewallData";
 import { recordScore } from "@/game/progress";
 import { COLORS, FONT, FONT_BOLD, Panel3D } from "./ui3d";
 
@@ -190,8 +190,9 @@ function Sparks({ onReady }: { onReady: (emit: SparkEmitter | null) => void }) {
 
 // ─── Game configuration ──────────────────────────────────────────────
 
-const CARD_W = 0.62;
-const CARD_H = 0.36;
+const CARD_W = 0.66;
+const CARD_H = 0.44;
+const TUTORIAL_READ_SECONDS = 9;
 const CARD_HALF = new THREE.Vector3(CARD_W / 2, CARD_H / 2, 0.09);
 const BUTTON_HALF = new THREE.Vector3(0.27, 0.11, 0.12);
 const SPAWN_Z = -9;
@@ -211,9 +212,9 @@ interface Wave {
 }
 
 const WAVES: Wave[] = [
-  { name: "WAVE 1 · TRAINING", subtitle: "One post at a time. Take your time to read.", lanes: [[0, 1.38]], readSeconds: 7, approachSeconds: 2.2, spawnEvery: 0, maxActive: 1 },
-  { name: "WAVE 2 · RUSH HOUR", subtitle: "Two feeds at once. Stay sharp.", lanes: [[-0.38, 1.3], [0.38, 1.46]], readSeconds: 5, approachSeconds: 1.8, spawnEvery: 3.4, maxActive: 2 },
-  { name: "WAVE 3 · OVERLOAD", subtitle: "Three feeds, less time. Trust the clues.", lanes: [[-0.62, 1.22], [0, 1.5], [0.62, 1.22]], readSeconds: 3.6, approachSeconds: 1.5, spawnEvery: 2.5, maxActive: 3 },
+  { name: "WAVE 1 · TRAINING", subtitle: "One post at a time. Read both checks, then decide.", lanes: [[0, 1.38]], readSeconds: 4.5, approachSeconds: 1.5, spawnEvery: 0, maxActive: 1 },
+  { name: "WAVE 2 · RUSH HOUR", subtitle: "Two feeds at once. Stay sharp.", lanes: [[-0.4, 1.28], [0.4, 1.5]], readSeconds: 3.4, approachSeconds: 1.25, spawnEvery: 2.6, maxActive: 2 },
+  { name: "WAVE 3 · OVERLOAD", subtitle: "Three feeds, less time. Trust the clues.", lanes: [[-0.7, 1.22], [0, 1.52], [0.7, 1.22]], readSeconds: 2.6, approachSeconds: 1.05, spawnEvery: 1.9, maxActive: 3 },
 ];
 
 type CardPhase = "incoming" | "reading" | "approach" | "slashed" | "passed";
@@ -229,7 +230,7 @@ interface Flying {
   t: number; // seconds in the current phase
 }
 
-type Outcome = { correct: boolean; text: string };
+type Outcome = { correct: boolean; text: string; card: FeedCard };
 
 /** Splits a deck so each wave gets an even mix of suspicious and credible posts. */
 function buildWaves(): FeedCard[][] {
@@ -244,8 +245,16 @@ function buildWaves(): FeedCard[][] {
   const sus = shuffle(FIREWALL_CARDS.filter((c) => c.suspicious));
   const cred = shuffle(FIREWALL_CARDS.filter((c) => !c.suspicious));
   const per = Math.floor(sus.length / WAVES.length);
-  return WAVES.map((_, w) => shuffle([...sus.slice(w * per, (w + 1) * per), ...cred.slice(w * per, (w + 1) * per)]));
+  const waves = WAVES.map((_, w) => shuffle([...sus.slice(w * per, (w + 1) * per), ...cred.slice(w * per, (w + 1) * per)]));
+  // Wave 1 opens with the two coached tutorial posts.
+  waves[0] = [...TUTORIAL_CARDS, ...waves[0]];
+  return waves;
 }
+
+const TOTAL_CARDS = FIREWALL_CARDS.length + TUTORIAL_CARDS.length;
+
+/** Tutorial posts hover longer so the coach text can be read. */
+const readFor = (f: Flying) => (f.card.coach ? TUTORIAL_READ_SECONDS : WAVES[f.wave].readSeconds);
 
 // ─── Card visuals ────────────────────────────────────────────────────
 
@@ -267,20 +276,46 @@ function CardMesh({ f, register, onClick }: { f: Flying; register: Register; onC
       <RoundedBox args={[CARD_W, CARD_H, 0.02]} radius={0.02} smoothness={2} onClick={(e) => { e.stopPropagation(); onClick(); }}>
         <meshBasicMaterial color="#f1f5f9" toneMapped={false} />
       </RoundedBox>
-      <Text position={[-CARD_W / 2 + 0.03, CARD_H / 2 - 0.036, 0.012]} fontSize={0.023} color="#475569" anchorX="left" anchorY="middle" font={FONT_BOLD} maxWidth={CARD_W - 0.06}>
-        {f.card.source}
-      </Text>
-      <Text position={[-CARD_W / 2 + 0.03, CARD_H / 2 - 0.074, 0.012]} fontSize={0.036} color="#0f172a" anchorX="left" anchorY="top" font={FONT_BOLD} maxWidth={CARD_W - 0.06} lineHeight={1.18}>
-        {f.card.headline}
-      </Text>
-      <group position={[0, -CARD_H / 2 + 0.05, 0.012]}>
-        <RoundedBox args={[CARD_W - 0.06, 0.048, 0.004]} radius={0.012} smoothness={2}>
-          <meshBasicMaterial color="#e2e8f0" toneMapped={false} />
+      {/* App + sender */}
+      <group position={[-CARD_W / 2 + 0.03, CARD_H / 2 - 0.038, 0.012]}>
+        <RoundedBox args={[0.15, 0.036, 0.004]} radius={0.01} smoothness={2} position-x={0.075}>
+          <meshBasicMaterial color="#0f172a" toneMapped={false} />
         </RoundedBox>
-        <Text position={[0, 0, 0.004]} fontSize={0.023} color="#1e293b" anchorX="center" anchorY="middle" font={FONT_BOLD} maxWidth={CARD_W - 0.1}>
-          {`CLUE: ${f.card.cue}`}
+        <Text position={[0.075, 0, 0.004]} fontSize={0.018} color="#f8fafc" anchorX="center" anchorY="middle" font={FONT_BOLD} maxWidth={0.14}>
+          {f.card.app.toUpperCase()}
+        </Text>
+        <Text position={[0.165, 0, 0.004]} fontSize={0.02} color="#475569" anchorX="left" anchorY="middle" font={FONT_BOLD} maxWidth={CARD_W - 0.23}>
+          {f.card.sender}
         </Text>
       </group>
+      <Text position={[-CARD_W / 2 + 0.03, CARD_H / 2 - 0.075, 0.012]} fontSize={0.033} color="#0f172a" anchorX="left" anchorY="top" font={FONT_BOLD} maxWidth={CARD_W - 0.06} lineHeight={1.18}>
+        {f.card.headline}
+      </Text>
+      {/* The two things to check */}
+      {f.card.clues.map((clue, i) => (
+        <group key={i} position={[0, -CARD_H / 2 + 0.105 - i * 0.052, 0.012]}>
+          <RoundedBox args={[CARD_W - 0.06, 0.044, 0.004]} radius={0.012} smoothness={2}>
+            <meshBasicMaterial color="#e2e8f0" toneMapped={false} />
+          </RoundedBox>
+          <Text position={[-CARD_W / 2 + 0.05, 0, 0.004]} fontSize={0.019} color="#64748b" anchorX="left" anchorY="middle" font={FONT_BOLD}>
+            {`CHECK ${i + 1}`}
+          </Text>
+          <Text position={[-CARD_W / 2 + 0.155, 0, 0.004]} fontSize={0.022} color="#0f172a" anchorX="left" anchorY="middle" font={FONT_BOLD} maxWidth={CARD_W - 0.2}>
+            {clue}
+          </Text>
+        </group>
+      ))}
+      {/* Coach text on tutorial posts */}
+      {f.card.coach && (
+        <group position={[0, CARD_H / 2 + 0.07, 0]}>
+          <RoundedBox args={[CARD_W + 0.1, 0.075, 0.01]} radius={0.02} smoothness={2}>
+            <meshBasicMaterial color="#0f172a" transparent opacity={0.9} toneMapped={false} />
+          </RoundedBox>
+          <Text position={[0, 0, 0.008]} fontSize={0.026} color="#fde68a" anchorX="center" anchorY="middle" font={FONT_BOLD} maxWidth={CARD_W + 0.05} textAlign="center">
+            {`TUTORIAL: ${f.card.coach}`}
+          </Text>
+        </group>
+      )}
       {/* Reading-time bar */}
       <mesh ref={bar} position={[0, -CARD_H / 2 - 0.018, 0.01]}>
         <planeGeometry args={[CARD_W, 0.012]} />
@@ -341,6 +376,52 @@ function IntegrityBar({ value }: { value: number }) {
   );
 }
 
+/** Always-visible cheat sheet to the player's left. */
+function RulesBoard() {
+  const line = (t: string) => `•  ${t}`;
+  return (
+    <Panel3D position={[-1.3, 1.42, -1.45]} rotation={[0, 0.65, 0]} width={0.78} height={0.86} title="HOW TO DECIDE">
+      <Text position={[-0.34, 0.24, 0.012]} fontSize={0.03} color="#fda4af" anchorX="left" anchorY="top" font={FONT_BOLD}>
+        SLASH (block) when you see:
+      </Text>
+      <Text position={[-0.34, 0.19, 0.012]} fontSize={0.026} color="#e2e8f0" anchorX="left" anchorY="top" font={FONT} lineHeight={1.4} maxWidth={0.7}>
+        {FIREWALL_RULES.slash.map(line).join("\n")}
+      </Text>
+      <Text position={[-0.34, -0.07, 0.012]} fontSize={0.03} color="#a7f3d0" anchorX="left" anchorY="top" font={FONT_BOLD}>
+        LET IT PASS (trust) when you see:
+      </Text>
+      <Text position={[-0.34, -0.12, 0.012]} fontSize={0.026} color="#e2e8f0" anchorX="left" anchorY="top" font={FONT} lineHeight={1.4} maxWidth={0.7}>
+        {FIREWALL_RULES.pass.map(line).join("\n")}
+      </Text>
+    </Panel3D>
+  );
+}
+
+/** Explains the last decision to the player's right. */
+function ExplainPanel({ outcome }: { outcome: Outcome | null }) {
+  if (!outcome) return null;
+  return (
+    <Panel3D
+      position={[1.3, 1.42, -1.45]}
+      rotation={[0, -0.65, 0]}
+      width={0.78}
+      height={0.6}
+      title={outcome.correct ? "GOOD CALL" : "MISTAKE"}
+      titleColor={outcome.correct ? COLORS.cyan : COLORS.amber}
+    >
+      <Text position={[0, 0.17, 0.012]} fontSize={0.027} color="#ffffff" anchorX="center" anchorY="top" font={FONT_BOLD} maxWidth={0.7} textAlign="center">
+        {`${outcome.card.suspicious ? "It was SUSPICIOUS" : "It was CREDIBLE"} — ${outcome.card.app}`}
+      </Text>
+      <Text position={[0, 0.1, 0.012]} fontSize={0.024} color="#cbd5e1" anchorX="center" anchorY="top" font={FONT} maxWidth={0.7} textAlign="center" lineHeight={1.3}>
+        {`“${outcome.card.headline}”`}
+      </Text>
+      <Text position={[0, -0.1, 0.012]} fontSize={0.026} color="#fde68a" anchorX="center" anchorY="top" font={FONT_BOLD} maxWidth={0.7} textAlign="center" lineHeight={1.3}>
+        {outcome.card.lesson}
+      </Text>
+    </Panel3D>
+  );
+}
+
 // ─── Game ────────────────────────────────────────────────────────────
 
 type Phase = "intro" | "interlude" | "play" | "done";
@@ -368,7 +449,7 @@ export default function Firewall() {
   const wrong = useRef<FeedCard[]>([]);
   const emitSparks = useRef<SparkEmitter | null>(null);
   const timer = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
-  const total = FIREWALL_CARDS.length;
+  const total = TOTAL_CARDS;
 
   useEffect(() => () => clearInterval(timer.current), []);
 
@@ -453,9 +534,10 @@ export default function Firewall() {
     }
     setOutcome({
       correct,
+      card: f.card,
       text: slashed
-        ? correct ? `Blocked! ${f.card.cue}` : "That one was credible!"
-        : correct ? "Credible — let through" : `A fake got through: ${f.card.cue}`,
+        ? correct ? "Blocked a suspicious post!" : "You slashed a credible post"
+        : correct ? "Credible post — let through" : "A suspicious post got through",
     });
     pushHud();
   };
@@ -488,17 +570,17 @@ export default function Firewall() {
       f.t += dt;
       if (f.phase === "incoming") {
         // Ease in quickly to the reading position.
-        const k = Math.min(1, f.t / 0.9);
+        const k = Math.min(1, f.t / 0.6);
         f.z = SPAWN_Z + (READ_Z - SPAWN_Z) * (1 - (1 - k) ** 3);
         if (k >= 1) { f.phase = "reading"; f.t = 0; }
       } else if (f.phase === "reading") {
         if (o?.bar) {
-          const left = Math.max(0, 1 - f.t / cfg.readSeconds);
+          const left = Math.max(0, 1 - f.t / readFor(f));
           o.bar.scale.x = Math.max(0.001, left);
           o.bar.position.x = (-CARD_W / 2) * (1 - left);
         }
         if (o) o.group.position.y = f.y + Math.sin(f.t * 2.2) * 0.012;
-        if (f.t >= cfg.readSeconds) { f.phase = "approach"; f.t = 0; }
+        if (f.t >= readFor(f)) { f.phase = "approach"; f.t = 0; }
       } else if (f.phase === "approach") {
         f.z = READ_Z + (PASS_Z - READ_Z) * Math.min(1, f.t / cfg.approachSeconds);
         if (f.t >= cfg.approachSeconds) resolve(f, false);
@@ -565,11 +647,11 @@ export default function Firewall() {
         <>
           <Panel3D
             position={[0, 1.62, -1.6]}
-            width={1.4}
-            height={0.78}
-            bodySize={0.042}
+            width={1.5}
+            height={0.9}
+            bodySize={0.038}
             title="MISINFORMATION FIREWALL"
-            body={"Posts fly in and HOVER in front of you so you can read them.\nWhen the blue bar runs out, they come at you.\n\nSLASH suspicious posts. LET CREDIBLE ONES PASS.\nThree waves. Every mistake damages the firewall."}
+            body={"You are the firewall. Posts from WhatsApp, SMS, Instagram and news sites fly in and hover in front of you.\n\nRead the sender and the two CHECKS on each post, then:\nSLASH it if it's a scam or fake.  LET IT PASS if it's credible.\n\nThe board on your left lists the rules. The first two posts are a tutorial."}
           />
           <SlashButton label={inVR ? "SLASH TO START" : "CLICK TO START"} position={[0, 1.12, -0.75]} color="#e0f2fe" onHit={start} />
         </>
@@ -591,6 +673,8 @@ export default function Firewall() {
 
       {(phase === "play" || phase === "interlude") && (
         <>
+          <RulesBoard />
+          <ExplainPanel outcome={outcome} />
           {visible.map((f) => (
             <CardMesh key={f.key} f={f} register={register} onClick={() => (f.phase === "reading" || f.phase === "approach" || f.phase === "incoming") && resolve(f, true)} />
           ))}

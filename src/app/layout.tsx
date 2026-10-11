@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Orbitron } from "next/font/google";
+import { Inter, Orbitron, Space_Grotesk, Unbounded } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Navbar from "@/components/Navbar";
@@ -15,6 +15,18 @@ const orbitron = Orbitron({
   subsets: ["latin"],
 });
 
+// Navbar typefaces: Unbounded for the wordmark, Space Grotesk for menu items.
+const unbounded = Unbounded({
+  variable: "--font-unbounded",
+  subsets: ["latin"],
+  weight: ["600", "800"],
+});
+
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
   title: "AIVENTURE - AI & Deepfake Learning",
   description: "Learning platform about the dangers of AI and deepfakes.",
@@ -26,7 +38,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${orbitron.variable} h-full antialiased`}>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${orbitron.variable} ${unbounded.variable} ${spaceGrotesk.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <ThemeProvider
           attribute="class"

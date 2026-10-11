@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import {
-  Menu, X, ChevronDown, ShieldCheck, Globe2, GraduationCap, ScanSearch, Images, ScanText,
+  Menu, X, ChevronDown, Globe2, GraduationCap, ScanSearch, Images, ScanText,
   Gamepad2, Glasses, Swords, ArrowRight, type LucideIcon,
 } from "lucide-react";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
@@ -120,24 +120,20 @@ export default function Navbar() {
   );
 
   return (
-    <header className="fixed top-0 inset-x-0 z-50 h-16">
+    <header className="fixed top-0 inset-x-0 z-50 h-16 font-[family-name:var(--font-space-grotesk)]">
       {/* Reading progress */}
       <div className="absolute top-0 left-0 h-0.5 bg-gradient-to-r from-primary to-secondary transition-[width] duration-150" style={{ width: `${progress}%` }} />
 
       <div className="h-full px-3 sm:px-6 flex items-center">
         <nav
           aria-label="Main"
-          className={`w-full max-w-6xl mx-auto h-12 flex items-center justify-between gap-3 rounded-full pl-3 pr-2 transition-all duration-300 ${
-            scrolled || open
-              ? "bg-background/80 backdrop-blur-xl border border-foreground/10 shadow-lg shadow-black/10"
-              : "bg-background/30 backdrop-blur-md border border-transparent"
-          }`}
+          data-scrolled={scrolled || open}
+          className="nav-shell w-full max-w-6xl mx-auto h-12 flex items-center justify-between gap-3 rounded-full pl-5 pr-2"
         >
-          <Link href="/" className="flex items-center gap-2 shrink-0" aria-label="AIVENTURE home">
-            <span className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white dark:text-black shadow-md shadow-primary/30">
-              <ShieldCheck size={18} />
+          <Link href="/" className="shrink-0 group" aria-label="AIVENTURE home">
+            <span className="text-[15px] sm:text-lg font-extrabold tracking-[0.06em] font-[family-name:var(--font-unbounded)] bg-gradient-to-r from-foreground via-primary to-secondary bg-clip-text text-transparent bg-[length:200%_100%] bg-left group-hover:bg-right transition-[background-position] duration-700">
+              AIVENTURE
             </span>
-            <span className="text-base sm:text-lg font-bold tracking-tighter font-[family-name:var(--font-orbitron)]">AIVENTURE</span>
           </Link>
 
           <div className="hidden lg:flex items-center gap-0.5">

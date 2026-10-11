@@ -13,17 +13,17 @@ import { Button3D, COLORS, FONT, FONT_BOLD, Panel3D } from "./ui3d";
 // ─── Layout (metres, standing player at the origin facing -Z) ─────────
 const PHOTO_WIDTH = 0.42;
 const LENS_RADIUS = 0.07;
-const MAGNIFY = 2;
+const MAGNIFY = 1; // the lens reveals hints at normal size (no magnification)
 const ZOOM_MIN = 1;
 const ZOOM_MAX = 1.9; // ~0.8 m wide at most — stays inside the field of view
-const DESK_Y = 0.85;
-const STAND_POS = new THREE.Vector3(0, 1.17, -0.62);
+const DESK_Y = 0.72;
+const STAND_POS = new THREE.Vector3(0, DESK_Y + 0.31, -0.62);
 const STAND_QUAT = new THREE.Quaternion().setFromEuler(new THREE.Euler(-0.28, 0, 0));
-const LENS_POS = new THREE.Vector3(0.24, 0.99, -0.34);
+const LENS_POS = new THREE.Vector3(0.24, DESK_Y + 0.14, -0.34);
 const BINS = { real: { x: -0.52, z: -0.5 }, ai: { x: 0.52, z: -0.5 } } as const;
 const BIN_HALF = { x: 0.2, z: 0.2 };
 // Where the photo may be moved (keeps it within reach and view).
-const BOUNDS = { min: new THREE.Vector3(-0.85, 0.82, -1.15), max: new THREE.Vector3(0.85, 1.9, -0.18) };
+const BOUNDS = { min: new THREE.Vector3(-0.85, DESK_Y - 0.02, -1.15), max: new THREE.Vector3(0.85, 1.85, -0.18) };
 const POINTS_CORRECT = 100;
 const POINTS_SCANNED = 25;
 const TINT = { real: "#a7f3d0", ai: "#fecdd3" };
@@ -48,7 +48,7 @@ function useClueTexture(ev: LabEvidence) {
     canvas.width = w;
     canvas.height = h;
     const ctx = canvas.getContext("2d")!;
-    ctx.font = "bold 40px 'Atkinson Hyperlegible', Arial, sans-serif";
+    ctx.font = "bold 30px 'Atkinson Hyperlegible', Arial, sans-serif";
     ctx.textBaseline = "middle";
     for (const c of ev.clues) {
       const x = c.x * w;
@@ -61,21 +61,21 @@ function useClueTexture(ev: LabEvidence) {
       ctx.stroke();
       ctx.strokeStyle = "#ffffff";
       ctx.setLineDash([20, 12]);
-      ctx.lineWidth = 6;
+      ctx.lineWidth = 5;
       ctx.beginPath();
       ctx.arc(x, y, r, 0, Math.PI * 2);
       ctx.stroke();
       ctx.setLineDash([]);
-      const tw = ctx.measureText(c.label).width + 30;
-      const below = y + r + 62 < h;
-      const ly = below ? y + r + 36 : y - r - 36;
+      const tw = ctx.measureText(c.label).width + 24;
+      const below = y + r + 50 < h;
+      const ly = below ? y + r + 28 : y - r - 28;
       const lx = Math.min(Math.max(x - tw / 2, 8), w - tw - 8);
       ctx.fillStyle = "rgba(15,23,42,0.86)";
       ctx.beginPath();
-      ctx.roundRect(lx, ly - 28, tw, 56, 16);
+      ctx.roundRect(lx, ly - 21, tw, 42, 12);
       ctx.fill();
       ctx.fillStyle = "#ffffff";
-      ctx.fillText(c.label, lx + 15, ly + 1);
+      ctx.fillText(c.label, lx + 12, ly + 1);
     }
     const tex = new THREE.CanvasTexture(canvas);
     tex.colorSpace = THREE.SRGBColorSpace;
@@ -146,7 +146,7 @@ interface Homing { pos: THREE.Vector3; quat: THREE.Quaternion }
 interface HomingApi { get: () => Homing | null; clear: () => void }
 
 function Evidence({
-  ev, photoRef, lensRef, zoomRef, reveal, onDrop, onScanned, onHoverBin, homing,
+  ev, photoRef, lensRef, zoomRef, reveal, onDrop, onScanned, onHoverBin, homing, onHold,
 }: {
   ev: LabEvidence;
   photoRef: React.RefObject<THREE.Group | null>;
@@ -157,6 +157,7 @@ function Evidence({
   onScanned: () => void;
   onHoverBin: (bin: Bin | null) => void;
   homing: HomingApi;
+  onHold: (hand: XRHandedness | null) => void;
 }) {
   const photo = useTexture(ev.src, (t) => { t.colorSpace = THREE.SRGBColorSpace; });
   const clueTex = useClueTexture(ev);
@@ -165,6 +166,7 @@ function Evidence({
   const innerRef = useRef<THREE.Group>(null);
   const overlayRef = useRef<THREE.Mesh>(null);
   const held = useRef(false);
+  const grabbingHand = useRef<XRHandedness | null>(null);
   const lastHover = useRef<Bin | null>(null);
   const scanTime = useRef(0);
   const scannedSent = useRef(false);
@@ -228,9 +230,11 @@ function Evidence({
     if (state.first) {
       held.current = true;
       homing.clear();
+      onHold(grabbingHand.current);
     }
     if (state.last) {
       held.current = false;
+      onHold(null);
       lastHover.current = null;
       onHoverBin(null);
       onDrop(binUnder(target.getWorldPosition(new THREE.Vector3())));
@@ -240,7 +244,14 @@ function Evidence({
   return (
     <group ref={photoRef} position={STAND_POS} quaternion={STAND_QUAT}>
       <Handle targetRef={photoRef} scale={false} apply={apply}>
-        <group ref={innerRef}>
+        {/* Remember which controller grabbed the photo: only that hand may zoom. */}
+        <group
+          ref={innerRef}
+          onPointerDown={(e) => {
+            const src = (e as unknown as { pointerState?: { inputSource?: XRInputSource } }).pointerState?.inputSource;
+            grabbingHand.current = src?.handedness ?? null;
+          }}
+        >
           <mesh position-z={-0.004}>
             <boxGeometry args={[PHOTO_WIDTH + 0.02, height + 0.02, 0.006]} />
             <meshStandardMaterial color="#f8fafc" roughness={0.5} />
@@ -266,7 +277,7 @@ function Magnifier({ lensRef }: { lensRef: React.RefObject<THREE.Group | null> }
         <group>
           <mesh>
             <torusGeometry args={[LENS_RADIUS, 0.008, 14, 56]} />
-            <meshStandardMaterial color="#e2e8f0" metalness={0.8} roughness={0.25} />
+            <meshStandardMaterial color="#475569" metalness={0.7} roughness={0.3} />
           </mesh>
           <mesh>
             <circleGeometry args={[LENS_RADIUS, 48]} />
@@ -283,7 +294,7 @@ function Magnifier({ lensRef }: { lensRef: React.RefObject<THREE.Group | null> }
             <cylinderGeometry args={[0.013, 0.016, 0.12, 16]} />
             <meshStandardMaterial color="#334155" metalness={0.3} roughness={0.5} />
           </mesh>
-          <Text position={[0, LENS_RADIUS + 0.028, 0]} fontSize={0.02} color="#e2e8f0" anchorX="center" font={FONT_BOLD}>
+          <Text position={[0, LENS_RADIUS + 0.028, 0]} fontSize={0.02} color="#334155" anchorX="center" font={FONT_BOLD}>
             AI SCANNER
           </Text>
         </group>
@@ -310,11 +321,11 @@ function Tray({ bin, label, hover, enabled, onPress }: { bin: Bin; label: string
       {/* Base */}
       <mesh position-y={0.004}>
         <boxGeometry args={[w, 0.008, d]} />
-        <meshStandardMaterial color="#111827" roughness={0.6} />
+        <meshStandardMaterial color="#e2e8f0" roughness={0.6} />
       </mesh>
       <mesh position-y={0.009} rotation-x={-Math.PI / 2}>
         <planeGeometry args={[w - 0.03, d - 0.03]} />
-        <meshBasicMaterial color={tint} transparent opacity={hover ? 0.35 : 0.08} toneMapped={false} />
+        <meshBasicMaterial color={tint} transparent opacity={hover ? 0.6 : 0.25} toneMapped={false} />
       </mesh>
       {/* Frosted walls */}
       {wall([0, h / 2, -d / 2], [w, h, 0.006])}
@@ -365,6 +376,7 @@ export default function ForensicLab() {
   const homingApi = useMemo<HomingApi>(() => ({ get: () => homing.current, clear: () => { homing.current = null; } }), []);
   const right = useXRInputSourceState("controller", "right");
   const left = useXRInputSourceState("controller", "left");
+  const holdingHand = useRef<XRHandedness | null>(null);
   const ev = LAB_EVIDENCE[index];
 
   const setZoom = (z: number) => {
@@ -372,14 +384,12 @@ export default function ForensicLab() {
     setZoomLabel(Math.round(zoomRef.current * 10) / 10);
   };
 
-  // Thumbstick up/down zooms the photo (either controller).
+  // Thumbstick up/down zooms the photo — only on the controller that is holding it.
   useFrame((_, dt) => {
     if (phase !== "play" && phase !== "feedback") return;
-    let y = 0;
-    for (const c of [right, left]) {
-      const stick = c?.gamepad?.["xr-standard-thumbstick"];
-      if (stick && Math.abs(stick.yAxis ?? 0) > Math.abs(y)) y = stick.yAxis ?? 0;
-    }
+    const hand = holdingHand.current;
+    const holder = hand === "right" ? right : hand === "left" ? left : undefined;
+    const y = holder?.gamepad?.["xr-standard-thumbstick"]?.yAxis ?? 0;
     if (Math.abs(y) > 0.25) {
       const next = THREE.MathUtils.clamp(zoomRef.current - y * dt * 1.2, ZOOM_MIN, ZOOM_MAX);
       if (Math.abs(next - zoomRef.current) > 1e-4) {
@@ -450,30 +460,32 @@ export default function ForensicLab() {
     <group>
       {/* Desk: rounded graphite top, light edge, two pedestals */}
       <RoundedBox args={[1.6, 0.04, 0.66]} radius={0.015} smoothness={3} position={[0, DESK_Y - 0.02, -0.55]}>
-        <meshStandardMaterial color="#1e293b" roughness={0.35} metalness={0.25} />
+        <meshStandardMaterial color="#f8fafc" roughness={0.4} metalness={0.05} />
       </RoundedBox>
       <mesh position={[0, DESK_Y - 0.02, -0.219]}>
         <boxGeometry args={[1.56, 0.006, 0.004]} />
-        <meshBasicMaterial color="#bae6fd" toneMapped={false} />
+        <meshBasicMaterial color="#60a5fa" toneMapped={false} />
       </mesh>
       {[-0.55, 0.55].map((x) => (
         <RoundedBox key={x} args={[0.32, DESK_Y - 0.04, 0.5]} radius={0.02} smoothness={2} position={[x, (DESK_Y - 0.04) / 2, -0.58]}>
-          <meshStandardMaterial color="#0f172a" roughness={0.7} />
+          <meshStandardMaterial color="#cbd5e1" roughness={0.6} />
         </RoundedBox>
       ))}
-      {/* Photo easel */}
-      <mesh position={[0, DESK_Y + 0.12, -0.7]} rotation-x={-0.28}>
-        <boxGeometry args={[0.06, 0.26, 0.015]} />
-        <meshStandardMaterial color="#334155" roughness={0.5} />
-      </mesh>
+      {/* Photo easel (only while there is a photo) */}
+      {phase !== "intro" && phase !== "done" && (
+        <mesh position={[0, DESK_Y + 0.12, -0.7]} rotation-x={-0.28}>
+          <boxGeometry args={[0.05, 0.24, 0.012]} />
+          <meshStandardMaterial color="#94a3b8" roughness={0.5} />
+        </mesh>
+      )}
 
       {phase === "intro" && (
         <Panel3D
-          position={[0, 1.52, -0.95]}
+          position={[0, 1.4, -0.95]}
           width={1.1}
           height={0.72}
           title="FORENSIC LAB"
-          body={"Eight pieces of evidence. Some are real photos, some were made by AI.\n\n• Point and hold the TRIGGER to grab the photo or the AI Scanner.\n• Push the THUMBSTICK up/down to zoom the photo.\n• Hold the scanner over the photo to magnify it and see where to look (+25 pts).\n• Drop the photo into a tray, or press its label."}
+          body={"Eight pieces of evidence. Some are real photos, some were made by AI.\n\n• Point and hold the TRIGGER to grab the photo or the AI Scanner.\n• While holding the photo, push that hand's THUMBSTICK up/down to zoom.\n• Hold the AI Scanner over the photo to reveal where to look (+25 pts).\n• Drop the photo into a tray, or press its label."}
         >
           <Button3D label="START INVESTIGATION" onPress={restart} position={[0, -0.28, 0.02]} width={0.5} height={0.1} />
         </Panel3D>
@@ -492,6 +504,7 @@ export default function ForensicLab() {
             onScanned={() => setScanned(true)}
             onHoverBin={setHoverBin}
             homing={homingApi}
+            onHold={(hand) => { holdingHand.current = hand; }}
           />
           <Magnifier lensRef={lensRef} />
           <Tray bin="real" label="REAL PHOTO" hover={hoverBin === "real"} enabled={phase === "play"} onPress={() => answer("real")} />
@@ -500,12 +513,12 @@ export default function ForensicLab() {
           {/* Zoom controls (also on the thumbstick) */}
           <group position={[-0.17, DESK_Y + 0.05, -0.32]} rotation-x={-0.6}>
             <Button3D label="−" onPress={() => setZoom(zoomRef.current - 0.15)} position={[0, 0, 0]} width={0.07} height={0.07} fontSize={0.05} color="#e2e8f0" textColor="#0f172a" />
-            <Text position={[0.045, 0.07, 0]} fontSize={0.022} color="#cbd5e1" anchorX="center" font={FONT_BOLD}>{`ZOOM ${zoomLabel.toFixed(1)}×`}</Text>
+            <Text position={[0.045, 0.07, 0]} fontSize={0.022} color="#334155" anchorX="center" font={FONT_BOLD}>{`ZOOM ${zoomLabel.toFixed(1)}×`}</Text>
             <Button3D label="+" onPress={() => setZoom(zoomRef.current + 0.15)} position={[0.09, 0, 0]} width={0.07} height={0.07} fontSize={0.05} color="#e2e8f0" textColor="#0f172a" />
           </group>
 
           {/* HUD */}
-          <group position={[0, 1.55, -0.98]}>
+          <group position={[0, 1.4, -0.98]}>
             <RoundedBox args={[0.7, 0.07, 0.01]} radius={0.02} smoothness={2}>
               <meshBasicMaterial color={COLORS.panel} transparent opacity={0.85} toneMapped={false} />
             </RoundedBox>
@@ -518,7 +531,7 @@ export default function ForensicLab() {
 
       {phase === "feedback" && last && (
         <Panel3D
-          position={[0.68, 1.5, -0.78]}
+          position={[0.68, 1.3, -0.78]}
           rotation={[0, -0.55, 0]}
           width={0.52}
           height={0.6}

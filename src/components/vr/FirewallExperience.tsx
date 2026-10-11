@@ -22,6 +22,7 @@ export default function FirewallExperience() {
   return (
     <VRShell
       store={store}
+      environment="firewall"
       title="Misinformation Firewall"
       subtitle="Deepfake Detective · VR arcade"
       desktopHint="No headset? Click a card to slash it — let credible posts pass."
