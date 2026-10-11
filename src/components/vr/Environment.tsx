@@ -134,13 +134,26 @@ function makeGridMaterial() {
       uniform float time;
       uniform vec3 color;
       varying vec2 vPos;
-      float line(float v, float w) { float f = abs(fract(v) - 0.5); return smoothstep(0.5 - w, 0.5, f); }
+      float hash(float n) { return fract(sin(n) * 43758.5453); }
       void main() {
-        // Plane is rotated flat: x = world x, y = -world z. Lines flow toward the player.
-        float gx = line(vPos.x / 1.2 + 0.5, 0.03);
-        float gz = line((vPos.y + time * ${TUNNEL_SPEED.toFixed(1)}) / 1.2, 0.03);
-        float fade = 1.0 - smoothstep(4.0, 24.0, length(vPos));
-        float a = max(gx, gz) * fade * 0.55;
+        // Plane is rotated flat: x = world x, y = -world z.
+        // A smooth glossy floor: soft glow pool around the player plus sparse
+        // light trails streaming toward the player (no grid).
+        float r = length(vPos);
+        float pool = (1.0 - smoothstep(0.0, 5.0, r)) * 0.22;
+        float sheen = (1.0 - smoothstep(0.0, 18.0, abs(vPos.x) * 2.5 + max(0.0, vPos.y))) * 0.08;
+
+        float laneW = 0.7;
+        float lane = floor(vPos.x / laneW);
+        float laneOn = step(0.62, hash(lane + 3.0));
+        float inLane = 1.0 - smoothstep(0.0, 0.018, abs(fract(vPos.x / laneW) - 0.5) * laneW);
+        float speed = ${TUNNEL_SPEED.toFixed(1)} * (0.8 + hash(lane) * 0.8);
+        float seg = fract((vPos.y + time * speed) / 6.0 + hash(lane * 1.7));
+        float trail = smoothstep(0.0, 0.04, seg) * (1.0 - smoothstep(0.04, 0.35, seg));
+        float streak = inLane * laneOn * trail * 0.9;
+
+        float fade = 1.0 - smoothstep(6.0, 26.0, r);
+        float a = (pool + sheen + streak) * fade;
         gl_FragColor = vec4(color, a);
         #include <colorspace_fragment>
       }`,

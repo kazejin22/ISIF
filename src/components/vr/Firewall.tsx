@@ -196,7 +196,8 @@ const TUTORIAL_READ_SECONDS = 9;
 const CARD_HALF = new THREE.Vector3(CARD_W / 2, CARD_H / 2, 0.09);
 const BUTTON_HALF = new THREE.Vector3(0.27, 0.11, 0.12);
 const SPAWN_Z = -9;
-const READ_Z = -1.9; // cards hover here so they can be read
+const READ_Z = -2.5; // cards hover here so they can be read
+const CARD_SCALE = 1.15;
 const PASS_Z = 0.6;
 const HIT_ZONE: [number, number] = [-1.5, 0.45];
 const INTEGRITY_HIT = 15;
@@ -213,8 +214,8 @@ interface Wave {
 
 const WAVES: Wave[] = [
   { name: "WAVE 1 · TRAINING", subtitle: "One post at a time. Read both checks, then decide.", lanes: [[0, 1.38]], readSeconds: 4.5, approachSeconds: 1.5, spawnEvery: 0, maxActive: 1 },
-  { name: "WAVE 2 · RUSH HOUR", subtitle: "Two feeds at once. Stay sharp.", lanes: [[-0.4, 1.28], [0.4, 1.5]], readSeconds: 3.4, approachSeconds: 1.25, spawnEvery: 2.6, maxActive: 2 },
-  { name: "WAVE 3 · OVERLOAD", subtitle: "Three feeds, less time. Trust the clues.", lanes: [[-0.7, 1.22], [0, 1.52], [0.7, 1.22]], readSeconds: 2.6, approachSeconds: 1.05, spawnEvery: 1.9, maxActive: 3 },
+  { name: "WAVE 2 · RUSH HOUR", subtitle: "Two feeds at once. Stay sharp.", lanes: [[-0.47, 1.28], [0.47, 1.52]], readSeconds: 3.4, approachSeconds: 1.25, spawnEvery: 2.6, maxActive: 2 },
+  { name: "WAVE 3 · OVERLOAD", subtitle: "Three feeds, less time. Trust the clues.", lanes: [[-0.86, 1.22], [0, 1.55], [0.86, 1.22]], readSeconds: 2.6, approachSeconds: 1.05, spawnEvery: 1.9, maxActive: 3 },
 ];
 
 type CardPhase = "incoming" | "reading" | "approach" | "slashed" | "passed";
@@ -269,7 +270,7 @@ function CardMesh({ f, register, onClick }: { f: Flying; register: Register; onC
   }, [f.key, register]);
 
   return (
-    <group ref={group} position={[f.x, f.y, f.z]}>
+    <group ref={group} position={[f.x, f.y, f.z]} scale={CARD_SCALE}>
       <RoundedBox args={[CARD_W + 0.012, CARD_H + 0.012, 0.016]} radius={0.024} smoothness={2} position-z={-0.004}>
         <meshBasicMaterial color="#7dd3fc" transparent opacity={0.35} toneMapped={false} />
       </RoundedBox>
@@ -380,7 +381,7 @@ function IntegrityBar({ value }: { value: number }) {
 function RulesBoard() {
   const line = (t: string) => `•  ${t}`;
   return (
-    <Panel3D position={[-1.3, 1.42, -1.45]} rotation={[0, 0.65, 0]} width={0.78} height={0.86} title="HOW TO DECIDE">
+    <Panel3D position={[-1.75, 1.45, -2.05]} rotation={[0, 0.6, 0]} scale={1.3} width={0.78} height={0.86} title="HOW TO DECIDE">
       <Text position={[-0.34, 0.24, 0.012]} fontSize={0.03} color="#fda4af" anchorX="left" anchorY="top" font={FONT_BOLD}>
         SLASH (block) when you see:
       </Text>
@@ -402,8 +403,9 @@ function ExplainPanel({ outcome }: { outcome: Outcome | null }) {
   if (!outcome) return null;
   return (
     <Panel3D
-      position={[1.3, 1.42, -1.45]}
-      rotation={[0, -0.65, 0]}
+      position={[1.75, 1.45, -2.05]}
+      rotation={[0, -0.6, 0]}
+      scale={1.3}
       width={0.78}
       height={0.6}
       title={outcome.correct ? "GOOD CALL" : "MISTAKE"}
@@ -646,19 +648,20 @@ export default function Firewall() {
       {phase === "intro" && (
         <>
           <Panel3D
-            position={[0, 1.62, -1.6]}
+            position={[0, 1.7, -2.3]}
+            scale={1.2}
             width={1.5}
             height={0.9}
             bodySize={0.038}
             title="MISINFORMATION FIREWALL"
             body={"You are the firewall. Posts from WhatsApp, SMS, Instagram and news sites fly in and hover in front of you.\n\nRead the sender and the two CHECKS on each post, then:\nSLASH it if it's a scam or fake.  LET IT PASS if it's credible.\n\nThe board on your left lists the rules. The first two posts are a tutorial."}
           />
-          <SlashButton label={inVR ? "SLASH TO START" : "CLICK TO START"} position={[0, 1.12, -0.75]} color="#e0f2fe" onHit={start} />
+          <SlashButton label={inVR ? "SLASH TO START" : "CLICK TO START"} position={[0, 1.12, -0.95]} color="#e0f2fe" onHit={start} />
         </>
       )}
 
       {phase === "interlude" && (
-        <group position={[0, 1.55, -1.7]}>
+        <group position={[0, 1.6, -2.5]} scale={1.2}>
           <Text fontSize={0.1} color="#e0f2fe" anchorX="center" anchorY="middle" font={FONT_BOLD}>
             {WAVES[wave].name}
           </Text>
@@ -678,7 +681,7 @@ export default function Firewall() {
           {visible.map((f) => (
             <CardMesh key={f.key} f={f} register={register} onClick={() => (f.phase === "reading" || f.phase === "approach" || f.phase === "incoming") && resolve(f, true)} />
           ))}
-          <group position={[0, 2.2, -2.3]}>
+          <group position={[0, 2.35, -3.0]} scale={1.25}>
             <Text fontSize={0.075} color="#f1f5f9" anchorX="center" anchorY="middle" font={FONT_BOLD}>
               {`${hud.points} PTS   ×${multiplier}   ${hud.done}/${total}`}
             </Text>
@@ -702,7 +705,8 @@ export default function Firewall() {
       {phase === "done" && (
         <>
           <Panel3D
-            position={[0, 1.62, -1.6]}
+            position={[0, 1.7, -2.3]}
+            scale={1.2}
             width={1.45}
             height={0.95}
             bodySize={0.038}
@@ -710,8 +714,8 @@ export default function Firewall() {
             titleColor={breached ? COLORS.amber : COLORS.cyan}
             body={`${hud.correct} correct  ·  ${hud.points} pts  ·  best combo ${hud.best}  ·  rating ${rating}/${FIREWALL_MAX_SCORE}\n${waveStats.map((w, i) => `${WAVES[i].name.split(" · ")[1]}: ${w.correct}/${w.total}`).join("    ")}${mistakes.length ? "\n\nWhat to remember:\n" + mistakes.map((m) => `• ${m.lesson}`).join("\n") : "\n\nPerfect firewall. Nothing got past you."}`}
           />
-          <SlashButton label="PLAY AGAIN" position={[-0.32, 1.0, -0.75]} color="#e0f2fe" onHit={start} />
-          <SlashButton label="EXIT VR" position={[0.32, 1.0, -0.75]} color="#94a3b8" onHit={() => store.getState().session?.end()} />
+          <SlashButton label="PLAY AGAIN" position={[-0.32, 1.05, -0.95]} color="#e0f2fe" onHit={start} />
+          <SlashButton label="EXIT VR" position={[0.32, 1.05, -0.95]} color="#94a3b8" onHit={() => store.getState().session?.end()} />
         </>
       )}
     </group>

@@ -53,12 +53,12 @@ export function Button3D({
 
 /** Dark rounded panel with a title and optional body text. */
 export function Panel3D({
-  position, rotation = [0, 0, 0], width = 1, height = 0.6, title, body, titleColor = COLORS.cyan, bodySize = 0.032, children,
+  position, rotation = [0, 0, 0], width = 1, height = 0.6, title, body, titleColor = COLORS.cyan, bodySize = 0.032, scale = 1, children,
 }: {
-  position: Vec3; rotation?: Vec3; width?: number; height?: number; title?: string; body?: string; titleColor?: string; bodySize?: number; children?: React.ReactNode;
+  position: Vec3; rotation?: Vec3; width?: number; height?: number; title?: string; body?: string; titleColor?: string; bodySize?: number; scale?: number; children?: React.ReactNode;
 }) {
   return (
-    <group position={position} rotation={rotation}>
+    <group position={position} rotation={rotation} scale={scale}>
       <RoundedBox args={[width + 0.012, height + 0.012, 0.016]} radius={0.034} smoothness={2} position-z={-0.004}>
         <meshBasicMaterial color="#7dd3fc" transparent opacity={0.28} toneMapped={false} />
       </RoundedBox>
