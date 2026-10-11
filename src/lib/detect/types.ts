@@ -27,6 +27,8 @@ export interface DetectionResult {
   /** Set when the server adjusted the model's verdict, explaining why. */
   adjustment: string | null;
   model: string;
+  /** Set when the result came from the cache instead of a fresh model call. */
+  cached?: "demo" | "recent";
 }
 
 export interface DetectionError {

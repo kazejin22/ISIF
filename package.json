@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "demo:results": "node scripts/build-demo-results.mjs"
   },
   "dependencies": {
     "@prisma/client": "^7.10.0",

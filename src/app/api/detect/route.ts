@@ -5,6 +5,7 @@ import { normalizeResult } from "@/lib/detect/normalize";
 import { analyzeWithFallback, AllModelsFailedError } from "@/lib/detect/llm";
 import { ACCEPTED_MIME_TYPES, MAX_UPLOAD_MB, type DetectionResponse } from "@/lib/detect/types";
 import { rateLimit } from "@/lib/rateLimit";
+import { getCached, hashOf, setCached } from "@/lib/detect/cache";
 
 // Video analysis can take a while on the model side.
 export const maxDuration = 180;
@@ -45,6 +46,10 @@ export async function POST(request: Request) {
 
   const kind = mediaKindOf(mime);
   const buffer = Buffer.from(await file.arrayBuffer());
+  const hash = hashOf(buffer);
+  const cached = getCached<DetectionResponse>("media", hash);
+  if (cached) return NextResponse.json<DetectionResponse>(cached);
+
   const base64 = buffer.toString("base64");
   const provenance = scanProvenance(buffer);
   const userPrompt = buildUserPrompt(kind, provenance.notes);
@@ -61,7 +66,9 @@ export async function POST(request: Request) {
       schemaText: RESULT_SCHEMA_TEXT,
       budgetMs: (maxDuration - 15) * 1000,
     });
-    return NextResponse.json<DetectionResponse>(normalizeResult(raw, model, provenance));
+    const result = normalizeResult(raw, model, provenance);
+    setCached("media", hash, result);
+    return NextResponse.json<DetectionResponse>(result);
   } catch (e) {
     if (e instanceof AllModelsFailedError && !e.configured) {
       return fail("The scanner is not configured: no AI API key is set on the server.", 503);

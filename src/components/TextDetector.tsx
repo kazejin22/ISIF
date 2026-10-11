@@ -327,6 +327,8 @@ function ResultPanel({ result }: { result: TextDetectionResult }) {
 
       <p className="text-[11px] text-foreground/40 px-1">
         Analyzed by <span className="font-mono">{result.model}</span>. Percentages are weighted by word count.
+        {result.cached === "demo" && " This is a saved result for a built-in sample, so it loaded instantly."}
+        {result.cached === "recent" && " This text was checked recently, so the saved result was reused."}
       </p>
     </>
   );

@@ -33,6 +33,15 @@ const SEVERITY_STYLE = {
   weak: "bg-foreground/5 text-foreground/60 border-foreground/10",
 };
 
+// Built-in demo images (the same verified photos as the "Real or Fake" mission).
+// Their results are saved in src/data/demoResults.json, so they scan instantly.
+const MEDIA_SAMPLES = [
+  { src: "/game/rof/e1.jpg", label: "Volcanic ash, Yogyakarta", type: "image/jpeg" },
+  { src: "/game/rof/e8.jpg", label: "Mountain cabins", type: "image/jpeg" },
+  { src: "/game/rof/e6.jpg", label: "Lincoln selfie", type: "image/jpeg" },
+  { src: "/game/rof/e7.jpg", label: "Fishmonger portrait", type: "image/jpeg" },
+];
+
 type MediaKind = "image" | "video" | "audio";
 
 function kindOf(file: File): MediaKind {
@@ -126,6 +135,15 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
     setError(null);
     setFile(selected);
     setPreview(URL.createObjectURL(selected));
+  };
+
+  const loadSample = async (sample: (typeof MEDIA_SAMPLES)[number]) => {
+    try {
+      const blob = await (await fetch(sample.src)).blob();
+      selectFile(new File([blob], sample.src.split("/").pop()!, { type: sample.type }));
+    } catch {
+      setError("Could not load the sample image.");
+    }
   };
 
   const reset = () => {
@@ -243,6 +261,27 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
                 accept="image/*,video/*,audio/*" onChange={(e) => selectFile(e.target.files?.[0])}
               />
             </div>
+
+            {!preview && (
+              <div className="w-full">
+                <p className="text-xs text-foreground/50 mb-2 text-center">No file at hand? Try a sample:</p>
+                <div className="grid grid-cols-4 gap-2">
+                  {MEDIA_SAMPLES.map((s) => (
+                    <button
+                      key={s.src}
+                      type="button"
+                      onClick={() => loadSample(s)}
+                      title={s.label}
+                      className="group relative aspect-square rounded-xl overflow-hidden border border-foreground/10 hover:border-primary/60 transition-colors"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={s.src} alt={s.label} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                      <span className="absolute inset-x-0 bottom-0 bg-black/60 text-white text-[9px] sm:text-[10px] px-1 py-0.5 truncate">{s.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Error */}
             {error && (
@@ -388,7 +427,9 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
               </div>
 
               <p className="text-[11px] text-foreground/40 leading-relaxed px-1">
-                Analyzed by <span className="font-mono">{result.model}</span>. AI detection is probabilistic and can be wrong — treat this as one signal and verify important media with trusted sources.
+                Analyzed by <span className="font-mono">{result.model}</span>.
+                {result.cached === "demo" && " This is a saved result for a built-in sample, so it loaded instantly."}
+                {result.cached === "recent" && " This file was scanned recently, so the saved result was reused."} AI detection is probabilistic and can be wrong — treat this as one signal and verify important media with trusted sources.
               </p>
             </div>
           )}

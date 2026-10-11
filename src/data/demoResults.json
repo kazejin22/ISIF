@@ -1,0 +1,549 @@
+{
+ "media": {
+  "9d8ffc9327e7bf2a5645d3de0d18ef4f84ca733e9a9b2a0f00519f9ae0a59245": {
+   "success": true,
+   "conclusion": "REAL",
+   "isReal": true,
+   "authenticityScore": 95,
+   "confidence": 92,
+   "riskLevel": "Low",
+   "mediaDescription": "An outdoor documentary photograph showing a worker wearing a conical hat, face mask, and red shirt sweeping volcanic ash off a street in Indonesia, with a rice sack labeled 'BERAS BULOG' in the foreground.",
+   "analysis": "The image shows clear hallmarks of genuine photojournalism depicting volcanic ash cleanup in Indonesia. Key text elements, such as the 'BERAS BULOG' logo and weight label on the rice bag, are rendered clearly and accurately without any garbled text typical of AI generation. Background objects, including the traditional becak pedicab, street signs, and utility structures, maintain proper perspective, texture, and continuity throughout the scene. No visual artifacts, unnatural geometry, or signs of digital manipulation are present.",
+   "anomalies": [],
+   "authenticSignals": [
+    "Legible and contextually accurate Indonesian text on the rice sack reading 'BERAS BULOG' and 'BERAT NETTO 15 kg', matching authentic official packaging",
+    "Realistic dynamic elements including fine dust haze, tire tracks pressed into ash, and natural shadows",
+    "Coherent background details including a traditional Indonesian pedicab (becak), realistic street signs, utility poles, and distant vehicles"
+   ],
+   "provenance": [
+    "EXIF metadata present, but no camera make/model was recognized."
+   ],
+   "adjustment": null,
+   "model": "gemini-3.5-flash"
+  },
+  "77f23333e96620b17c844f6ee7d156fda1d597328557e36ac07e3767e9b9f913": {
+   "success": true,
+   "conclusion": "AI-GENERATED",
+   "isReal": false,
+   "authenticityScore": 15,
+   "confidence": 90,
+   "riskLevel": "High",
+   "mediaDescription": "The image features a figure strongly resembling Abraham Lincoln, complete with his iconic beard and solemn expression, dressed in a 19th-century suit and bow tie. He is seated on a brown leather couch in a dimly lit, upscale interior, engrossed in looking at and holding a modern smartphone. The image has a cinematic, polished quality with a shallow depth of field.",
+   "analysis": "The image is clearly AI-generated due to the glaring anachronism of Abraham Lincoln holding a modern smartphone. Further examination reveals several visual tells, including subtly malformed and waxy hands, as well as an unnaturally smooth, poreless skin texture on the face. These strong and consistent indicators allow for a high confidence in the AI-generated verdict.",
+   "anomalies": [
+    {
+     "finding": "Anachronism: Abraham Lincoln holding a modern smartphone.",
+     "location": "Overall concept and specific object (smartphone)",
+     "severity": "strong"
+    },
+    {
+     "finding": "Fingers appear slightly fused, lacking natural definition, and exhibit a waxy texture inconsistent with the facial details.",
+     "location": "Left hand, fingers holding the phone; Right hand, fingers holding the phone",
+     "severity": "strong"
+    },
+    {
+     "finding": "The skin on the face, particularly the forehead and cheeks, appears overly smooth and poreless, contrasting with the detailed wrinkles and hair.",
+     "location": "Face, forehead and cheeks",
+     "severity": "moderate"
+    },
+    {
+     "finding": "The bow tie lacks realistic texture and depth, appearing somewhat flat.",
+     "location": "Bow tie",
+     "severity": "weak"
+    }
+   ],
+   "authenticSignals": [],
+   "provenance": [],
+   "adjustment": null,
+   "model": "gemini-2.5-flash"
+  },
+  "be36221b355e3afa614e2d0481d3b3f0a5016bef35acd2724cfa85691f9572c1": {
+   "success": true,
+   "conclusion": "REAL",
+   "isReal": true,
+   "authenticityScore": 92,
+   "confidence": 90,
+   "riskLevel": "Low",
+   "mediaDescription": "A close-up black-and-white portrait of an elderly man wearing a flat cap and a checkered shirt, smiling broadly outdoors in what appears to be a market setting.",
+   "analysis": "This image shows strong indicators of being an authentic photograph. The man's facial features display natural imperfections, such as realistic missing teeth and organic skin aging, which generative models frequently struggle to render convincingly. The fabric patterns on his shirt and flat cap seamlessly follow physical folds without distortion or structural glitches. High-contrast black-and-white editing was applied during post-processing, but no synthetic or AI manipulation artifacts were detected.",
+   "anomalies": [],
+   "authenticSignals": [
+    "Realistic dental irregularities including missing teeth, natural gum lines, and individual tooth shapes",
+    "Highly detailed and natural skin texture featuring organic wrinkles, pores, and fine facial and chest hair",
+    "Coherent plaid pattern on the shirt following realistic fabric folds and stitching",
+    "Consistent natural lighting and shadowing between the subject's face, neck, hat, and clothing",
+    "Natural background depth of field blur without edge bleeding or halos around the subject"
+   ],
+   "provenance": [
+    "EXIF metadata present, but no camera make/model was recognized."
+   ],
+   "adjustment": null,
+   "model": "gemini-3.5-flash"
+  },
+  "172fac66208d36c7dda144c3fc0727f4727aeeb926085091ffc7f039c0531fe6": {
+   "success": true,
+   "conclusion": "AI-GENERATED",
+   "isReal": false,
+   "authenticityScore": 15,
+   "confidence": 90,
+   "riskLevel": "High",
+   "mediaDescription": "A stylized landscape image featuring a large lake, surrounded by green mountains and forests, under a blue sky with fluffy clouds. Two rustic wooden cabins are visible on opposite shores of the lake. A prominent, glowing beam of light descends from a large cloud onto the peak of the central mountain.",
+   "analysis": "This image exhibits numerous strong indicators of AI generation. The fantastical element of the light beam, combined with the highly stylized and perfectly rendered appearance of the landscape, mountains, and cabins, strongly suggests a synthetic origin. The textures and reflections lack the natural imperfections and complexity typically found in real-world photographs, making me highly confident this is an AI-generated image.",
+   "anomalies": [
+    {
+     "finding": "The overall aesthetic and rendering style of the landscape, including the highly uniform and repetitive textures on the mountains and trees, resembles a digital illustration or 3D render rather than a photograph.",
+     "location": "Throughout the entire image, especially mountain textures and background trees.",
+     "severity": "strong"
+    },
+    {
+     "finding": "The beam of light originating from the cloud and striking the mountain peak is a fantastical element not observed in natural photography.",
+     "location": "Center-top, from the large cloud to the main mountain peak.",
+     "severity": "strong"
+    },
+    {
+     "finding": "The reflections in the water are overly simplified and perfectly smooth, lacking the natural complexity, ripples, or subtle distortions expected from a real body of water.",
+     "location": "Surface of the lake.",
+     "severity": "moderate"
+    },
+    {
+     "finding": "The two wooden cabins appear too pristine and uniform, resembling 3D models with simplified details rather than structures with natural wear or authentic architectural imperfections.",
+     "location": "Left and right shores of the lake.",
+     "severity": "moderate"
+    }
+   ],
+   "authenticSignals": [],
+   "provenance": [],
+   "adjustment": null,
+   "model": "gemini-2.5-flash"
+  }
+ },
+ "text": {
+  "71293852d0f61aaff8317accfd864a216be064e4f200979306fea4c25a9130ea": {
+   "success": true,
+   "mode": "model",
+   "conclusion": "AI-GENERATED",
+   "breakdown": {
+    "ai": 100,
+    "refined": 0,
+    "human": 0
+   },
+   "confidence": 98,
+   "language": "English",
+   "analysis": "The text exhibits all classic markers of standard AI generation. It follows a predictable formula: introducing the broad topic, discussing positive aspects, transitioning with 'However' to negative aspects, and concluding with a balanced summary metaphor ('double-edged sword') followed by a recommendation. The vocabulary relies heavily on stock language model phrases like 'navigate this complex landscape', 'curated, idealized portrayals', and 'pervasive influence', maintaining an extremely uniform rhythm with no personal voice or concrete details.",
+   "sentences": [
+    {
+     "i": 1,
+     "text": "Social media has fundamentally transformed how teenagers interact, communicate, and perceive the world.",
+     "start": 0,
+     "end": 103,
+     "words": 13,
+     "label": "ai",
+     "p": 95,
+     "reason": "Generic introductory sentence typical of AI essay templates."
+    },
+    {
+     "i": 2,
+     "text": "Platforms like Instagram, TikTok, and Snapchat provide young people with unprecedented opportunities for self-expression, global connectivity, and creative exploration.",
+     "start": 104,
+     "end": 272,
+     "words": 19,
+     "label": "ai",
+     "p": 95,
+     "reason": "Standard AI listing of platforms and abstract positive impacts."
+    },
+    {
+     "i": 3,
+     "text": "Teenagers can easily discover supportive communities, stay informed about current events, and maintain friendships regardless of geographical boundaries.",
+     "start": 273,
+     "end": 426,
+     "words": 18,
+     "label": "ai",
+     "p": 90,
+     "reason": "Smooth, generalized prose highlighting benefits without specific examples."
+    },
+    {
+     "i": 4,
+     "text": "These digital spaces foster a sense of belonging and allow adolescents to explore their identities in diverse environments.",
+     "start": 427,
+     "end": 550,
+     "words": 18,
+     "label": "ai",
+     "p": 95,
+     "reason": "Stock AI phrases like 'digital spaces' and 'sense of belonging'."
+    },
+    {
+     "i": 5,
+     "text": "However, the pervasive influence of social media also introduces significant challenges to teenage well-being.",
+     "start": 552,
+     "end": 662,
+     "words": 14,
+     "label": "ai",
+     "p": 95,
+     "reason": "Formulaic transition ('However, the pervasive influence of...') introducing drawbacks."
+    },
+    {
+     "i": 6,
+     "text": "Constant exposure to curated, idealized portrayals of life often leads to unhealthy social comparisons, triggering feelings of inadequacy, low self-esteem, and body image issues.",
+     "start": 663,
+     "end": 841,
+     "words": 24,
+     "label": "ai",
+     "p": 95,
+     "reason": "Classic AI vocabulary like 'curated, idealized portrayals' and 'unhealthy social comparisons'."
+    },
+    {
+     "i": 7,
+     "text": "Furthermore, the addictive design of these platforms, driven by endless scrolling and notification loops, disrupts sleep patterns and distracts from academic responsibilities.",
+     "start": 842,
+     "end": 1017,
+     "words": 22,
+     "label": "ai",
+     "p": 95,
+     "reason": "Stock transition 'Furthermore' followed by generalized points on platform mechanics."
+    },
+    {
+     "i": 8,
+     "text": "Cyberbullying represents another severe issue, exposing vulnerable youth to harassment that extends beyond the classroom and into their homes.",
+     "start": 1018,
+     "end": 1160,
+     "words": 19,
+     "label": "ai",
+     "p": 90,
+     "reason": "Standard template paragraph topic sentence on cyberbullying."
+    },
+    {
+     "i": 9,
+     "text": "Ultimately, social media acts as a double-edged sword for the modern adolescent.",
+     "start": 1162,
+     "end": 1242,
+     "words": 12,
+     "label": "ai",
+     "p": 95,
+     "reason": "Cliché AI summary metaphor ('double-edged sword')."
+    },
+    {
+     "i": 10,
+     "text": "While it offers valuable tools for connection and learning, its potential to harm mental health cannot be overlooked.",
+     "start": 1243,
+     "end": 1360,
+     "words": 18,
+     "label": "ai",
+     "p": 95,
+     "reason": "Balanced hedging typical of AI conclusions ('While it offers... cannot be overlooked')."
+    },
+    {
+     "i": 11,
+     "text": "To navigate this complex landscape, teenagers need guidance from parents and educators to develop digital literacy and healthy habits.",
+     "start": 1361,
+     "end": 1495,
+     "words": 19,
+     "label": "ai",
+     "p": 95,
+     "reason": "Generic call-to-action phrase ('navigate this complex landscape')."
+    },
+    {
+     "i": 12,
+     "text": "By fostering mindfulness and setting boundaries, young users can maximize the benefits of social media while mitigating its negative effects on their personal development.",
+     "start": 1496,
+     "end": 1667,
+     "words": 24,
+     "label": "ai",
+     "p": 95,
+     "reason": "Tidy, prescriptive concluding sentence focusing on 'mitigating negative effects'."
+    }
+   ],
+   "aiSignals": [
+    "Template structure: thesis, pros, cons, double-edged sword summary, prescriptive conclusion.",
+    "Stock AI transitions ('However', 'Furthermore', 'Ultimately').",
+    "High frequency of AI buzzwords ('navigate this complex landscape', 'double-edged sword', 'pervasive influence').",
+    "Uniform sentence length and low burstiness (20%).",
+    "Flawless grammar with complete absence of personal voice or specific examples."
+   ],
+   "humanSignals": [],
+   "fingerprint": {
+    "words": 220,
+    "sentences": 12,
+    "avgSentenceLength": 18.3,
+    "burstiness": 20,
+    "vocabularyDiversity": 0.9,
+    "firstPersonRate": 0,
+    "phraseDensity": 2.7,
+    "phraseHits": [
+     {
+      "phrase": "furthermore",
+      "count": 1
+     },
+     {
+      "phrase": "foster",
+      "count": 1
+     },
+     {
+      "phrase": "fostering",
+      "count": 1
+     },
+     {
+      "phrase": "ultimately,",
+      "count": 1
+     },
+     {
+      "phrase": "navigate",
+      "count": 1
+     },
+     {
+      "phrase": "a double-edged sword",
+      "count": 1
+     }
+    ]
+   },
+   "adjustment": null,
+   "model": "gemini-3.5-flash"
+  },
+  "f9fdbca456b34e4d04f5c8879e6896635cd633a24e5778ad2eec929bc363f0dc": {
+   "success": true,
+   "mode": "model",
+   "conclusion": "AI-GENERATED",
+   "breakdown": {
+    "ai": 100,
+    "refined": 0,
+    "human": 0
+   },
+   "confidence": 95,
+   "language": "Indonesian",
+   "analysis": "Teks ini menunjukkan seluruh tanda-tanda utama dari tulisan yang dihasilkan oleh model bahasa AI (LLM). Dari kalimat pertama hingga akhir, teks menggunakan pola formulaik seperti pembuka 'Di era...', struktur kontras 'bukan sekadar... melainkan...', serta kesimpulan normatif. Panjang dan ritme kalimat sangat seragam dengan tingkat variasi (burstiness) yang sangat rendah. Tidak ditemukan adanya argumen personal, kesalahan tata bahasa, atau detail spesifik yang biasa ditemukan dalam tulisan manusia.",
+   "sentences": [
+    {
+     "i": 1,
+     "text": "Di era transformasi digital yang masif, literasi digital menjadi salah satu kemampuan esensial yang harus dimiliki oleh pelajar Indonesia.",
+     "start": 0,
+     "end": 138,
+     "words": 19,
+     "label": "ai",
+     "p": 95,
+     "reason": "Tipikal pembuka AI dengan klaim umum 'Di era transformasi digital yang masif'."
+    },
+    {
+     "i": 2,
+     "text": "Literasi digital bukan sekadar kemampuan mengoperasikan gawai atau mengakses internet, melainkan kecakapan dalam memahami, menganalisis, mengevaluasi, dan menggunakan informasi digital secara kritis, bijak, serta bertanggung jawab.",
+     "start": 139,
+     "end": 370,
+     "words": 26,
+     "label": "ai",
+     "p": 95,
+     "reason": "Menggunakan pola definisi AI 'bukan sekadar..., melainkan...' dan deretan kata sifat beruntun."
+    },
+    {
+     "i": 3,
+     "text": "Bagi pelajar, literasi digital berfungsi sebagai benteng pertahanan dari paparan informasi palsu atau hoaks yang marak beredar di media sosial.",
+     "start": 372,
+     "end": 515,
+     "words": 20,
+     "label": "ai",
+     "p": 90,
+     "reason": "Gaya penulisan generik tentang fungsi literasi digital sebagai benteng pertahanan."
+    },
+    {
+     "i": 4,
+     "text": "Dengan kemampuan analisis yang baik, pelajar dapat memilah informasi yang akurat dan bermanfaat untuk menunjang kegiatan belajar mereka.",
+     "start": 516,
+     "end": 652,
+     "words": 18,
+     "label": "ai",
+     "p": 90,
+     "reason": "Struktur kalimat AI standar untuk menghubungkan analisis informasi dengan kegiatan belajar."
+    },
+    {
+     "i": 5,
+     "text": "Selain itu, pemahaman yang kuat tentang etika berinternet membantu menjaga kesehatan mental pelajar dari ancaman perundungan siber dan kejahatan digital.",
+     "start": 653,
+     "end": 806,
+     "words": 20,
+     "label": "ai",
+     "p": 90,
+     "reason": "Penggunaan frasa transisi 'Selain itu' dan topik umum perundungan siber."
+    },
+    {
+     "i": 6,
+     "text": "Penguasaan literasi digital juga membekali pelajar Indonesia dengan keterampilan abad ke-21 yang sangat dibutuhkan dalam dunia kerja masa depan.",
+     "start": 808,
+     "end": 952,
+     "words": 19,
+     "label": "ai",
+     "p": 95,
+     "reason": "Menggunakan jargon umum AI seperti 'keterampilan abad ke-21' dan 'dunia kerja masa depan'."
+    },
+    {
+     "i": 7,
+     "text": "Pelajar yang literat secara digital cenderung lebih kreatif, inovatif, dan mampu berkolaborasi secara global tanpa terbatas oleh ruang dan waktu.",
+     "start": 953,
+     "end": 1098,
+     "words": 20,
+     "label": "ai",
+     "p": 90,
+     "reason": "Deretan kata sifat beruntun (kreatif, inovatif) khas penjelasan AI."
+    },
+    {
+     "i": 8,
+     "text": "Mereka tidak hanya menjadi konsumen informasi, tetapi juga mampu menjadi pencipta karya digital yang produktif.",
+     "start": 1099,
+     "end": 1210,
+     "words": 15,
+     "label": "ai",
+     "p": 95,
+     "reason": "Pola kontras AI yang sangat umum: 'tidak hanya menjadi..., tetapi juga...'."
+    },
+    {
+     "i": 9,
+     "text": "Oleh karena itu, peningkatan literasi digital di lingkungan sekolah harus terus didorong.",
+     "start": 1212,
+     "end": 1301,
+     "words": 12,
+     "label": "ai",
+     "p": 95,
+     "reason": "Transisi kesimpulan AI yang sangat standar 'Oleh karena itu'."
+    },
+    {
+     "i": 10,
+     "text": "Hal ini penting demi mencetak generasi muda Indonesia yang tidak hanya cerdas secara akademis, tetapi juga berkarakter, beretika, dan siap bersaing di kancah internasional pada masa mendatang.",
+     "start": 1302,
+     "end": 1494,
+     "words": 27,
+     "label": "ai",
+     "p": 95,
+     "reason": "Penutup normatif dan klise khas AI tentang mencetak generasi muda berkarakter."
+    }
+   ],
+   "aiSignals": [
+    "Frasa pembuka klise 'Di era transformasi digital yang masif'",
+    "Penggunaan berulang pola 'bukan sekadar..., melainkan...' dan 'tidak hanya..., tetapi juga...'",
+    "Penggunaan kata sambung transisi AI seperti 'Selain itu' dan 'Oleh karena itu'",
+    "Struktur esai yang sangat rapi, seimbang, dan monoton (burstiness rendah)",
+    "Banyak menggunakan jargon normatif AI (keterampilan abad ke-21, berkarakter, bersaing di kancah internasional)"
+   ],
+   "humanSignals": [],
+   "fingerprint": {
+    "words": 196,
+    "sentences": 10,
+    "avgSentenceLength": 19.6,
+    "burstiness": 22,
+    "vocabularyDiversity": 0.86,
+    "firstPersonRate": 0,
+    "phraseDensity": 4.6,
+    "phraseHits": [
+     {
+      "phrase": "tidak hanya",
+      "count": 2
+     },
+     {
+      "phrase": "di era",
+      "count": 1
+     },
+     {
+      "phrase": "selain itu",
+      "count": 1
+     },
+     {
+      "phrase": "oleh karena itu",
+      "count": 1
+     },
+     {
+      "phrase": "bukan sekadar",
+      "count": 1
+     },
+     {
+      "phrase": "esensial",
+      "count": 1
+     },
+     {
+      "phrase": "transformasi digital",
+      "count": 1
+     },
+     {
+      "phrase": "abad ke-21",
+      "count": 1
+     }
+    ]
+   },
+   "adjustment": null,
+   "model": "gemini-3.5-flash"
+  },
+  "9de0dc281f22d59160b4546f62339323afed7b601a575114bfcc544b0491b8ab": {
+   "success": true,
+   "mode": "model",
+   "conclusion": "HUMAN",
+   "breakdown": {
+    "ai": 0,
+    "refined": 0,
+    "human": 100
+   },
+   "confidence": 100,
+   "language": "English",
+   "analysis": "This text is an excerpt from Mark Twain's famous memoir 'Life on the Mississippi' (Chapter 4). It exhibits rich, highly specific historical descriptions, extreme burstiness in sentence length, and authentic 19th-century prose style. There are no signs of AI generation or editing.",
+   "sentences": [
+    {
+     "i": 1,
+     "text": "Once a day a cheap, gaudy packet arrived upward from St. Louis, and another downward from Keokuk.",
+     "start": 0,
+     "end": 97,
+     "words": 17,
+     "label": "human",
+     "p": 5,
+     "reason": ""
+    },
+    {
+     "i": 2,
+     "text": "Before these events, the day was glorious with expectancy; after them, the day was a dead and empty thing.",
+     "start": 98,
+     "end": 204,
+     "words": 19,
+     "label": "human",
+     "p": 5,
+     "reason": ""
+    },
+    {
+     "i": 3,
+     "text": "Not only the boys, but the whole village, felt this.",
+     "start": 205,
+     "end": 257,
+     "words": 10,
+     "label": "human",
+     "p": 5,
+     "reason": ""
+    },
+    {
+     "i": 4,
+     "text": "After all these years I can picture that old time to myself now, just as it was then: the white town drowsing in the sunshine of a summer's morning; the streets empty, or pretty nearly so; one or two clerks sitting in front of the Water Street stores, with their splint-bottomed chairs tilted back against the wall, chins on breasts, hats slouched over their faces, asleep—with shingle-shavings enough around to show what broke them down; a sow and a litter of pigs loafing along the sidewalk, doing a good business in watermelon rinds and seeds; two or three lonely little freight piles scattered about the 'levee;' a pile of 'skids' on the slope of the stone-paved wharf, and the fragrant town drunkard asleep in the shadow of them; two or three wood flats at the head of the wharf, but nobody to listen to the peaceful lapping of the wavelets against them; the great Mississippi, the majestic, the magnificent Mississippi, rolling its mile-wide tide along, shining in the sun; the dense forest away on the other side; the 'point' above the town, and the 'point' below, bounding the river-glimpse and turning it into a sort of sea, and withal a very still and brilliant and lonely one.",
+     "start": 258,
+     "end": 1445,
+     "words": 207,
+     "label": "human",
+     "p": 5,
+     "reason": ""
+    }
+   ],
+   "aiSignals": [],
+   "humanSignals": [
+    "Classic historical literary text (Mark Twain's Life on the Mississippi)",
+    "Extremely long, descriptive, highly bursty sentence structure",
+    "Specific local historical details (Keokuk, Water Street, splint-bottomed chairs)",
+    "Authentic 19th-century vocabulary and imagery"
+   ],
+   "fingerprint": {
+    "words": 255,
+    "sentences": 4,
+    "avgSentenceLength": 63.3,
+    "burstiness": 131,
+    "vocabularyDiversity": 0.8,
+    "firstPersonRate": 0.4,
+    "phraseDensity": 0.4,
+    "phraseHits": [
+     {
+      "phrase": "not only",
+      "count": 1
+     }
+    ]
+   },
+   "adjustment": null,
+   "model": "gemini-3.5-flash"
+  }
+ }
+}

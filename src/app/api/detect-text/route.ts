@@ -6,6 +6,7 @@ import {
   TEXT_RESULT_SCHEMA, TEXT_RESULT_SCHEMA_TEXT, TEXT_SYSTEM_PROMPT,
 } from "@/lib/detect/textAnalysis";
 import { rateLimit } from "@/lib/rateLimit";
+import { getCached, hashOf, setCached } from "@/lib/detect/cache";
 
 export const maxDuration = 120;
 
@@ -32,6 +33,10 @@ export async function POST(request: Request) {
   if (words < MIN_WORDS) return fail(`Please enter at least ${MIN_WORDS} words (you entered ${words}).`, 400);
   if (text.length > MAX_CHARS) return fail(`Text is too long. The limit is ${MAX_CHARS.toLocaleString("en-US")} characters.`, 413);
 
+  const hash = hashOf(text);
+  const cached = getCached<TextDetectionResponse>("text", hash);
+  if (cached) return NextResponse.json<TextDetectionResponse>(cached);
+
   const sentences = splitSentences(text);
   const fingerprint = computeFingerprint(text, sentences);
   const userPrompt = buildTextUserPrompt(sentences, fingerprint);
@@ -49,7 +54,9 @@ export async function POST(request: Request) {
       maxOutputTokens: 16_384,
       validate: (r) => isUsableTextResult(r, sentences.length),
     });
-    return NextResponse.json<TextDetectionResponse>(normalizeTextResult(raw, model, sentences, fingerprint));
+    const result = normalizeTextResult(raw, model, sentences, fingerprint);
+    setCached("text", hash, result);
+    return NextResponse.json<TextDetectionResponse>(result);
   } catch (e) {
     if (!(e instanceof AllModelsFailedError)) throw e;
     console.error("[detect-text] all models failed", e.attempts);

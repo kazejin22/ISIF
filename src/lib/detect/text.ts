@@ -65,6 +65,8 @@ export interface TextDetectionResult {
   fingerprint: Fingerprint;
   adjustment: string | null;
   model: string;
+  /** Set when the result came from the cache instead of a fresh model call. */
+  cached?: "demo" | "recent";
 }
 
 export type TextDetectionResponse = TextDetectionResult | { success: false; error: string };
