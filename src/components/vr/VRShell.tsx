@@ -7,6 +7,7 @@ import { XR, noEvents, PointerEvents, useXR, type XRStore } from "@react-three/x
 import { ArrowLeft, Glasses, MousePointer2, RotateCcw, TriangleAlert } from "lucide-react";
 import Environment from "./Environment";
 import "@/lib/quietThree";
+import { useT } from "@/lib/i18n";
 
 /** Can this browser create a WebGL context right now? (False when it has blocked 3D for the page.) */
 function canUseWebGL() {
@@ -26,18 +27,22 @@ function SessionWatcher({ onChange }: { onChange: (inVR: boolean) => void }) {
 }
 
 function GraphicsProblem({ blocked }: { blocked: boolean }) {
+  const t = useT();
   return (
     <div className="absolute inset-0 z-10 flex items-center justify-center p-6 bg-[#0b1324]">
       <div className="max-w-md rounded-2xl border border-white/10 bg-black/50 p-6 text-white text-center">
         <TriangleAlert className="mx-auto mb-3 text-amber-400" size={32} />
-        <h2 className="text-lg font-black mb-2">{blocked ? "3D graphics are blocked" : "The 3D view was interrupted"}</h2>
+        <h2 className="text-lg font-black mb-2">{blocked ? t("3D graphics are blocked", "Grafis 3D diblokir") : t("The 3D view was interrupted", "Tampilan 3D terputus")}</h2>
         <p className="text-sm text-white/70 mb-4">
           {blocked
-            ? "The browser has turned off 3D graphics for this page, usually after a graphics reset. Close this tab completely and open the page again. On Meta Quest, if that does not help, fully quit and reopen the browser."
-            : "The graphics chip reset while the game was running. Reloading usually fixes it."}
+            ? t(
+              "The browser has turned off 3D graphics for this page, usually after a graphics reset. Close this tab completely and open the page again. On Meta Quest, if that does not help, fully quit and reopen the browser.",
+              "Browser mematikan grafis 3D untuk halaman ini, biasanya setelah grafis di-reset. Tutup tab ini sepenuhnya lalu buka lagi halamannya. Di Meta Quest, kalau belum berhasil, keluar dari browser sepenuhnya lalu buka lagi.",
+            )
+            : t("The graphics chip reset while the game was running. Reloading usually fixes it.", "Chip grafis ter-reset saat game berjalan. Biasanya bisa diatasi dengan memuat ulang.")}
         </p>
         <button type="button" onClick={() => location.reload()} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#00f3ff] text-black font-bold">
-          <RotateCcw size={16} /> Reload
+          <RotateCcw size={16} /> {t("Reload", "Muat ulang")}
         </button>
       </div>
     </div>
@@ -55,6 +60,7 @@ export default function VRShell({
   // This component only renders in the browser (it is loaded with ssr: false), so probing here is safe.
   const [webgl] = useState(canUseWebGL);
   const [contextLost, setContextLost] = useState(false);
+  const t = useT();
 
   useEffect(() => {
     let cancelled = false;
@@ -73,7 +79,7 @@ export default function VRShell({
     try {
       await store.enterVR();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not start VR.");
+      setError(e instanceof Error ? e.message : t("Could not start VR.", "VR tidak bisa dimulai."));
     }
   };
 
@@ -119,13 +125,13 @@ export default function VRShell({
             {supported ? (
               <>
                 <button type="button" onClick={enter} className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl bg-[#00f3ff] text-black font-black hover:brightness-110">
-                  <Glasses size={22} /> Enter VR
+                  <Glasses size={22} /> {t("Enter VR", "Masuk VR")}
                 </button>
-                <p className="text-[11px] text-white/50 mt-2 text-center">Best on Meta Quest. Put on the headset, then press Enter VR.</p>
+                <p className="text-[11px] text-white/50 mt-2 text-center">{t("Best on Meta Quest. Put on the headset, then press Enter VR.", "Paling bagus di Meta Quest. Pakai headset, lalu tekan Masuk VR.")}</p>
               </>
             ) : (
               <p className="text-xs text-white/70 text-center">
-                {supported === null ? "Checking for a VR headset…" : "No VR headset detected. Open this page in the Meta Quest Browser to play in VR."}
+                {supported === null ? t("Checking for a VR headset…", "Mencari headset VR…") : t("No VR headset detected. Open this page in the Meta Quest Browser to play in VR.", "Headset VR tidak terdeteksi. Buka halaman ini di Meta Quest Browser untuk main di VR.")}
               </p>
             )}
             <p className="text-[11px] text-white/50 mt-2 flex items-center justify-center gap-1.5"><MousePointer2 size={12} /> {desktopHint}</p>

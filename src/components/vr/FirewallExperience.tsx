@@ -3,6 +3,7 @@
 import { Suspense } from "react";
 import { createXRStore } from "@react-three/xr";
 import VRShell from "./VRShell";
+import { useT } from "@/lib/i18n";
 import { EMULATOR } from "./emulator";
 import Firewall, { SaberController } from "./Firewall";
 
@@ -20,13 +21,14 @@ if (process.env.NODE_ENV === "development" && typeof window !== "undefined") {
 }
 
 export default function FirewallExperience() {
+  const t = useT();
   return (
     <VRShell
       store={store}
       environment="firewall"
-      title="Misinformation Firewall"
-      subtitle="Deepfake Detective · VR arcade"
-      desktopHint="No headset? Click a card to slash it — let credible posts pass."
+      title={t("Misinformation Firewall", "Firewall Misinformasi")}
+      subtitle={t("Deepfake Detective · VR arcade", "Deepfake Detective · arkade VR")}
+      desktopHint={t("No headset? Click a card to slash it — let credible posts pass.", "Tidak punya headset? Klik kartu untuk menebasnya — biarkan unggahan tepercaya lewat.")}
     >
       <Suspense fallback={null}>
         <Firewall />

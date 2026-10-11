@@ -6,7 +6,8 @@ import { Text, useTexture, RoundedBox } from "@react-three/drei";
 import { Handle, defaultApply, type HandleState } from "@react-three/handle";
 import { useXRStore, useXRInputSourceState } from "@react-three/xr";
 import * as THREE from "three";
-import { LAB_EVIDENCE, LAB_MAX_SCORE, LAB_MISSION_ID, type LabEvidence } from "@/game/vr/labData";
+import { LAB_MAX_SCORE, LAB_MISSION_ID, labEvidenceFor, type LabEvidence } from "@/game/vr/labData";
+import { useLang, useT } from "@/lib/i18n";
 import { recordScore } from "@/game/progress";
 import { Button3D, COLORS, FONT, FONT_BOLD, Panel3D } from "./ui3d";
 
@@ -306,7 +307,7 @@ function Magnifier({ lensRef }: { lensRef: React.RefObject<THREE.Group | null> }
 }
 
 /** Open glass tray with a lit rim and a label plate that doubles as a button. */
-function Tray({ bin, label, hover, enabled, onPress }: { bin: Bin; label: string; hover: boolean; enabled: boolean; onPress: () => void }) {
+function Tray({ bin, label, releaseLabel, hover, enabled, onPress }: { bin: Bin; label: string; releaseLabel: string; hover: boolean; enabled: boolean; onPress: () => void }) {
   const { x, z } = BINS[bin];
   const tint = TINT[bin];
   const w = 0.36;
@@ -344,7 +345,7 @@ function Tray({ bin, label, hover, enabled, onPress }: { bin: Bin; label: string
       {/* Label plate / button behind the tray */}
       <group position={[0, h + 0.13, -d / 2 - 0.01]} rotation-x={-0.2}>
         <Button3D
-          label={hover ? "RELEASE TO FILE HERE" : label}
+          label={hover ? releaseLabel : label}
           onPress={onPress}
           position={[0, 0, 0]}
           width={0.34}
@@ -379,6 +380,9 @@ export default function ForensicLab() {
   const right = useXRInputSourceState("controller", "right");
   const left = useXRInputSourceState("controller", "left");
   const holdingHand = useRef<XRHandedness | null>(null);
+  const lang = useLang();
+  const t = useT();
+  const LAB_EVIDENCE = labEvidenceFor(lang);
   const ev = LAB_EVIDENCE[index];
 
   const setZoom = (z: number) => {
@@ -487,10 +491,13 @@ export default function ForensicLab() {
           width={1.3}
           height={0.84}
           bodySize={0.037}
-          title="FORENSIC LAB"
-          body={"Eight pieces of evidence. Some are real photos, some were made by AI.\n\n• Point and hold the TRIGGER to grab the photo or the AI Scanner.\n• While holding the photo, push that hand's THUMBSTICK up/down to zoom.\n• Hold the AI Scanner over the photo to reveal where to look (+25 pts).\n• Drop the photo into a tray, or press its label."}
+          title={t("FORENSIC LAB", "LAB FORENSIK")}
+          body={t(
+            "Eight pieces of evidence. Some are real photos, some were made by AI.\n\n• Point and hold the TRIGGER to grab the photo or the AI Scanner.\n• While holding the photo, push that hand's THUMBSTICK up/down to zoom.\n• Hold the AI Scanner over the photo to reveal where to look (+25 pts).\n• Drop the photo into a tray, or press its label.",
+            "Delapan barang bukti. Sebagian foto asli, sebagian dibuat oleh AI.\n\n• Arahkan dan tahan TRIGGER untuk mengambil foto atau Pemindai AI.\n• Sambil memegang foto, dorong THUMBSTICK tangan itu ke atas/bawah untuk zoom.\n• Arahkan Pemindai AI di atas foto untuk melihat bagian yang perlu dicek (+25 poin).\n• Jatuhkan foto ke salah satu baki, atau tekan labelnya.",
+          )}
         >
-          <Button3D label="START INVESTIGATION" onPress={restart} position={[0, -0.33, 0.02]} width={0.56} height={0.11} fontSize={0.042} />
+          <Button3D label={t("START INVESTIGATION", "MULAI PENYELIDIKAN")} onPress={restart} position={[0, -0.33, 0.02]} width={0.56} height={0.11} fontSize={0.042} />
         </Panel3D>
       )}
 
@@ -510,8 +517,8 @@ export default function ForensicLab() {
             onHold={(hand) => { holdingHand.current = hand; }}
           />
           <Magnifier lensRef={lensRef} />
-          <Tray bin="real" label="REAL PHOTO" hover={hoverBin === "real"} enabled={phase === "play"} onPress={() => answer("real")} />
-          <Tray bin="ai" label="AI-GENERATED" hover={hoverBin === "ai"} enabled={phase === "play"} onPress={() => answer("ai")} />
+          <Tray bin="real" label={t("REAL PHOTO", "FOTO ASLI")} releaseLabel={t("RELEASE TO FILE HERE", "LEPAS DI SINI")} hover={hoverBin === "real"} enabled={phase === "play"} onPress={() => answer("real")} />
+          <Tray bin="ai" label={t("AI-GENERATED", "BUATAN AI")} releaseLabel={t("RELEASE TO FILE HERE", "LEPAS DI SINI")} hover={hoverBin === "ai"} enabled={phase === "play"} onPress={() => answer("ai")} />
 
           {/* Zoom controls (also on the thumbstick) */}
           <group position={[-0.17, DESK_Y + 0.05, -0.32 + DESK_PUSH]} rotation-x={-0.6}>
@@ -526,7 +533,7 @@ export default function ForensicLab() {
               <meshBasicMaterial color={COLORS.panel} transparent opacity={0.85} toneMapped={false} />
             </RoundedBox>
             <Text position={[0, 0, 0.008]} fontSize={0.028} color="#e2e8f0" anchorX="center" anchorY="middle" font={FONT_BOLD}>
-              {`EVIDENCE ${index + 1}/${LAB_EVIDENCE.length}   ·   SCORE ${score}   ·   ${scanned ? "SCANNED" : "NOT SCANNED YET"}`}
+              {`${t("EVIDENCE", "BUKTI")} ${index + 1}/${LAB_EVIDENCE.length}   ·   ${t("SCORE", "SKOR")} ${score}   ·   ${scanned ? t("SCANNED", "SUDAH DIPINDAI") : t("NOT SCANNED YET", "BELUM DIPINDAI")}`}
             </Text>
           </group>
         </>
@@ -538,11 +545,11 @@ export default function ForensicLab() {
           rotation={[0, -0.55, 0]}
           width={0.52}
           height={0.6}
-          title={last.correct ? `CORRECT  +${last.gained}` : "NOT QUITE"}
+          title={last.correct ? `${t("CORRECT", "BENAR")}  +${last.gained}` : t("NOT QUITE", "BELUM TEPAT")}
           titleColor={last.correct ? COLORS.cyan : COLORS.amber}
         >
           <Text position={[0, 0.17, 0.012]} fontSize={0.026} color="#ffffff" anchorX="center" anchorY="top" font={FONT_BOLD}>
-            {ev.answer === "ai" ? "This image is AI-generated" : "This is a real photograph"}
+            {ev.answer === "ai" ? t("This image is AI-generated", "Gambar ini buatan AI") : t("This is a real photograph", "Ini foto asli")}
           </Text>
           <Text position={[0, 0.12, 0.012]} fontSize={0.021} color={COLORS.text} anchorX="center" anchorY="top" font={FONT} maxWidth={0.46} lineHeight={1.35} textAlign="left">
             {ev.explain}
@@ -550,7 +557,7 @@ export default function ForensicLab() {
           <Text position={[0, -0.2, 0.012]} fontSize={0.014} color="#94a3b8" anchorX="center" anchorY="top" font={FONT} maxWidth={0.46}>
             {ev.credit}
           </Text>
-          <Button3D label={index + 1 >= LAB_EVIDENCE.length ? "FINISH" : "NEXT EVIDENCE"} onPress={next} position={[0, -0.26, 0.02]} width={0.38} fontSize={0.032} />
+          <Button3D label={index + 1 >= LAB_EVIDENCE.length ? t("FINISH", "SELESAI") : t("NEXT EVIDENCE", "BUKTI BERIKUTNYA")} onPress={next} position={[0, -0.26, 0.02]} width={0.38} fontSize={0.032} />
         </Panel3D>
       )}
 
@@ -560,11 +567,11 @@ export default function ForensicLab() {
           width={1.0}
           height={0.6}
           bodySize={0.036}
-          title="CASE CLOSED"
-          body={`Score: ${Math.min(LAB_MAX_SCORE, score)} / ${LAB_MAX_SCORE}\n${correctCount} of ${LAB_EVIDENCE.length} correct\n\n${correctCount >= 7 ? "Outstanding forensic work, detective." : correctCount >= 5 ? "Good eye — a few fakes slipped past." : "Review the hints and try again."}`}
+          title={t("CASE CLOSED", "KASUS DITUTUP")}
+          body={`${t("Score", "Skor")}: ${Math.min(LAB_MAX_SCORE, score)} / ${LAB_MAX_SCORE}\n${t(`${correctCount} of ${LAB_EVIDENCE.length} correct`, `${correctCount} dari ${LAB_EVIDENCE.length} benar`)}\n\n${correctCount >= 7 ? t("Outstanding forensic work, detective.", "Kerja forensik yang luar biasa, detektif.") : correctCount >= 5 ? t("Good eye — a few fakes slipped past.", "Jeli — tapi beberapa yang palsu lolos.") : t("Review the hints and try again.", "Pelajari petunjuknya lalu coba lagi.")}`}
         >
-          <Button3D label="PLAY AGAIN" onPress={restart} position={[-0.2, -0.2, 0.02]} width={0.3} />
-          <Button3D label="EXIT VR" onPress={() => store.getState().session?.end()} position={[0.2, -0.2, 0.02]} width={0.3} color="#334155" textColor="#fff" />
+          <Button3D label={t("PLAY AGAIN", "MAIN LAGI")} onPress={restart} position={[-0.2, -0.2, 0.02]} width={0.3} />
+          <Button3D label={t("EXIT VR", "KELUAR VR")} onPress={() => store.getState().session?.end()} position={[0.2, -0.2, 0.02]} width={0.3} color="#334155" textColor="#fff" />
         </Panel3D>
       )}
     </group>

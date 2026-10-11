@@ -6,7 +6,9 @@ import { Text, RoundedBox } from "@react-three/drei";
 import { XRControllerModel, useXR, useXRInputSourceStateContext, useXRStore } from "@react-three/xr";
 import * as THREE from "three";
 import { FIREWALL_CARDS, FIREWALL_MAX_SCORE, FIREWALL_MISSION_ID, FIREWALL_RULES, TUTORIAL_CARDS, type FeedCard } from "@/game/vr/firewallData";
+import { FIREWALL_CARDS_ID, FIREWALL_RULES_ID } from "@/game/vr/firewallData.id";
 import { recordScore } from "@/game/progress";
+import { useLang, useT, type Lang } from "@/lib/i18n";
 import { COLORS, FONT, FONT_BOLD, Panel3D } from "./ui3d";
 
 // ─── Sabers ──────────────────────────────────────────────────────────
@@ -203,8 +205,9 @@ const HIT_ZONE: [number, number] = [-1.5, 0.45];
 const INTEGRITY_HIT = 15;
 
 interface Wave {
-  name: string;
-  subtitle: string;
+  name: [string, string];
+  short: [string, string];
+  subtitle: [string, string];
   lanes: [number, number][]; // [x, y]
   readSeconds: number;
   approachSeconds: number;
@@ -213,9 +216,9 @@ interface Wave {
 }
 
 const WAVES: Wave[] = [
-  { name: "WAVE 1 · TRAINING", subtitle: "One post at a time. Read both checks, then decide.", lanes: [[0, 1.38]], readSeconds: 4.5, approachSeconds: 1.5, spawnEvery: 0, maxActive: 1 },
-  { name: "WAVE 2 · RUSH HOUR", subtitle: "Two feeds at once. Stay sharp.", lanes: [[-0.47, 1.28], [0.47, 1.52]], readSeconds: 3.4, approachSeconds: 1.25, spawnEvery: 2.6, maxActive: 2 },
-  { name: "WAVE 3 · OVERLOAD", subtitle: "Three feeds, less time. Trust the clues.", lanes: [[-0.86, 1.22], [0, 1.55], [0.86, 1.22]], readSeconds: 2.6, approachSeconds: 1.05, spawnEvery: 1.9, maxActive: 3 },
+  { name: ["WAVE 1 · TRAINING", "GELOMBANG 1 · LATIHAN"], short: ["TRAINING", "LATIHAN"], subtitle: ["One post at a time. Read both checks, then decide.", "Satu unggahan sekali jalan. Baca kedua cek, lalu putuskan."], lanes: [[0, 1.38]], readSeconds: 4.5, approachSeconds: 1.5, spawnEvery: 0, maxActive: 1 },
+  { name: ["WAVE 2 · RUSH HOUR", "GELOMBANG 2 · JAM SIBUK"], short: ["RUSH HOUR", "JAM SIBUK"], subtitle: ["Two feeds at once. Stay sharp.", "Dua arus sekaligus. Tetap fokus."], lanes: [[-0.47, 1.28], [0.47, 1.52]], readSeconds: 3.4, approachSeconds: 1.25, spawnEvery: 2.6, maxActive: 2 },
+  { name: ["WAVE 3 · OVERLOAD", "GELOMBANG 3 · KEWALAHAN"], short: ["OVERLOAD", "KEWALAHAN"], subtitle: ["Three feeds, less time. Trust the clues.", "Tiga arus, waktu lebih sedikit. Percayai petunjuknya."], lanes: [[-0.86, 1.22], [0, 1.55], [0.86, 1.22]], readSeconds: 2.6, approachSeconds: 1.05, spawnEvery: 1.9, maxActive: 3 },
 ];
 
 type CardPhase = "incoming" | "reading" | "approach" | "slashed" | "passed";
@@ -231,7 +234,13 @@ interface Flying {
   t: number; // seconds in the current phase
 }
 
-type Outcome = { correct: boolean; text: string; card: FeedCard };
+type Outcome = { correct: boolean; text: [string, string]; card: FeedCard };
+
+/** The post's text in the player's language (decks are built from the English cards). */
+function localizeCard(card: FeedCard, lang: Lang): FeedCard {
+  const id = lang === "id" ? FIREWALL_CARDS_ID[card.id] : undefined;
+  return id ? { ...card, ...id } : card;
+}
 
 /** Splits a deck so each wave gets an even mix of suspicious and credible posts. */
 function buildWaves(): FeedCard[][] {
@@ -262,6 +271,8 @@ const readFor = (f: Flying) => (f.card.coach ? TUTORIAL_READ_SECONDS : WAVES[f.w
 type Register = (key: number, group: THREE.Group | null, bar: THREE.Mesh | null) => void;
 
 function CardMesh({ f, register, onClick }: { f: Flying; register: Register; onClick: () => void }) {
+  const t = useT();
+  const card = localizeCard(f.card, useLang());
   const group = useRef<THREE.Group>(null);
   const bar = useRef<THREE.Mesh>(null);
   useEffect(() => {
@@ -283,23 +294,23 @@ function CardMesh({ f, register, onClick }: { f: Flying; register: Register; onC
           <meshBasicMaterial color="#0f172a" toneMapped={false} />
         </RoundedBox>
         <Text position={[0.075, 0, 0.004]} fontSize={0.018} color="#f8fafc" anchorX="center" anchorY="middle" font={FONT_BOLD} maxWidth={0.14}>
-          {f.card.app.toUpperCase()}
+          {card.app.toUpperCase()}
         </Text>
         <Text position={[0.165, 0, 0.004]} fontSize={0.02} color="#475569" anchorX="left" anchorY="middle" font={FONT_BOLD} maxWidth={CARD_W - 0.23}>
-          {f.card.sender}
+          {card.sender}
         </Text>
       </group>
       <Text position={[-CARD_W / 2 + 0.03, CARD_H / 2 - 0.075, 0.012]} fontSize={0.033} color="#0f172a" anchorX="left" anchorY="top" font={FONT_BOLD} maxWidth={CARD_W - 0.06} lineHeight={1.18}>
-        {f.card.headline}
+        {card.headline}
       </Text>
       {/* The two things to check */}
-      {f.card.clues.map((clue, i) => (
+      {card.clues.map((clue, i) => (
         <group key={i} position={[0, -CARD_H / 2 + 0.105 - i * 0.052, 0.012]}>
           <RoundedBox args={[CARD_W - 0.06, 0.044, 0.004]} radius={0.012} smoothness={2}>
             <meshBasicMaterial color="#e2e8f0" toneMapped={false} />
           </RoundedBox>
           <Text position={[-CARD_W / 2 + 0.05, 0, 0.004]} fontSize={0.019} color="#64748b" anchorX="left" anchorY="middle" font={FONT_BOLD}>
-            {`CHECK ${i + 1}`}
+            {`${t("CHECK", "CEK")} ${i + 1}`}
           </Text>
           <Text position={[-CARD_W / 2 + 0.155, 0, 0.004]} fontSize={0.022} color="#0f172a" anchorX="left" anchorY="middle" font={FONT_BOLD} maxWidth={CARD_W - 0.2}>
             {clue}
@@ -307,13 +318,13 @@ function CardMesh({ f, register, onClick }: { f: Flying; register: Register; onC
         </group>
       ))}
       {/* Coach text on tutorial posts */}
-      {f.card.coach && (
+      {card.coach && (
         <group position={[0, CARD_H / 2 + 0.07, 0]}>
           <RoundedBox args={[CARD_W + 0.1, 0.075, 0.01]} radius={0.02} smoothness={2}>
             <meshBasicMaterial color="#0f172a" transparent opacity={0.9} toneMapped={false} />
           </RoundedBox>
           <Text position={[0, 0, 0.008]} fontSize={0.026} color="#fde68a" anchorX="center" anchorY="middle" font={FONT_BOLD} maxWidth={CARD_W + 0.05} textAlign="center">
-            {`TUTORIAL: ${f.card.coach}`}
+            {`TUTORIAL: ${card.coach}`}
           </Text>
         </group>
       )}
@@ -360,6 +371,7 @@ function SlashButton({ label, position, color, onHit }: { label: string; positio
 function IntegrityBar({ value }: { value: number }) {
   const w = 1.0;
   const color = value > 50 ? "#7dd3fc" : value > 25 ? "#fbbf24" : "#f87171";
+  const t = useT();
   return (
     <group>
       <mesh>
@@ -371,7 +383,7 @@ function IntegrityBar({ value }: { value: number }) {
         <meshBasicMaterial color={color} toneMapped={false} />
       </mesh>
       <Text position={[0, 0.04, 0]} fontSize={0.028} color="#cbd5e1" anchorX="center" anchorY="bottom" font={FONT_BOLD}>
-        {`FIREWALL INTEGRITY ${value}%`}
+        {`${t("FIREWALL INTEGRITY", "KEKUATAN FIREWALL")} ${value}%`}
       </Text>
     </group>
   );
@@ -379,20 +391,22 @@ function IntegrityBar({ value }: { value: number }) {
 
 /** Always-visible cheat sheet to the player's left. */
 function RulesBoard() {
-  const line = (t: string) => `•  ${t}`;
+  const t = useT();
+  const rules = useLang() === "id" ? FIREWALL_RULES_ID : FIREWALL_RULES;
+  const line = (text: string) => `•  ${text}`;
   return (
-    <Panel3D position={[-1.75, 1.45, -2.05]} rotation={[0, 0.6, 0]} scale={1.3} width={0.78} height={0.86} title="HOW TO DECIDE">
+    <Panel3D position={[-1.75, 1.45, -2.05]} rotation={[0, 0.6, 0]} scale={1.3} width={0.78} height={0.86} title={t("HOW TO DECIDE", "CARA MEMUTUSKAN")}>
       <Text position={[-0.34, 0.24, 0.012]} fontSize={0.03} color="#fda4af" anchorX="left" anchorY="top" font={FONT_BOLD}>
-        SLASH (block) when you see:
+        {t("SLASH (block) when you see:", "TEBAS (blokir) kalau kamu lihat:")}
       </Text>
       <Text position={[-0.34, 0.19, 0.012]} fontSize={0.026} color="#e2e8f0" anchorX="left" anchorY="top" font={FONT} lineHeight={1.4} maxWidth={0.7}>
-        {FIREWALL_RULES.slash.map(line).join("\n")}
+        {rules.slash.map(line).join("\n")}
       </Text>
       <Text position={[-0.34, -0.07, 0.012]} fontSize={0.03} color="#a7f3d0" anchorX="left" anchorY="top" font={FONT_BOLD}>
-        LET IT PASS (trust) when you see:
+        {t("LET IT PASS (trust) when you see:", "BIARKAN LEWAT (percaya) kalau kamu lihat:")}
       </Text>
       <Text position={[-0.34, -0.12, 0.012]} fontSize={0.026} color="#e2e8f0" anchorX="left" anchorY="top" font={FONT} lineHeight={1.4} maxWidth={0.7}>
-        {FIREWALL_RULES.pass.map(line).join("\n")}
+        {rules.pass.map(line).join("\n")}
       </Text>
     </Panel3D>
   );
@@ -400,7 +414,10 @@ function RulesBoard() {
 
 /** Explains the last decision to the player's right. */
 function ExplainPanel({ outcome }: { outcome: Outcome | null }) {
+  const t = useT();
+  const lang = useLang();
   if (!outcome) return null;
+  const card = localizeCard(outcome.card, lang);
   return (
     <Panel3D
       position={[1.75, 1.45, -2.05]}
@@ -408,17 +425,17 @@ function ExplainPanel({ outcome }: { outcome: Outcome | null }) {
       scale={1.3}
       width={0.78}
       height={0.6}
-      title={outcome.correct ? "GOOD CALL" : "MISTAKE"}
+      title={outcome.correct ? t("GOOD CALL", "KEPUTUSAN TEPAT") : t("MISTAKE", "KELIRU")}
       titleColor={outcome.correct ? COLORS.cyan : COLORS.amber}
     >
       <Text position={[0, 0.17, 0.012]} fontSize={0.027} color="#ffffff" anchorX="center" anchorY="top" font={FONT_BOLD} maxWidth={0.7} textAlign="center">
-        {`${outcome.card.suspicious ? "It was SUSPICIOUS" : "It was CREDIBLE"} — ${outcome.card.app}`}
+        {`${card.suspicious ? t("It was SUSPICIOUS", "Ini MENCURIGAKAN") : t("It was CREDIBLE", "Ini TEPERCAYA")} — ${card.app}`}
       </Text>
       <Text position={[0, 0.1, 0.012]} fontSize={0.024} color="#cbd5e1" anchorX="center" anchorY="top" font={FONT} maxWidth={0.7} textAlign="center" lineHeight={1.3}>
-        {`“${outcome.card.headline}”`}
+        {`“${card.headline}”`}
       </Text>
       <Text position={[0, -0.1, 0.012]} fontSize={0.026} color="#fde68a" anchorX="center" anchorY="top" font={FONT_BOLD} maxWidth={0.7} textAlign="center" lineHeight={1.3}>
-        {outcome.card.lesson}
+        {card.lesson}
       </Text>
     </Panel3D>
   );
@@ -442,6 +459,8 @@ export default function Firewall() {
   const [waveStats, setWaveStats] = useState<WaveStats[]>([]);
   const [breached, setBreached] = useState(false);
   const [countdown, setCountdown] = useState(0);
+  const lang = useLang();
+  const t = useT();
 
   const decks = useRef<FeedCard[][]>([]);
   const flying = useRef<Flying[]>([]);
@@ -538,8 +557,8 @@ export default function Firewall() {
       correct,
       card: f.card,
       text: slashed
-        ? correct ? "Blocked a suspicious post!" : "You slashed a credible post"
-        : correct ? "Credible post — let through" : "A suspicious post got through",
+        ? correct ? ["Blocked a suspicious post!", "Unggahan mencurigakan diblokir!"] : ["You slashed a credible post", "Kamu menebas unggahan tepercaya"]
+        : correct ? ["Credible post — let through", "Unggahan tepercaya — dibiarkan lewat"] : ["A suspicious post got through", "Unggahan mencurigakan lolos"],
     });
     pushHud();
   };
@@ -653,23 +672,26 @@ export default function Firewall() {
             width={1.5}
             height={0.9}
             bodySize={0.038}
-            title="MISINFORMATION FIREWALL"
-            body={"You are the firewall. Posts from WhatsApp, SMS, Instagram and news sites fly in and hover in front of you.\n\nRead the sender and the two CHECKS on each post, then:\nSLASH it if it's a scam or fake.  LET IT PASS if it's credible.\n\nThe board on your left lists the rules. The first two posts are a tutorial."}
+            title={t("MISINFORMATION FIREWALL", "FIREWALL MISINFORMASI")}
+            body={t(
+              "You are the firewall. Posts from WhatsApp, SMS, Instagram and news sites fly in and hover in front of you.\n\nRead the sender and the two CHECKS on each post, then:\nSLASH it if it's a scam or fake.  LET IT PASS if it's credible.\n\nThe board on your left lists the rules. The first two posts are a tutorial.",
+              "Kamulah firewall-nya. Unggahan dari WhatsApp, SMS, Instagram, dan situs berita melayang dan berhenti di depanmu.\n\nBaca pengirim dan dua CEK di setiap unggahan, lalu:\nTEBAS kalau itu penipuan atau palsu.  BIARKAN LEWAT kalau tepercaya.\n\nPapan di sebelah kirimu berisi aturannya. Dua unggahan pertama adalah tutorial.",
+            )}
           />
-          <SlashButton label={inVR ? "SLASH TO START" : "CLICK TO START"} position={[0, 1.12, -0.95]} color="#e0f2fe" onHit={start} />
+          <SlashButton label={inVR ? t("SLASH TO START", "TEBAS UNTUK MULAI") : t("CLICK TO START", "KLIK UNTUK MULAI")} position={[0, 1.12, -0.95]} color="#e0f2fe" onHit={start} />
         </>
       )}
 
       {phase === "interlude" && (
         <group position={[0, 1.6, -2.5]} scale={1.2}>
           <Text fontSize={0.1} color="#e0f2fe" anchorX="center" anchorY="middle" font={FONT_BOLD}>
-            {WAVES[wave].name}
+            {t(...WAVES[wave].name)}
           </Text>
           <Text position={[0, -0.12, 0]} fontSize={0.05} color="#cbd5e1" anchorX="center" anchorY="middle" font={FONT}>
-            {WAVES[wave].subtitle}
+            {t(...WAVES[wave].subtitle)}
           </Text>
           <Text position={[0, -0.32, 0]} fontSize={0.16} color="#ffffff" anchorX="center" anchorY="middle" font={FONT_BOLD}>
-            {countdown > 0 ? String(countdown) : "GO"}
+            {countdown > 0 ? String(countdown) : t("GO", "MULAI")}
           </Text>
         </group>
       )}
@@ -683,11 +705,11 @@ export default function Firewall() {
           ))}
           <group position={[0, 2.35, -3.0]} scale={1.25}>
             <Text fontSize={0.075} color="#f1f5f9" anchorX="center" anchorY="middle" font={FONT_BOLD}>
-              {`${hud.points} PTS   ×${multiplier}   ${hud.done}/${total}`}
+              {`${hud.points} ${t("PTS", "POIN")}   ×${multiplier}   ${hud.done}/${total}`}
             </Text>
             {outcome && (
               <Text position={[0, -0.11, 0]} fontSize={0.05} color={outcome.correct ? "#bae6fd" : "#fcd34d"} anchorX="center" anchorY="middle" font={FONT_BOLD} maxWidth={2.6} textAlign="center">
-                {outcome.text}
+                {t(...outcome.text)}
               </Text>
             )}
             <group position={[0, -0.24, 0]}>
@@ -696,7 +718,7 @@ export default function Firewall() {
           </group>
           {!inVR && (
             <Text position={[0, 0.7, -0.9]} fontSize={0.032} color="#94a3b8" anchorX="center" font={FONT}>
-              Desktop preview: click a card to slash it
+              {t("Desktop preview: click a card to slash it", "Pratinjau desktop: klik kartu untuk menebasnya")}
             </Text>
           )}
         </>
@@ -710,12 +732,12 @@ export default function Firewall() {
             width={1.45}
             height={0.95}
             bodySize={0.038}
-            title={breached ? "FIREWALL BREACHED" : "FIREWALL REPORT"}
+            title={breached ? t("FIREWALL BREACHED", "FIREWALL JEBOL") : t("FIREWALL REPORT", "LAPORAN FIREWALL")}
             titleColor={breached ? COLORS.amber : COLORS.cyan}
-            body={`${hud.correct} correct  ·  ${hud.points} pts  ·  best combo ${hud.best}  ·  rating ${rating}/${FIREWALL_MAX_SCORE}\n${waveStats.map((w, i) => `${WAVES[i].name.split(" · ")[1]}: ${w.correct}/${w.total}`).join("    ")}${mistakes.length ? "\n\nWhat to remember:\n" + mistakes.map((m) => `• ${m.lesson}`).join("\n") : "\n\nPerfect firewall. Nothing got past you."}`}
+            body={`${hud.correct} ${t("correct", "benar")}  ·  ${hud.points} ${t("pts", "poin")}  ·  ${t("best combo", "kombo terbaik")} ${hud.best}  ·  ${t("rating", "nilai")} ${rating}/${FIREWALL_MAX_SCORE}\n${waveStats.map((w, i) => `${t(...WAVES[i].short)}: ${w.correct}/${w.total}`).join("    ")}${mistakes.length ? `\n\n${t("What to remember:", "Yang perlu diingat:")}\n` + mistakes.map((m) => `• ${localizeCard(m, lang).lesson}`).join("\n") : `\n\n${t("Perfect firewall. Nothing got past you.", "Firewall sempurna. Tidak ada yang lolos.")}`}`}
           />
-          <SlashButton label="PLAY AGAIN" position={[-0.32, 1.05, -0.95]} color="#e0f2fe" onHit={start} />
-          <SlashButton label="EXIT VR" position={[0.32, 1.05, -0.95]} color="#94a3b8" onHit={() => store.getState().session?.end()} />
+          <SlashButton label={t("PLAY AGAIN", "MAIN LAGI")} position={[-0.32, 1.05, -0.95]} color="#e0f2fe" onHit={start} />
+          <SlashButton label={t("EXIT VR", "KELUAR VR")} position={[0.32, 1.05, -0.95]} color="#94a3b8" onHit={() => store.getState().session?.end()} />
         </>
       )}
     </group>
