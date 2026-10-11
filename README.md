@@ -5,14 +5,17 @@ A learning platform about AI-generated media and deepfakes, built for **ISIF 202
 | Page | What it does |
 |---|---|
 | `/` | Landing page |
-| `/learning` | Core modules, interactive "Anatomy of a Fake" slider, curated PDF modules, video explainers, AI text detector |
-| `/detector` | Upload an image, video or audio clip; an AI model analyzes it and explains its evidence |
+| `/learning` | Core modules, interactive "Anatomy of a Fake" slider, curated PDF modules, video explainers |
+| `/detector` | Media scanner (image, video, audio) and AI text scanner (`/detector#text`), each explaining its evidence |
 | `/map` | 3D globe of documented deepfake incidents, each linked to a news report or fact-check |
-| `/game` | Interactive mission (coming soon) |
+| `/game` | Deepfake Detective: four missions inspired by real cases, with a local leaderboard |
+| `/game/vr/lab`, `/game/vr/firewall` | WebXR missions for Meta Quest (also playable with a mouse) |
+
+The whole site is available in **English and Indonesian** (EN/ID switch in the navbar; the first visit follows the device language).
 
 ## Tech stack
 
-Next.js 16 (App Router) · React 19 · Tailwind CSS v4 · three.js / react-three-fiber · react-globe.gl · recharts · Prisma 7 (PostgreSQL, reserved for the upcoming game leaderboard)
+Next.js 16 (App Router) · React 19 · Tailwind CSS v4 · three.js / react-three-fiber · @react-three/xr · react-globe.gl · recharts · Prisma 7 (PostgreSQL, reserved for an online leaderboard)
 
 ## Getting started
 
@@ -38,12 +41,24 @@ Open http://localhost:3000.
 
 `POST /api/detect` (see `src/app/api/detect/route.ts` and `src/lib/detect/`):
 
-1. Validates file type and size (12 MB max) and rate-limits each IP (8 scans/minute).
+1. Validates file type and size (12 MB locally, 4.4 MB on Vercel — larger photos are resized in the browser first) and rate-limits each IP (8 scans/minute).
 2. Scans the file bytes for provenance metadata: C2PA content credentials, IPTC "AI-generated" tags, generator signatures (Stable Diffusion, ComfyUI, Midjourney, …) and camera EXIF.
 3. Sends the media to Gemini with an evidence-first forensic prompt and a strict JSON schema. The model must cite specific locations for every anomaly and may answer **UNCERTAIN** instead of guessing.
 4. Normalizes the result without inventing numbers: a verdict that contradicts its own score, or a "fake" verdict with no cited anomaly, is downgraded to UNCERTAIN; metadata that explicitly declares an AI generator overrides the visual verdict. Any adjustment is shown to the user.
 
 AI detection is probabilistic — the UI says so, and failures are shown as errors, never as a verdict.
+
+### Cache and demo results
+
+Both detectors cache results by a SHA-256 of the exact input (in memory, per server instance), so scanning the same file twice doesn't spend quota again. The built-in samples (four photos and three texts, in English and Indonesian) ship with saved results in `src/data/demoResults.json`, so they load instantly even when every model is out of quota. After changing a prompt, delete the affected entries and rebuild them with the dev server running:
+
+```bash
+npm run demo:results
+```
+
+### Languages
+
+Requests carry `?lang=en|id`. In Indonesian the model writes its explanations in Indonesian, and the notes the server adds itself are translated in `src/lib/detect/localize.ts`.
 
 ## How the text detector works
 
@@ -60,17 +75,31 @@ Free-tier Gemini quotas are **per model, per day**. The text detector therefore 
 
 Never use the result alone to accuse someone of using AI.
 
+## Translations
+
+- UI copy is written inline with both languages: `t("Scan now", "Pindai sekarang")` (`src/lib/i18n.ts`; `<T en id />` in server components).
+- Data copy is translated by its English text in `src/i18n/` (stats, learning, map cases), or by a parallel file with the same ids: `src/game/missions.id.ts` and `src/game/vr/firewallData.id.ts`. Keep these in sync when you edit the English data.
+
 ## Data
 
-- `src/data/crimeData.ts` — map incidents. Every entry has a working source link; keep it that way when adding cases.
+- `src/data/crimeData.ts` — map incidents. Every entry has a working source link; keep it that way when adding cases (and add the Indonesian text to `src/i18n/cases.ts`).
 - `src/data/stats.ts` — statistics shown on the site, each with its source.
 - `public/modules/` — curated PDF learning modules.
 
 ## Scripts
 
 ```bash
-npm run dev     # development server
-npm run build   # production build
-npm run lint    # ESLint
+npm run dev           # development server
+npm run build         # production build
+npm run lint          # ESLint
+npm run demo:results  # rebuild saved detector results for the samples (needs npm run dev)
 npx prisma validate
 ```
+
+## Deploying to Vercel
+
+1. Push the repository to GitHub, then on [vercel.com](https://vercel.com) choose **Add New → Project** and import it. The defaults for Next.js are correct.
+2. Under **Settings → Environment Variables**, add `GEMINI_API_KEY` (and optionally `OPENROUTER_API_KEY`). `DATABASE_URL` is not needed.
+3. Deploy. The site is served over HTTPS, so the VR missions work directly in the Meta Quest Browser.
+
+Notes: uploads are limited to 4.4 MB on Vercel (`next.config.ts`), the detector routes need up to 180 s (`maxDuration`), and the result cache and rate limiter live in memory per function instance.
