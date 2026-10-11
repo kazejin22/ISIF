@@ -3,12 +3,13 @@
 import { Suspense } from "react";
 import { createXRStore } from "@react-three/xr";
 import VRShell from "./VRShell";
+import { EMULATOR } from "./emulator";
 import ForensicLab from "./ForensicLab";
 
 // One store per page. Controllers keep their default ray (point + trigger) and
 // grab pointers; Quest 2 is emulated on localhost when no headset is present.
 const store = createXRStore({
-  emulate: { type: "metaQuest2", syntheticEnvironment: false },
+  emulate: EMULATOR,
   foveation: 1,
   frameRate: "mid",
   hand: false,

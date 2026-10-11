@@ -3,11 +3,12 @@
 import { Suspense } from "react";
 import { createXRStore } from "@react-three/xr";
 import VRShell from "./VRShell";
+import { EMULATOR } from "./emulator";
 import Firewall, { SaberController } from "./Firewall";
 
 // Sabers replace the default controllers (no laser pointers in this game).
 const store = createXRStore({
-  emulate: { type: "metaQuest2", syntheticEnvironment: false },
+  emulate: EMULATOR,
   controller: SaberController,
   foveation: 1,
   frameRate: "mid",
