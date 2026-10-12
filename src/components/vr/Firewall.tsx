@@ -10,6 +10,7 @@ import { FIREWALL_CARDS_ID, FIREWALL_RULES_ID } from "@/game/vr/firewallData.id"
 import { recordScore } from "@/game/progress";
 import { useLang, useT, type Lang } from "@/lib/i18n";
 import { COLORS, FONT, FONT_BOLD, Panel3D } from "./ui3d";
+import QuitControl from "./QuitControl";
 
 // ─── Sabers ──────────────────────────────────────────────────────────
 // Each controller registers its blade so the game loop can hit-test it.
@@ -529,6 +530,16 @@ export default function Firewall() {
     if (wasBreached) sfx.breach();
   };
 
+  // Leave mid-game without recording a score, back to the intro and out of VR.
+  const quit = () => {
+    clearInterval(timer.current);
+    flying.current = [];
+    setVisible([]);
+    setOutcome(null);
+    setPhase("intro");
+    store.getState().session?.end();
+  };
+
   const resolve = (f: Flying, slashed: boolean) => {
     const v = s.current;
     const correct = slashed === f.card.suspicious;
@@ -700,6 +711,7 @@ export default function Firewall() {
         <>
           <RulesBoard />
           <ExplainPanel outcome={outcome} />
+          <QuitControl onQuit={quit} position={[1.75, 0.85, -2.05]} rotation={[0, -0.6, 0]} scale={1.3} />
           {visible.map((f) => (
             <CardMesh key={f.key} f={f} register={register} onClick={() => (f.phase === "reading" || f.phase === "approach" || f.phase === "incoming") && resolve(f, true)} />
           ))}

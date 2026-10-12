@@ -10,6 +10,7 @@ import { LAB_MAX_SCORE, LAB_MISSION_ID, labEvidenceFor, type LabEvidence } from 
 import { useLang, useT } from "@/lib/i18n";
 import { recordScore } from "@/game/progress";
 import { Button3D, COLORS, FONT, FONT_BOLD, Panel3D } from "./ui3d";
+import QuitControl from "./QuitControl";
 
 // ─── Layout (metres, standing player at the origin facing -Z) ─────────
 const PHOTO_WIDTH = 0.42;
@@ -462,6 +463,13 @@ export default function ForensicLab() {
     startRound(0);
   };
 
+  // Leave mid-round without recording a score, back to the intro and out of VR.
+  const quit = () => {
+    homing.current = null;
+    setPhase("intro");
+    store.getState().session?.end();
+  };
+
   return (
     <group>
       {/* Desk: rounded graphite top, light edge, two pedestals */}
@@ -536,6 +544,8 @@ export default function ForensicLab() {
               {`${t("EVIDENCE", "BUKTI")} ${index + 1}/${LAB_EVIDENCE.length}   ·   ${t("SCORE", "SKOR")} ${score}   ·   ${scanned ? t("SCANNED", "SUDAH DIPINDAI") : t("NOT SCANNED YET", "BELUM DIPINDAI")}`}
             </Text>
           </group>
+
+          <QuitControl onQuit={quit} position={[-0.8, 1.3, -1.12]} rotation={[0, 0.55, 0]} />
         </>
       )}
 
