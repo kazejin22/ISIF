@@ -21,12 +21,56 @@ const SCAN_STEPS: [string, string][] = [
   ["> Compiling forensic verdict...", "> Menyusun kesimpulan forensik..."],
 ];
 
+// Saved results come back almost instantly; the scan animation still plays for at
+// least this long so every scan looks and reads the same.
+const MIN_SCAN_MS = 5000;
+
 const VERDICTS: Record<Conclusion, { label: [string, string]; text: string; bg: string; border: string; hex: string; Icon: typeof ShieldCheck }> = {
   REAL: { label: ["LIKELY AUTHENTIC", "KEMUNGKINAN ASLI"], text: "text-emerald-500", bg: "bg-emerald-500", border: "border-emerald-500/30", hex: "#10b981", Icon: ShieldCheck },
   "AI-GENERATED": { label: ["AI-GENERATED", "BUATAN AI"], text: "text-red-500", bg: "bg-red-500", border: "border-red-500/30", hex: "#ef4444", Icon: AlertTriangle },
   DEEPFAKE: { label: ["DEEPFAKE DETECTED", "DEEPFAKE TERDETEKSI"], text: "text-orange-500", bg: "bg-orange-500", border: "border-orange-500/30", hex: "#f97316", Icon: ShieldAlert },
   UNCERTAIN: { label: ["INCONCLUSIVE", "BELUM PASTI"], text: "text-amber-500", bg: "bg-amber-500", border: "border-amber-500/30", hex: "#f59e0b", Icon: ShieldQuestion },
 };
+
+const SEVERITY_HEX = { strong: "#ef4444", moderate: "#f97316", weak: "#fbbf24" };
+
+/**
+ * Numbered boxes over the photo, one per anomaly the model located. The SVG uses the
+ * image's own pixel size as its viewBox with "meet", so it lines up exactly with an
+ * object-contain image in the same box.
+ */
+function AnomalyOverlay({ anomalies, size, active, onHover }: {
+  anomalies: DetectionResult["anomalies"];
+  size: { w: number; h: number };
+  active: number | null;
+  onHover: (i: number | null) => void;
+}) {
+  const { w, h } = size;
+  const stroke = Math.max(2, w / 260);
+  const font = Math.max(12, w / 32);
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="xMidYMid meet" className="absolute inset-0 w-full h-full pointer-events-none" aria-hidden>
+      {anomalies.map((a, i) => {
+        if (!a.box) return null;
+        const [y0, x0, y1, x1] = a.box;
+        const x = (x0 / 1000) * w, y = (y0 / 1000) * h, bw = ((x1 - x0) / 1000) * w, bh = ((y1 - y0) / 1000) * h;
+        const color = SEVERITY_HEX[a.severity];
+        const dim = active !== null && active !== i;
+        const badge = font * 1.5;
+        return (
+          <g key={i} opacity={dim ? 0.3 : 1} className="pointer-events-auto cursor-pointer transition-opacity" onMouseEnter={() => onHover(i)} onMouseLeave={() => onHover(null)}>
+            <rect x={x} y={y} width={bw} height={bh} rx={stroke * 2} fill={color} fillOpacity={active === i ? 0.18 : 0.06} stroke="#000" strokeOpacity={0.5} strokeWidth={stroke * 2.2} />
+            <rect x={x} y={y} width={bw} height={bh} rx={stroke * 2} fill="none" stroke={color} strokeWidth={stroke} strokeDasharray={`${stroke * 6} ${stroke * 3}`} className="anomaly-box" />
+            <g transform={`translate(${Math.max(0, x - badge / 2)} ${Math.max(0, y - badge / 2)})`}>
+              <rect width={badge} height={badge} rx={badge / 2} fill={color} stroke="#000" strokeOpacity={0.4} strokeWidth={stroke / 2} />
+              <text x={badge / 2} y={badge / 2} fontSize={font} fontWeight={800} fill="#fff" textAnchor="middle" dominantBaseline="central">{i + 1}</text>
+            </g>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
 
 const SEVERITY_STYLE = {
   strong: "bg-red-500/15 text-red-500 border-red-500/30",
@@ -135,12 +179,16 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState(false);
+  const [fastSteps, setFastSteps] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
   const [result, setResult] = useState<DetectionResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [glitch, setGlitch] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [resized, setResized] = useState(false);
+  const [imgSize, setImgSize] = useState<{ w: number; h: number } | null>(null);
+  const [activeBox, setActiveBox] = useState<number | null>(null);
+  const [showBoxes, setShowBoxes] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const lang = useLang();
   const t = useT();
@@ -150,9 +198,9 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
 
   useEffect(() => {
     if (!isScanning) return;
-    const interval = setInterval(() => setStepIndex((i) => Math.min(i + 1, SCAN_STEPS.length - 1)), 2500);
+    const interval = setInterval(() => setStepIndex((i) => Math.min(i + 1, SCAN_STEPS.length - 1)), fastSteps ? MIN_SCAN_MS / SCAN_STEPS.length : 2500);
     return () => clearInterval(interval);
-  }, [isScanning]);
+  }, [isScanning, fastSteps]);
 
   const status = isScanning
     ? t(...SCAN_STEPS[stepIndex])
@@ -180,6 +228,9 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
       return;
     }
     setError(null);
+    setImgSize(null);
+    setActiveBox(null);
+    setShowBoxes(true);
     setFile(chosen);
     setPreview(URL.createObjectURL(chosen));
   };
@@ -206,6 +257,8 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
     if (!file) return;
     setStepIndex(0);
     setIsScanning(true);
+    setFastSteps(false);
+    const started = Date.now();
     setResult(null);
     setError(null);
 
@@ -226,6 +279,11 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
       }
       if (!data.success) throw new Error(data.error);
 
+      const remaining = MIN_SCAN_MS - (Date.now() - started);
+      if (remaining > 0) {
+        setFastSteps(true);
+        await new Promise((r) => setTimeout(r, remaining));
+      }
       setResult(data);
       if (data.conclusion === "AI-GENERATED" || data.conclusion === "DEEPFAKE") {
         setGlitch(true);
@@ -277,7 +335,24 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
                 <div className="relative w-full aspect-[4/3] rounded-2xl md:rounded-3xl overflow-hidden bg-black/80 flex items-center justify-center">
                   {kind === "image" && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={preview} alt={t("Uploaded media", "Media yang diunggah")} className={mediaClass} />
+                    <img
+                      src={preview}
+                      alt={t("Uploaded media", "Media yang diunggah")}
+                      className={mediaClass}
+                      onLoad={(e) => setImgSize({ w: e.currentTarget.naturalWidth, h: e.currentTarget.naturalHeight })}
+                    />
+                  )}
+                  {kind === "image" && result && !isScanning && showBoxes && imgSize && (
+                    <AnomalyOverlay anomalies={result.anomalies} size={imgSize} active={activeBox} onHover={setActiveBox} />
+                  )}
+                  {kind === "image" && result && !isScanning && result.anomalies.some((a) => a.box) && (
+                    <button
+                      type="button"
+                      onClick={() => setShowBoxes((v) => !v)}
+                      className="absolute bottom-3 right-3 md:bottom-auto md:top-3 z-30 px-3 py-1.5 rounded-full bg-black/70 backdrop-blur text-white text-[11px] font-bold border border-white/15 hover:bg-black/85"
+                    >
+                      {showBoxes ? t("Hide marked areas", "Sembunyikan area") : t("Show marked areas", "Tampilkan area")}
+                    </button>
                   )}
                   {kind === "video" && <video src={preview} controls playsInline className={mediaClass} />}
                   {kind === "audio" && (
@@ -443,7 +518,17 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
                   </div>
                   <ul className="flex flex-col gap-3">
                     {result.anomalies.map((a, idx) => (
-                      <li key={idx} className="flex items-start gap-3">
+                      <li
+                        key={idx}
+                        onMouseEnter={() => a.box && setActiveBox(idx)}
+                        onMouseLeave={() => setActiveBox(null)}
+                        className={`flex items-start gap-3 rounded-xl -mx-2 px-2 py-1 transition-colors ${a.box ? "cursor-pointer" : ""} ${activeBox === idx ? "bg-red-500/10" : ""}`}
+                      >
+                        {a.box && (
+                          <span className="w-5 h-5 rounded-full text-[10px] font-black text-white flex items-center justify-center shrink-0 mt-0.5" style={{ background: SEVERITY_HEX[a.severity] }}>
+                            {idx + 1}
+                          </span>
+                        )}
                         <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 mt-0.5 ${SEVERITY_STYLE[a.severity]}`}>
                           {t(a.severity, { strong: "kuat", moderate: "sedang", weak: "lemah" }[a.severity])}
                         </span>

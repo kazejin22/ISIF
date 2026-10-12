@@ -90,7 +90,10 @@ export function buildUserPrompt(kind: MediaKind, provenanceNotes: string[]): str
   const meta = provenanceNotes.length
     ? provenanceNotes.map((n) => `- ${n}`).join("\n")
     : "- No provenance or camera metadata was found (this is common and proves nothing).";
-  return `Analyze the attached ${kind} following your method.\n\nSERVER-EXTRACTED FILE METADATA:\n${meta}`;
+  const boxes = kind === "image"
+    ? "\n\nFor every anomaly tied to a visible region, add \"box_2d\": [ymin, xmin, ymax, xmax] — a tight box around that region, in coordinates normalized to 0-1000 of the image height and width. Omit box_2d for findings about the whole image."
+    : "";
+  return `Analyze the attached ${kind} following your method.${boxes}\n\nSERVER-EXTRACTED FILE METADATA:\n${meta}`;
 }
 
 // JSON schema for Gemini structured output (OpenAPI subset).
@@ -109,6 +112,7 @@ export const RESULT_SCHEMA = {
           finding: { type: "STRING" },
           location: { type: "STRING" },
           severity: { type: "STRING", enum: ["strong", "moderate", "weak"] },
+          box_2d: { type: "ARRAY", items: { type: "INTEGER" } },
         },
         required: ["finding", "location", "severity"],
       },
@@ -123,7 +127,7 @@ export const RESULT_SCHEMA = {
 // Plain-text version of the schema for providers without structured output.
 export const RESULT_SCHEMA_TEXT = `{
   "mediaDescription": string,
-  "anomalies": [{ "finding": string, "location": string, "severity": "strong" | "moderate" | "weak" }],
+  "anomalies": [{ "finding": string, "location": string, "severity": "strong" | "moderate" | "weak", "box_2d"?: [ymin, xmin, ymax, xmax] (images only, 0-1000) }],
   "authenticSignals": string[],
   "conclusion": "REAL" | "AI-GENERATED" | "DEEPFAKE" | "UNCERTAIN",
   "authenticityScore": integer 0-100,

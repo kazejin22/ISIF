@@ -43,6 +43,10 @@ function sentenceClass(s: ScoredSentence, selected: boolean) {
   return `${base}${ring} hover:bg-foreground/[0.06]`;
 }
 
+// Saved results come back almost instantly; keep the "scoring" state on screen for
+// at least this long so every check looks and reads the same.
+const MIN_SCAN_MS = 5000;
+
 export default function TextDetector() {
   const [text, setText] = useState("");
   const [analyzedText, setAnalyzedText] = useState("");
@@ -63,6 +67,7 @@ export default function TextDetector() {
   const analyze = async () => {
     if (tooShort || tooLong || loading) return;
     setLoading(true);
+    const started = Date.now();
     setError(null);
     setSelected(null);
     try {
@@ -78,6 +83,8 @@ export default function TextDetector() {
         throw new Error(t(`The server returned an unexpected response (HTTP ${res.status}).`, `Server memberi respons yang tidak terduga (HTTP ${res.status}).`));
       }
       if (!data.success) throw new Error(data.error);
+      const remaining = MIN_SCAN_MS - (Date.now() - started);
+      if (remaining > 0) await new Promise((r) => setTimeout(r, remaining));
       setAnalyzedText(text.replace(/\r\n?/g, "\n").trim());
       setResult(data);
       setView("result");

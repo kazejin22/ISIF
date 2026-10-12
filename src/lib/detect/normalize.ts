@@ -21,6 +21,18 @@ function parseConclusion(value: unknown): Conclusion {
   return "UNCERTAIN";
 }
 
+/** Accepts [ymin, xmin, ymax, xmax] on a 0-1000 scale; rejects anything malformed or degenerate. */
+function parseBox(value: unknown): Anomaly["box"] {
+  if (!Array.isArray(value) || value.length !== 4) return undefined;
+  const n = value.map(Number);
+  if (n.some((x) => !Number.isFinite(x))) return undefined;
+  const [y0, x0, y1, x1] = n.map((x) => Math.round(Math.min(1000, Math.max(0, x))));
+  const top = Math.min(y0, y1), bottom = Math.max(y0, y1), left = Math.min(x0, x1), right = Math.max(x0, x1);
+  // A box over a large part of the frame says nothing about where to look.
+  if (bottom - top < 8 || right - left < 8 || (bottom - top) * (right - left) > 400_000) return undefined;
+  return [top, left, bottom, right];
+}
+
 function parseAnomalies(value: unknown): Anomaly[] {
   if (!Array.isArray(value)) return [];
   return value
@@ -31,10 +43,12 @@ function parseAnomalies(value: unknown): Anomaly[] {
       const finding = String(o.finding ?? o.description ?? "").trim();
       if (!finding) return null;
       const sev = String(o.severity ?? "").toLowerCase() as Severity;
+      const box = parseBox(o.box_2d ?? o.box);
       return {
         finding,
         location: String(o.location ?? "").trim(),
         severity: SEVERITIES.includes(sev) ? sev : "moderate",
+        ...(box ? { box } : {}),
       };
     })
     .filter((a): a is Anomaly => a !== null);

@@ -157,7 +157,20 @@ body {
     0 26px 50px -24px color-mix(in srgb, var(--fx-tint) 70%, transparent);
 }
 
+/* Detector: suspicious-area boxes draw in, then their dashes drift slowly. */
+.anomaly-box {
+  animation: anomaly-in 0.9s ease-out both, anomaly-march 6s linear 0.9s infinite;
+}
+@keyframes anomaly-in {
+  from { opacity: 0; transform: scale(1.06); transform-box: fill-box; transform-origin: center; }
+  to { opacity: 1; transform: scale(1); transform-box: fill-box; transform-origin: center; }
+}
+@keyframes anomaly-march {
+  to { stroke-dashoffset: -200; }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .anomaly-box { animation: none; }
   .card-fx, .card-fx::after { transition: none; }
   :is(a, button).card-fx:hover, .card-fx[data-lift]:hover { transform: none; }
 }

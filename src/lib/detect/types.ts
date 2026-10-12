@@ -8,6 +8,8 @@ export interface Anomaly {
   finding: string;
   location: string;
   severity: Severity;
+  /** Images only: where the finding is, as [ymin, xmin, ymax, xmax] normalized to 0-1000. */
+  box?: [number, number, number, number];
 }
 
 export interface DetectionResult {

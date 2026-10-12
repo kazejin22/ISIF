@@ -21,42 +21,6 @@
    "adjustment": null,
    "model": "gemini-3.5-flash"
   },
-  "77f23333e96620b17c844f6ee7d156fda1d597328557e36ac07e3767e9b9f913": {
-   "success": true,
-   "conclusion": "AI-GENERATED",
-   "isReal": false,
-   "authenticityScore": 15,
-   "confidence": 90,
-   "riskLevel": "High",
-   "mediaDescription": "The image features a figure strongly resembling Abraham Lincoln, complete with his iconic beard and solemn expression, dressed in a 19th-century suit and bow tie. He is seated on a brown leather couch in a dimly lit, upscale interior, engrossed in looking at and holding a modern smartphone. The image has a cinematic, polished quality with a shallow depth of field.",
-   "analysis": "The image is clearly AI-generated due to the glaring anachronism of Abraham Lincoln holding a modern smartphone. Further examination reveals several visual tells, including subtly malformed and waxy hands, as well as an unnaturally smooth, poreless skin texture on the face. These strong and consistent indicators allow for a high confidence in the AI-generated verdict.",
-   "anomalies": [
-    {
-     "finding": "Anachronism: Abraham Lincoln holding a modern smartphone.",
-     "location": "Overall concept and specific object (smartphone)",
-     "severity": "strong"
-    },
-    {
-     "finding": "Fingers appear slightly fused, lacking natural definition, and exhibit a waxy texture inconsistent with the facial details.",
-     "location": "Left hand, fingers holding the phone; Right hand, fingers holding the phone",
-     "severity": "strong"
-    },
-    {
-     "finding": "The skin on the face, particularly the forehead and cheeks, appears overly smooth and poreless, contrasting with the detailed wrinkles and hair.",
-     "location": "Face, forehead and cheeks",
-     "severity": "moderate"
-    },
-    {
-     "finding": "The bow tie lacks realistic texture and depth, appearing somewhat flat.",
-     "location": "Bow tie",
-     "severity": "weak"
-    }
-   ],
-   "authenticSignals": [],
-   "provenance": [],
-   "adjustment": null,
-   "model": "gemini-2.5-flash"
-  },
   "be36221b355e3afa614e2d0481d3b3f0a5016bef35acd2724cfa85691f9572c1": {
    "success": true,
    "conclusion": "REAL",
@@ -80,42 +44,6 @@
    "adjustment": null,
    "model": "gemini-3.5-flash"
   },
-  "172fac66208d36c7dda144c3fc0727f4727aeeb926085091ffc7f039c0531fe6": {
-   "success": true,
-   "conclusion": "AI-GENERATED",
-   "isReal": false,
-   "authenticityScore": 15,
-   "confidence": 90,
-   "riskLevel": "High",
-   "mediaDescription": "A stylized landscape image featuring a large lake, surrounded by green mountains and forests, under a blue sky with fluffy clouds. Two rustic wooden cabins are visible on opposite shores of the lake. A prominent, glowing beam of light descends from a large cloud onto the peak of the central mountain.",
-   "analysis": "This image exhibits numerous strong indicators of AI generation. The fantastical element of the light beam, combined with the highly stylized and perfectly rendered appearance of the landscape, mountains, and cabins, strongly suggests a synthetic origin. The textures and reflections lack the natural imperfections and complexity typically found in real-world photographs, making me highly confident this is an AI-generated image.",
-   "anomalies": [
-    {
-     "finding": "The overall aesthetic and rendering style of the landscape, including the highly uniform and repetitive textures on the mountains and trees, resembles a digital illustration or 3D render rather than a photograph.",
-     "location": "Throughout the entire image, especially mountain textures and background trees.",
-     "severity": "strong"
-    },
-    {
-     "finding": "The beam of light originating from the cloud and striking the mountain peak is a fantastical element not observed in natural photography.",
-     "location": "Center-top, from the large cloud to the main mountain peak.",
-     "severity": "strong"
-    },
-    {
-     "finding": "The reflections in the water are overly simplified and perfectly smooth, lacking the natural complexity, ripples, or subtle distortions expected from a real body of water.",
-     "location": "Surface of the lake.",
-     "severity": "moderate"
-    },
-    {
-     "finding": "The two wooden cabins appear too pristine and uniform, resembling 3D models with simplified details rather than structures with natural wear or authentic architectural imperfections.",
-     "location": "Left and right shores of the lake.",
-     "severity": "moderate"
-    }
-   ],
-   "authenticSignals": [],
-   "provenance": [],
-   "adjustment": null,
-   "model": "gemini-2.5-flash"
-  },
   "9d8ffc9327e7bf2a5645d3de0d18ef4f84ca733e9a9b2a0f00519f9ae0a59245:id": {
    "success": true,
    "conclusion": "REAL",
@@ -135,68 +63,6 @@
    "provenance": [
     "Ada metadata EXIF, tetapi merek/model kamera tidak dikenali."
    ],
-   "adjustment": null,
-   "model": "gemini-3.5-flash"
-  },
-  "172fac66208d36c7dda144c3fc0727f4727aeeb926085091ffc7f039c0531fe6:id": {
-   "success": true,
-   "conclusion": "AI-GENERATED",
-   "isReal": false,
-   "authenticityScore": 5,
-   "confidence": 95,
-   "riskLevel": "High",
-   "mediaDescription": "Ilustrasi lanskap digital bergaya 3D render yang menampilkan pegunungan dramatis, danau, rumah kabin kayu, dan awan badai melingkar di atas puncak gunung utama.",
-   "analysis": "Gambar ini secara jelas merupakan hasil sintesis kecerdasan buatan (AI) berbasis gaya render 3D atau seni digital. Pencahayaan pada awan, garis-garis petir yang tegak lurus sempurna, serta tekstur lereng gunung tidak mencerminkan fenomena alam nyata maupun fotografi lanskap asli. Selain itu, tekstur pepohonan, bebatuan di tepi danau, serta wujud kabin kayu menunjukkan tingkat kehalusan simetris khas gambar buatan model generatif. Tidak ditemukan sinyal autentisitas fotografi pada media ini.",
-   "anomalies": [
-    {
-     "finding": "Awan badai melayang dengan bentuk bundar sempurna di atas puncak gunung, mengeluarkan garis-garis cahaya vertikal yang tidak sesuai dengan fisika petir alami.",
-     "location": "Awan badai di bagian atas tengah",
-     "severity": "strong"
-    },
-    {
-     "finding": "Lereng gunung memiliki tekstur serat garis-garis paralel yang seragam, menyerupai hasil lukisan digital atau pola rendering AI.",
-     "location": "Lereng gunung utama di tengah",
-     "severity": "strong"
-    },
-    {
-     "finding": "Bebatuan di tepi danau dan pepohonan pinus terlihat sangat halus dan tampak seperti aset pemodelan 3D berulang.",
-     "location": "Tepi danau kanan bawah dan barisan pohon pinus",
-     "severity": "moderate"
-    }
-   ],
-   "authenticSignals": [],
-   "provenance": [],
-   "adjustment": null,
-   "model": "gemini-3.5-flash"
-  },
-  "77f23333e96620b17c844f6ee7d156fda1d597328557e36ac07e3767e9b9f913:id": {
-   "success": true,
-   "conclusion": "AI-GENERATED",
-   "isReal": false,
-   "authenticityScore": 5,
-   "confidence": 98,
-   "riskLevel": "High",
-   "mediaDescription": "Gambar digital berkualitas tinggi yang menampilkan sosok menyerupai tokoh sejarah Abraham Lincoln berpakaian jas dan rompi abad ke-19, sedang duduk di sofa kulit dan menggunakan ponsel pintar modern.",
-   "analysis": "Gambar ini merupakan hasil generasi kecerdasan buatan (AI) secara penuh. Alasan utamanya adalah anakronisme sejarah yang jelas, di mana tokoh abad ke-19 Abraham Lincoln ditampilkan memegang dan menatap ponsel pintar modern. Selain subjek yang tidak mungkin ada dalam fotografi nyata, gaya pencahayaan, penghalusan tekstur kulit, serta detail kecil pada kancing dan rantai rompi menunjukkan ciri khas estetika render dari model generatif modern.",
-   "anomalies": [
-    {
-     "finding": "Anakronisme sejarah yang mustahil secara fisik, menampilkan Abraham Lincoln (wafat tahun 1865) menggunakan ponsel pintar modern.",
-     "location": "Seluruh subjek dan ponsel pintar di tangan",
-     "severity": "strong"
-    },
-    {
-     "finding": "Struktur kancing rompi memiliki pola geometris tidak wajar dan rantai jam saku tampak menyatu kurang alami dengan kain rompi.",
-     "location": "Bagian rompi di dada subjek",
-     "severity": "moderate"
-    },
-    {
-     "finding": "Tekstur kulit, lipatan pakaian, dan pencahayaan memiliki estetika pengerjaan halus yang sangat khas dari model AI generatif (seperti Midjourney).",
-     "location": "Seluruh area gambar",
-     "severity": "moderate"
-    }
-   ],
-   "authenticSignals": [],
-   "provenance": [],
    "adjustment": null,
    "model": "gemini-3.5-flash"
   },
@@ -223,6 +89,193 @@
    "provenance": [
     "Ada metadata EXIF, tetapi merek/model kamera tidak dikenali."
    ],
+   "adjustment": null,
+   "model": "gemini-2.5-flash"
+  },
+  "172fac66208d36c7dda144c3fc0727f4727aeeb926085091ffc7f039c0531fe6": {
+   "success": true,
+   "conclusion": "AI-GENERATED",
+   "isReal": false,
+   "authenticityScore": 10,
+   "confidence": 85,
+   "riskLevel": "High",
+   "mediaDescription": "A highly detailed and rendered landscape image depicting majestic mountains, a serene lake, and two rustic cabins surrounded by pine trees. A large, dramatic cloud formation hovers above the central mountain peak, from which stylized beams of light or energy descend onto the summit. The scene has a fantastical or idealized quality, characteristic of digital art.",
+   "analysis": "This image exhibits several strong indicators of being AI-generated. The most prominent is the physically impossible light beams descending from the cloud onto the mountain, which defies natural physics. Additionally, the overall aesthetic features an overly polished, 'render' look with uniform textures in the foliage and repetitive elements like the shoreline rocks, all lacking the subtle imperfections found in real photographs. These combined observations lead to high confidence in an AI-generated verdict.",
+   "anomalies": [
+    {
+     "finding": "Physically impossible light beams or rain emanating from the central cloud and striking the mountain peak.",
+     "location": "Central cloud and mountain peak region",
+     "severity": "strong"
+    },
+    {
+     "finding": "Overly smooth and uniform textures, particularly on the pine trees and rock formations, giving a 'plastic' or 'rendered' appearance.",
+     "location": "Pine trees around both cabins and along the distant forest lines; rock formations along the lake shore.",
+     "severity": "moderate"
+    },
+    {
+     "finding": "An overly polished, cinematic 'render' look across the entire image, lacking natural photographic imperfections like sensor noise, subtle motion blur, or varied material imperfections.",
+     "location": "Entire image",
+     "severity": "moderate"
+    }
+   ],
+   "authenticSignals": [],
+   "provenance": [],
+   "adjustment": null,
+   "model": "gemini-2.5-flash"
+  },
+  "77f23333e96620b17c844f6ee7d156fda1d597328557e36ac07e3767e9b9f913": {
+   "success": true,
+   "conclusion": "AI-GENERATED",
+   "isReal": false,
+   "authenticityScore": 5,
+   "confidence": 95,
+   "riskLevel": "High",
+   "mediaDescription": "The image depicts a man resembling Abraham Lincoln, dressed in a 19th-century suit and bow tie, seated on a brown leather sofa. He is looking down intently at a modern smartphone he holds in both hands. The background is an out-of-focus indoor setting, possibly a lounge or study, with some greenery visible.",
+   "analysis": "This image presents Abraham Lincoln, a 19th-century figure, using a modern smartphone, which is a clear and undeniable anachronism, instantly flagging the media as synthetically generated. Furthermore, the subject's skin has an artificial waxy smoothness, and the pocket watch chain exhibits structural inconsistencies by disappearing into the clothing. These strong visual and conceptual anomalies leave no doubt that the image was created by an AI generator.",
+   "anomalies": [
+    {
+     "finding": "The historical figure Abraham Lincoln is shown using a modern smartphone, creating a strong anachronism that is impossible in reality.",
+     "location": "Overall concept and subject interaction",
+     "severity": "strong"
+    },
+    {
+     "finding": "The pocket watch chain on the subject's left side appears to merge into the waistcoat rather than having a clear attachment point, indicating structural incoherence.",
+     "location": "Subject's left waistcoat, near hip",
+     "severity": "strong",
+     "box": [
+      792,
+      412,
+      856,
+      458
+     ]
+    },
+    {
+     "finding": "The skin on the subject's face, particularly the forehead and nose, exhibits a smooth, waxy, and somewhat poreless quality, which contrasts with the detailed hair and beard, suggesting a synthetic texture.",
+     "location": "Subject's face, forehead and nose area",
+     "severity": "moderate",
+     "box": [
+      267,
+      439,
+      442,
+      606
+     ]
+    },
+    {
+     "finding": "The right side of the bow tie appears slightly melted or unnaturally flat, merging subtly with the collar.",
+     "location": "Subject's bow tie, right side",
+     "severity": "moderate",
+     "box": [
+      342,
+      592,
+      483,
+      672
+     ]
+    }
+   ],
+   "authenticSignals": [],
+   "provenance": [],
+   "adjustment": null,
+   "model": "gemini-2.5-flash"
+  },
+  "172fac66208d36c7dda144c3fc0727f4727aeeb926085091ffc7f039c0531fe6:id": {
+   "success": true,
+   "conclusion": "AI-GENERATED",
+   "isReal": false,
+   "authenticityScore": 15,
+   "confidence": 85,
+   "riskLevel": "High",
+   "mediaDescription": "Sebuah pemandangan pegunungan yang sangat bergaya, menampilkan puncak gunung yang diterangi sinar cahaya dari awan badai di atasnya. Di bagian bawah, sebuah danau biru jernih dengan dua kabin kayu di tepi air dan hutan pinus. Langit cerah dengan awan putih yang menggembung. Gaya gambar menyerupai ilustrasi digital atau render 3D dengan kualitas tinggi.",
+   "analysis": "Media ini menggambarkan pemandangan gunung dan danau yang sangat bergaya. Saya mengamati sinar cahaya yang tidak realistis memancar dari awan ke puncak gunung dan permukaan air yang terlalu halus dengan pantulan sempurna. Fitur-fitur ini, bersama dengan estetika gambar keseluruhan yang terlalu rapi dan 'dirender', sangat mengindikasikan bahwa media tersebut dihasilkan oleh AI dan bukan merupakan foto asli.",
+   "anomalies": [
+    {
+     "finding": "Pancaran cahaya yang tidak realistis, menyerupai garis-garis bersinar daripada sinar cahaya alami yang berinteraksi dengan atmosfer.",
+     "location": "Puncak gunung dan awan di atasnya, bagian tengah atas gambar.",
+     "severity": "strong",
+     "box": [
+      0,
+      200,
+      500,
+      800
+     ]
+    },
+    {
+     "finding": "Permukaan air danau yang terlalu halus dan refleksi yang terlalu sempurna, tidak menunjukkan variasi atau riak alami yang biasa terlihat pada badan air.",
+     "location": "Permukaan danau di seluruh gambar.",
+     "severity": "moderate"
+    },
+    {
+     "finding": "Penampilan keseluruhan gambar yang terlalu disempurnakan dan menyerupai 'render', dengan tekstur yang sangat seragam pada pohon, rumput, dan bebatuan, kurangnya detail dan ketidaksempurnaan alami yang ditemukan di foto nyata.",
+     "location": "Keseluruhan gambar.",
+     "severity": "strong"
+    }
+   ],
+   "authenticSignals": [],
+   "provenance": [],
+   "adjustment": null,
+   "model": "gemini-2.5-flash"
+  },
+  "77f23333e96620b17c844f6ee7d156fda1d597328557e36ac07e3767e9b9f913:id": {
+   "success": true,
+   "conclusion": "AI-GENERATED",
+   "isReal": false,
+   "authenticityScore": 15,
+   "confidence": 85,
+   "riskLevel": "High",
+   "mediaDescription": "Sebuah gambar seorang pria yang menyerupai Abraham Lincoln, mengenakan setelan jas dan dasi kupu-kupu era abad ke-19, duduk di sofa kulit dan melihat ke ponsel modern. Latar belakangnya buram, menunjukkan interior ruangan yang mewah dengan tanaman hias. Gambarnya berkualitas tinggi dengan gaya yang realistis dan sinematik.",
+   "analysis": "Saya mengamati gambar seorang pria yang mirip Abraham Lincoln menggunakan ponsel modern. Beberapa anomali yang konsisten ditemukan, termasuk jari-jari tangan yang kaku dan tidak alami saat memegang ponsel, anomali rendering di tepi ponsel, serta tekstur kulit wajah yang terlalu halus dan 'plastik' kontras dengan detail rambut. Estetika sinematik yang sangat dipoles dan anachronism subjek juga sangat menunjukkan bahwa media ini dihasilkan oleh AI. Oleh karena itu, saya yakin gambar ini dibuat oleh AI.",
+   "anomalies": [
+    {
+     "finding": "Jari-jari tangan yang memegang ponsel terlihat kaku dan tidak alami, dengan bentuk yang sedikit aneh dan kurang luwes.",
+     "location": "Tangan kiri memegang ponsel (jari tengah, manis, kelingking) dan ibu jari tangan kanan.",
+     "severity": "moderate",
+     "box": [
+      670,
+      310,
+      800,
+      560
+     ]
+    },
+    {
+     "finding": "Ada garis terang atau anomali tekstur di bagian bawah ponsel, menunjukkan ketidaksempurnaan rendering.",
+     "location": "Tepi bawah ponsel, di dekat tengah.",
+     "severity": "moderate",
+     "box": [
+      760,
+      410,
+      775,
+      430
+     ]
+    },
+    {
+     "finding": "Tekstur kulit wajah terlihat terlalu halus dan 'plastik' meskipun ada detail kerutan yang tajam, kontras dengan detail rambut dan janggut yang sangat halus.",
+     "location": "Area kulit wajah, terutama dahi dan pipi.",
+     "severity": "moderate",
+     "box": [
+      200,
+      320,
+      680,
+      650
+     ]
+    },
+    {
+     "finding": "Rantai jam saku memiliki beberapa tautan yang tampak sedikit melebur atau tidak sepenuhnya koheren, mengindikasikan ketidaksempurnaan generasi.",
+     "location": "Rantai jam saku di sisi kanan rompi.",
+     "severity": "moderate",
+     "box": [
+      660,
+      415,
+      740,
+      455
+     ]
+    },
+    {
+     "finding": "Secara keseluruhan, gambar ini memiliki tampilan yang sangat dipoles, sinematik, dan menyerupai render 3D berkualitas tinggi, bukan foto asli.",
+     "location": "Keseluruhan gambar",
+     "severity": "moderate"
+    }
+   ],
+   "authenticSignals": [],
+   "provenance": [],
    "adjustment": null,
    "model": "gemini-2.5-flash"
   }
