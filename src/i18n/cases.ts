@@ -128,4 +128,101 @@ export const CASES_ID: Record<string, string> = {
   "Billionaire Deepfake Crypto Ads": "Iklan Kripto Deepfake Miliarder",
   "Scam ads using Andrew Forrest's likeness, including deepfake videos, ran on Facebook for months. A US judge ruled in 2024 that he can sue Meta for negligence over the ads.":
     "Iklan penipuan yang memakai wajah Andrew Forrest, termasuk video deepfake, tayang di Facebook selama berbulan-bulan. Pada 2024 seorang hakim AS memutuskan ia boleh menggugat Meta atas kelalaian terkait iklan itu.",
+
+  // Countries added with the October 2026 cases
+  France: "Prancis",
+  "United Arab Emirates": "Uni Emirat Arab",
+  Mexico: "Meksiko",
+  Ireland: "Irlandia",
+  Bangladesh: "Bangladesh",
+  Sudan: "Sudan",
+  Taiwan: "Taiwan",
+  Pakistan: "Pakistan",
+  Malaysia: "Malaysia",
+  Germany: "Jerman",
+  Ghana: "Ghana",
+  "New Zealand": "Selandia Baru",
+
+  // Cases added October 2026
+  "Fake Brad Pitt Romance Scam": "Penipuan Asmara Brad Pitt Palsu",
+  "A French woman sent about €830,000 over more than a year to scammers posing as Brad Pitt, who used AI-generated images to 'prove' he was in hospital and needed money for cancer treatment.":
+    "Seorang perempuan Prancis mengirim sekitar €830.000 selama lebih dari setahun kepada penipu yang menyamar sebagai Brad Pitt, yang memakai gambar buatan AI untuk 'membuktikan' ia dirawat di rumah sakit dan butuh uang untuk pengobatan kanker.",
+  "Principal Framed by Voice Clone": "Kepala Sekolah Difitnah dengan Suara Kloning",
+  "A fake recording of a Baltimore County high school principal making racist remarks went viral. Police said the school's athletic director made it with AI in retaliation, and arrested him.":
+    "Rekaman palsu seorang kepala SMA di Baltimore County yang seolah melontarkan ucapan rasis menjadi viral. Polisi menyatakan direktur olahraga sekolah itu membuatnya dengan AI sebagai balas dendam, lalu menangkapnya.",
+  "Ferrari CEO Voice Clone Foiled": "Kloning Suara CEO Ferrari Digagalkan",
+  "Scammers messaged and then phoned a Ferrari executive with a cloned voice of CEO Benedetto Vigna about a secret deal. The executive asked which book Vigna had recently recommended, and the call ended.":
+    "Penipu mengirim pesan lalu menelepon seorang eksekutif Ferrari dengan suara kloning CEO Benedetto Vigna soal kesepakatan rahasia. Sang eksekutif bertanya buku apa yang baru saja direkomendasikan Vigna, dan telepon pun terputus.",
+  "Defence Minister Voice Used on Tycoons": "Suara Menteri Pertahanan Dipakai untuk Menipu Konglomerat",
+  "Callers using an AI clone of Defence Minister Guido Crosetto's voice asked Italian business leaders for money to free kidnapped journalists. Former Inter Milan owner Massimo Moratti paid almost €1 million before police froze it.":
+    "Penelepon yang memakai kloning AI suara Menteri Pertahanan Guido Crosetto meminta uang kepada para pengusaha Italia untuk membebaskan jurnalis yang diculik. Mantan pemilik Inter Milan, Massimo Moratti, membayar hampir €1 juta sebelum polisi membekukannya.",
+  "Deepfake Romance Scam Syndicate": "Sindikat Penipuan Asmara Deepfake",
+  "Police arrested 27 people who used deepfake video calls to pose as attractive women and lure men into fake crypto investments, with losses of more than HK$360 million.":
+    "Polisi menangkap 27 orang yang memakai panggilan video deepfake untuk menyamar sebagai perempuan menarik dan menjebak pria ke investasi kripto palsu, dengan kerugian lebih dari HK$360 juta.",
+  "Fake Nudes of 50 Schoolgirls": "Gambar Telanjang Palsu 50 Siswi",
+  "AI-generated explicit images of about 50 girls from Bacchus Marsh Grammar, made from their social media photos, circulated online. A teenage boy was arrested.":
+    "Gambar eksplisit buatan AI tentang sekitar 50 siswi Bacchus Marsh Grammar, yang dibuat dari foto media sosial mereka, beredar di internet. Seorang remaja laki-laki ditangkap.",
+  "US$35 Million 'Deep Voice' Bank Heist": "Perampokan Bank US$35 Juta dengan 'Deep Voice'",
+  "A bank manager approved US$35 million in transfers after a call from a cloned voice of a company director he knew, backed up by fake emails. UAE investigators later asked the US for help tracing the money.":
+    "Seorang manajer bank menyetujui transfer US$35 juta setelah menerima telepon dari suara kloning seorang direktur perusahaan yang ia kenal, diperkuat email palsu. Penyidik UEA kemudian meminta bantuan AS untuk melacak uangnya.",
+  "Consumer Champion Deepfake Ad": "Iklan Deepfake Pembela Konsumen",
+  "A Facebook ad used a deepfake of money expert Martin Lewis to push a 'Quantum AI' investment app supposedly backed by Elon Musk. Lewis, who never promotes investments, called it disgraceful.":
+    "Sebuah iklan Facebook memakai deepfake pakar keuangan Martin Lewis untuk mempromosikan aplikasi investasi 'Quantum AI' yang katanya didukung Elon Musk. Lewis, yang tidak pernah mempromosikan investasi, menyebutnya memalukan.",
+  "Fake CEO in a Teams Meeting": "CEO Palsu di Rapat Teams",
+  "Scammers set up a Microsoft Teams meeting using WPP chief executive Mark Read's photo, a voice clone and YouTube footage to get an agency leader to start a new business. Staff spotted it and nothing was lost.":
+    "Penipu mengatur rapat Microsoft Teams memakai foto CEO WPP Mark Read, suara kloning, dan cuplikan YouTube untuk membujuk seorang pimpinan agensi membuka bisnis baru. Staf menyadarinya dan tidak ada kerugian.",
+  "President's Face Sells Fake Investments": "Wajah Presiden Dipakai Menjual Investasi Palsu",
+  "President Claudia Sheinbaum warned that AI-made videos using her face and voice to promote investment platforms were scams: 'I am not inviting anyone to invest in anything. They are fake.'":
+    "Presiden Claudia Sheinbaum memperingatkan bahwa video buatan AI yang memakai wajah dan suaranya untuk mempromosikan platform investasi adalah penipuan: 'Saya tidak mengajak siapa pun berinvestasi apa pun. Itu palsu.'",
+  "Fake Bulletin Says Candidate Quit": "Buletin Palsu Kabarkan Kandidat Mundur",
+  "Days before the presidential vote, a video styled as an RTÉ News bulletin showed candidate Catherine Connolly 'withdrawing' and claimed the election was cancelled. She called it a fabrication and a complaint went to the Electoral Commission.":
+    "Beberapa hari sebelum pemilihan presiden, video bergaya buletin RTÉ News menampilkan kandidat Catherine Connolly 'mengundurkan diri' dan mengklaim pemilu dibatalkan. Ia menyebutnya rekayasa, dan pengaduan diajukan ke Komisi Pemilihan.",
+  "Polling-Day 'Withdrawal' Video": "Video 'Mundur' di Hari Pemungutan Suara",
+  "On the morning of the January 2024 vote, a deepfake of independent candidate Abdullah Nahid Nigar announcing that he had withdrawn went viral in Gaibandha-1, confusing many voters.":
+    "Pada pagi hari pemungutan suara Januari 2024, deepfake kandidat independen Abdullah Nahid Nigar yang seolah mengumumkan pengunduran dirinya viral di dapil Gaibandha-1 dan membingungkan banyak pemilih.",
+  "Bollywood Stars Faked Into Politics": "Bintang Bollywood Dipalsukan untuk Politik",
+  "During the general election, AI-altered videos showed actors Aamir Khan and Ranveer Singh criticising Prime Minister Modi. Both filed police complaints; Singh's clip used a cloned voice over real footage.":
+    "Selama pemilu nasional, video yang diubah AI menampilkan aktor Aamir Khan dan Ranveer Singh mengkritik Perdana Menteri Modi. Keduanya melapor ke polisi; klip Singh memakai suara kloning di atas rekaman asli.",
+  "Cricket Legend in a Gaming-App Ad": "Legenda Kriket di Iklan Aplikasi Game",
+  "A deepfake of Sachin Tendulkar promoting an online gaming app as an easy way to make money went viral. Mumbai police registered a case against the gaming site and a Facebook page.":
+    "Deepfake Sachin Tendulkar yang mempromosikan aplikasi game online sebagai cara mudah mendapat uang menjadi viral. Polisi Mumbai membuka kasus terhadap situs game itu dan sebuah halaman Facebook.",
+  "Fake Presidential Aid Scam": "Penipuan Bantuan Presiden Palsu",
+  "Police in Central Lampung arrested a man who made deepfake videos of President Prabowo, Vice President Gibran and Finance Minister Sri Mulyani offering government aid, then charged victims 'administrative fees'.":
+    "Polisi di Lampung Tengah menangkap seorang pria yang membuat video deepfake Presiden Prabowo, Wakil Presiden Gibran, dan Menteri Keuangan Sri Mulyani yang menawarkan bantuan pemerintah, lalu memungut 'biaya administrasi' dari korban.",
+  "President 'Speaks Mandarin'": "Presiden 'Berbahasa Mandarin'",
+  "A viral video made President Joko Widodo appear to give a speech in Mandarin. The communications ministry traced it to a 2015 speech and said the voice and lip movements were altered with AI.":
+    "Video viral membuat Presiden Joko Widodo seolah berpidato dalam bahasa Mandarin. Kominfo menelusurinya ke pidato tahun 2015 dan menyatakan suara serta gerak bibirnya diubah dengan AI.",
+  "Deepfake Bosses on a Zoom Call": "Bos Deepfake di Panggilan Zoom",
+  "A finance director joined a Zoom call where the company's executives were deepfakes, and sent US$499,000. Singapore and Hong Kong police recovered the full amount within days.":
+    "Seorang direktur keuangan mengikuti panggilan Zoom yang para eksekutif perusahaannya ternyata deepfake, lalu mengirim US$499.000. Polisi Singapura dan Hong Kong memulihkan seluruh dana dalam beberapa hari.",
+  "Ex-Dictator's Voice Cloned in Wartime": "Suara Mantan Diktator Dikloning saat Perang",
+  "A TikTok account posted 'leaked' recordings of former president Omar al-Bashir during Sudan's civil war. A BBC investigation found the voice was AI-generated, and TikTok removed the account.":
+    "Sebuah akun TikTok mengunggah rekaman 'bocoran' mantan presiden Omar al-Bashir selama perang saudara Sudan. Investigasi BBC menemukan suaranya buatan AI, dan TikTok menghapus akun tersebut.",
+  "Fake Elon Musk Romance Scam": "Penipuan Asmara Elon Musk Palsu",
+  "A woman lost 70 million won (~US$50,000) to a scammer posing as Elon Musk on Instagram. Her doubts faded after a deepfake video call in which 'Musk' said he loved her.":
+    "Seorang perempuan kehilangan 70 juta won (~US$50.000) karena penipu yang menyamar sebagai Elon Musk di Instagram. Keraguannya hilang setelah panggilan video deepfake di mana 'Musk' mengatakan mencintainya.",
+  "Presidential Race Deepfakes": "Deepfake dalam Pemilihan Presiden",
+  "Before the January 2024 vote, a fake audio clip of candidate Ko Wen-je and an altered video of Lai Ching-te praising his rivals spread online. Investigators and fact-checkers found both were made with deepfake tools.":
+    "Menjelang pemilu Januari 2024, klip audio palsu kandidat Ko Wen-je dan video rekayasa Lai Ching-te yang seolah memuji lawannya menyebar di internet. Penyidik dan pemeriksa fakta menemukan keduanya dibuat dengan alat deepfake.",
+  "Jailed Leader's Fake Boycott Call": "Seruan Boikot Palsu dari Pemimpin yang Dipenjara",
+  "The day before the 2024 election, an AI voice clone of jailed former prime minister Imran Khan urged a boycott of the vote. His party PTI called it fake.":
+    "Sehari sebelum pemilu 2024, kloning suara AI mantan perdana menteri Imran Khan yang dipenjara menyerukan boikot pemilu. Partainya, PTI, menyebutnya palsu.",
+  "Prime Minister in Scam Videos": "Perdana Menteri dalam Video Penipuan",
+  "Police found five deepfake videos of Prime Minister Anwar Ibrahim and other public figures inviting people into 'government-backed' investment schemes promising up to 100 times returns.":
+    "Polisi menemukan lima video deepfake Perdana Menteri Anwar Ibrahim dan tokoh publik lain yang mengajak orang ikut skema investasi 'didukung pemerintah' dengan janji keuntungan hingga 100 kali lipat.",
+  "Prime Minister Crypto Deepfake": "Deepfake Kripto Perdana Menteri",
+  "A Toronto man lost about $12,000 after a YouTube video, faked with AI and voice cloning, showed Justin Trudeau recommending a cryptocurrency platform. His 'balance' grew on screen but could never be withdrawn.":
+    "Seorang pria Toronto kehilangan sekitar $12.000 setelah video YouTube yang dipalsukan dengan AI dan kloning suara menampilkan Justin Trudeau merekomendasikan platform kripto. 'Saldonya' naik di layar tetapi tidak pernah bisa ditarik.",
+  "Chancellor Deepfake Banned in Court": "Deepfake Kanselir Dilarang Pengadilan",
+  "An artists' collective published a video in which an AI clone of Chancellor Olaf Scholz's voice announced a ban on the AfD. A Berlin court granted the government an injunction against it in February 2024.":
+    "Sebuah kolektif seniman menerbitkan video berisi kloning AI suara Kanselir Olaf Scholz yang mengumumkan pelarangan partai AfD. Pengadilan Berlin mengabulkan perintah larangan dari pemerintah pada Februari 2024.",
+  "President Promotes a Malicious Link": "Presiden 'Mempromosikan' Tautan Berbahaya",
+  "A Facebook video showed President John Mahama promoting a scheme with daily earnings. Fact-checkers found AI-generated audio laid over his Africa Day 2025 message, with lips out of sync.":
+    "Sebuah video Facebook menampilkan Presiden John Mahama mempromosikan skema dengan penghasilan harian. Pemeriksa fakta menemukan audio buatan AI ditempelkan pada pesan Hari Afrika 2025 miliknya, dengan gerak bibir yang tidak sinkron.",
+  "Pensioner Robbed by PM Deepfake": "Pensiunan Dirampok lewat Deepfake PM",
+  "A Taranaki pensioner lost about NZ$224,000 after a Facebook deepfake of Prime Minister Christopher Luxon promoted a crypto investment for retirees. The scammers later tried to extort her for more.":
+    "Seorang pensiunan di Taranaki kehilangan sekitar NZ$224.000 setelah deepfake Perdana Menteri Christopher Luxon di Facebook mempromosikan investasi kripto untuk pensiunan. Para penipu kemudian mencoba memerasnya lagi.",
+  "Tom Hanks Dental Plan Deepfake": "Deepfake Tom Hanks untuk Asuransi Gigi",
+  "Tom Hanks warned his followers that a video using an AI version of his face and voice to promote a dental plan had 'nothing to do with' him.":
+    "Tom Hanks memperingatkan pengikutnya bahwa video yang memakai versi AI wajah dan suaranya untuk mempromosikan asuransi gigi 'tidak ada hubungannya' dengan dirinya.",
 };
