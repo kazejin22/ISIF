@@ -347,6 +347,9 @@ export const MISSIONS: Mission[] = [heistMission, realOrFakeMission, voiceMissio
 
 export const MAX_MISSION_SCORE = 1000;
 
+/** Every scored mode: the web missions plus the two VR missions (ids from src/game/vr). */
+export const SCORED_MISSION_IDS = [...MISSIONS.map((m) => m.id), "vr-forensic-lab", "vr-firewall"];
+
 export function getMission(id: string): Mission | undefined {
   return MISSIONS.find((m) => m.id === id);
 }

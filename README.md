@@ -8,14 +8,14 @@ A learning platform about AI-generated media and deepfakes, built for **ISIF 202
 | `/learning` | Core modules, interactive "Anatomy of a Fake" slider, curated PDF modules, video explainers |
 | `/detector` | Media scanner (image, video, audio) and AI text scanner (`/detector#text`), each explaining its evidence |
 | `/map` | 3D globe of documented deepfake incidents, each linked to a news report or fact-check |
-| `/game` | Deepfake Detective: four missions inspired by real cases, with a local leaderboard |
+| `/game` | Deepfake Detective: four missions inspired by real cases, with an online leaderboard |
 | `/game/vr/lab`, `/game/vr/firewall` | WebXR missions for Meta Quest (also playable with a mouse) |
 
 The whole site is available in **English and Indonesian** (EN/ID switch in the navbar; the first visit follows the device language).
 
 ## Tech stack
 
-Next.js 16 (App Router) · React 19 · Tailwind CSS v4 · three.js / react-three-fiber · @react-three/xr · react-globe.gl · recharts · Prisma 7 (PostgreSQL, reserved for an online leaderboard)
+Next.js 16 (App Router) · React 19 · Tailwind CSS v4 · three.js / react-three-fiber · @react-three/xr · react-globe.gl · recharts · Prisma 7 + node-postgres (online leaderboard)
 
 ## Getting started
 
@@ -35,7 +35,7 @@ Open http://localhost:3000.
 | `OPENROUTER_API_KEY` | No | Fallback for **images only** when Gemini is unavailable |
 | `GEMINI_MODELS` | No | Comma-separated override of the Gemini model order |
 | `OPENROUTER_MODELS` | No | Comma-separated override of the OpenRouter fallback models |
-| `DATABASE_URL` | Only for Prisma | PostgreSQL connection string (read by `prisma.config.ts`) |
+| `DATABASE_URL` | For the online leaderboard | A `postgres://` connection string (Neon, Supabase, Prisma Postgres direct URL…). Without it the leaderboard shows scores saved on the device. |
 
 ## How the detector works
 
@@ -56,6 +56,12 @@ Both detectors cache results by a SHA-256 of the exact input (in memory, per ser
 npm run demo:results
 ```
 
+### Suspicious areas
+
+For images the model also returns a `box_2d` (`[ymin, xmin, ymax, xmax]`, 0-1000) for each anomaly it can locate. The scanner draws these as numbered boxes over the photo, linked to the findings list. Boxes covering more than 40% of the frame are dropped, since they don't point anywhere useful.
+
+Saved results still play the scan animation for at least 5 seconds, so every scan looks the same.
+
 ### Languages
 
 Requests carry `?lang=en|id`. In Indonesian the model writes its explanations in Indonesian, and the notes the server adds itself are translated in `src/lib/detect/localize.ts`.
@@ -74,6 +80,12 @@ Requests carry `?lang=en|id`. In Indonesian the model writes its explanations in
 Free-tier Gemini quotas are **per model, per day**. The text detector therefore tries a chain of models (`GEMINI_TEXT_MODELS` to override) with low "thinking" for speed. Models that run out of daily quota are skipped until they reset, and overload (503) and per-minute limits (429) are retried once.
 
 Never use the result alone to accuse someone of using AI.
+
+## Online leaderboard
+
+`GET/POST /api/leaderboard` (`src/app/api/leaderboard/route.ts`, Prisma model `Leaderboard`). Each agent gets a random id stored on the device; the server keeps the best score per agent per mission (web + VR) and ranks agents by the sum. Scores are validated (known mission, 0-1000, rate-limited) but come from the browser, so treat it as a fun leaderboard, not proof.
+
+`npm run build` runs `scripts/prepare-db.mjs` first, which creates the table with `prisma db push` when a `postgres://` URL is set, and skips it otherwise. Locally, run a database with `npx prisma dev -d` and put its `postgres://…:51214/…` URL in `.env.local` as `DATABASE_URL`.
 
 ## Translations
 
@@ -99,7 +111,8 @@ npx prisma validate
 ## Deploying to Vercel
 
 1. Push the repository to GitHub, then on [vercel.com](https://vercel.com) choose **Add New → Project** and import it. The defaults for Next.js are correct.
-2. Under **Settings → Environment Variables**, add `GEMINI_API_KEY` (and optionally `OPENROUTER_API_KEY`). `DATABASE_URL` is not needed.
-3. Deploy. The site is served over HTTPS, so the VR missions work directly in the Meta Quest Browser.
+2. Under **Settings → Environment Variables**, add `GEMINI_API_KEY` (and optionally `OPENROUTER_API_KEY`).
+3. For the online leaderboard: **Storage → Create Database → Neon (Postgres)** and connect it to the project. This sets `DATABASE_URL`; the next build creates the table.
+4. Deploy (or **Redeploy** after adding variables). The site is served over HTTPS, so the VR missions work directly in the Meta Quest Browser.
 
 Notes: uploads are limited to 4.4 MB on Vercel (`next.config.ts`), the detector routes need up to 180 s (`maxDuration`), and the result cache and rate limiter live in memory per function instance.

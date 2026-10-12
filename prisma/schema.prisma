@@ -26,13 +26,16 @@ model ThreatCase {
 }
 
 // ──────────────────────────────────────────────────
-// 2. LEADERBOARD GAME (Skor Misi Interaktif)
+// 2. LEADERBOARD GAME (online, best score per player per mission)
 // ──────────────────────────────────────────────────
 model Leaderboard {
-  id          String   @id @default(uuid())
-  playerName  String   // Nama yang diinputkan di akhir misi
-  score       Int      // Skor akhir
-  completedAt DateTime @default(now()) // Waktu berhasil menyelesaikan
+  id         String   @id @default(uuid())
+  playerId   String   // Random id kept on the player's device (names can repeat)
+  playerName String   // Agent name, max 24 characters
+  missionId  String   // Web mission id, or vr-forensic-lab / vr-firewall
+  score      Int      // Best score for this mission (0-1000)
+  updatedAt  DateTime @default(now()) @updatedAt
 
+  @@unique([playerId, missionId])
   @@map("leaderboard")
 }

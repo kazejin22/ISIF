@@ -1,16 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ShieldAlert, Trophy, MapPin, ArrowRight, CheckCircle2, UserRound, LogOut, Crown, Mail, Image as ImageIcon, PhoneCall, Vote, Glasses, ScanSearch, Swords } from "lucide-react";
-import { MISSIONS, MAX_MISSION_SCORE, missionsFor, rankFor } from "@/game/missions";
+import { ShieldAlert, Trophy, MapPin, ArrowRight, CheckCircle2, UserRound, LogOut, Crown, Medal, Globe2, Smartphone, Mail, Image as ImageIcon, PhoneCall, Vote, Glasses, ScanSearch, Swords } from "lucide-react";
+import { MAX_MISSION_SCORE, SCORED_MISSION_IDS, missionsFor, rankFor } from "@/game/missions";
 import { useLang, useT } from "@/lib/i18n";
-import { leaderboard, signIn, signOut, totalScore, useGameState } from "@/game/progress";
+import { leaderboard, signIn, signOut, syncCurrentAgent, totalScore, useGameState } from "@/game/progress";
+import type { GlobalRow, LeaderboardResponse } from "@/app/api/leaderboard/route";
 import { useMounted } from "@/lib/useMounted";
 import { panel } from "./ui";
 
 const ICONS = [Mail, ImageIcon, PhoneCall, Vote];
-const MAX_TOTAL = MISSIONS.length * MAX_MISSION_SCORE;
+const MAX_TOTAL = SCORED_MISSION_IDS.length * MAX_MISSION_SCORE;
+const REFRESH_MS = 20_000;
+
+/** The online leaderboard: null while loading, "off" when the server has no database. */
+function useGlobalBoard(): GlobalRow[] | "off" | null {
+  const [rows, setRows] = useState<GlobalRow[] | "off" | null>(null);
+  useEffect(() => {
+    let alive = true;
+    const load = () =>
+      fetch("/api/leaderboard", { cache: "no-store" })
+        .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+        .then((data: LeaderboardResponse) => alive && setRows(data.enabled ? data.rows : "off"))
+        .catch(() => alive && setRows((prev) => (Array.isArray(prev) ? prev : "off")));
+    load();
+    const id = setInterval(load, REFRESH_MS);
+    return () => { alive = false; clearInterval(id); };
+  }, []);
+  return rows;
+}
 
 const VR_MODES: { id: string; href: string; Icon: typeof Swords; title: [string, string]; text: [string, string] }[] = [
   {
@@ -33,6 +52,13 @@ export default function GameHub() {
   const total = totalScore(agent);
   const { current: rank, next } = rankFor(total);
   const board = leaderboard(state);
+  const global = useGlobalBoard();
+  const [scope, setScope] = useState<"global" | "device">("global");
+  const showGlobal = scope === "global" && global !== "off";
+
+  // Make sure this agent's saved scores are on the online board.
+  const current = state.current;
+  useEffect(() => { if (current) syncCurrentAgent(); }, [current]);
   const progressToNext = next ? ((total - rank.min) / (next.min - rank.min)) * 100 : 100;
   const lang = useLang();
   const t = useT();
@@ -145,22 +171,51 @@ export default function GameHub() {
           </div>
 
           <div className={`${panel} p-5`}>
-            <div className="flex items-center gap-2 font-black mb-3"><Trophy size={17} className="text-amber-500" /> {t("Leaderboard", "Papan Peringkat")}</div>
-            {mounted && board.length ? (
-              <ol className="space-y-1.5">
-                {board.map((row, i) => (
-                  <li key={row.name} className={`flex items-center gap-3 px-3 py-2 rounded-xl text-sm ${row.name === state.current ? "bg-primary/10" : "bg-foreground/[0.03]"}`}>
-                    <span className="w-5 text-center font-mono font-bold text-foreground/50">{i === 0 ? <Crown size={15} className="text-amber-500 inline" /> : i + 1}</span>
-                    <span className="flex-1 truncate font-bold">{row.name}</span>
-                    <span className="text-[10px] text-foreground/40">{row.missions}/{MISSIONS.length}</span>
-                    <span className="font-mono font-black">{row.total}</span>
-                  </li>
-                ))}
-              </ol>
-            ) : (
-              <p className="text-xs text-foreground/50">{t("No scores yet. Complete a case to claim the top spot.", "Belum ada skor. Selesaikan satu kasus untuk merebut posisi teratas.")}</p>
+            <div className="flex items-center gap-2 font-black mb-3">
+              <Trophy size={17} className="text-amber-500" /> {t("Leaderboard", "Papan Peringkat")}
+            </div>
+            {global !== "off" && (
+                <div role="tablist" className="grid grid-cols-2 gap-0.5 p-0.5 mb-3 rounded-full bg-foreground/[0.06] text-[11px] font-bold">
+                  {(["global", "device"] as const).map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      role="tab"
+                      aria-selected={scope === s}
+                      onClick={() => setScope(s)}
+                      className={`inline-flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-full transition-colors ${scope === s ? "bg-primary text-white dark:text-black" : "text-foreground/60 hover:text-foreground"}`}
+                    >
+                      {s === "global" ? <><Globe2 size={12} /> {t("Global", "Global")}</> : <><Smartphone size={12} /> {t("This device", "Perangkat ini")}</>}
+                    </button>
+                  ))}
+                </div>
             )}
-            <p className="text-[10px] text-foreground/40 mt-3">{t("Scores are stored on this device.", "Skor disimpan di perangkat ini.")}</p>
+            {(() => {
+              const rows = showGlobal
+                ? (Array.isArray(global) ? global : []).map((r) => ({ key: r.playerId, name: r.name, total: r.total, missions: r.missions, mine: r.playerId === agent?.id }))
+                : board.map((r) => ({ key: r.name, name: r.name, total: r.total, missions: r.missions, mine: r.name === state.current }));
+              if (!mounted || (showGlobal && global === null)) return <div className="h-24 rounded-xl bg-foreground/[0.03] animate-pulse" />;
+              if (!rows.length) return <p className="text-xs text-foreground/50">{t("No scores yet. Complete a case to claim the top spot.", "Belum ada skor. Selesaikan satu kasus untuk merebut posisi teratas.")}</p>;
+              return (
+                <ol className="space-y-1.5 max-h-[22rem] overflow-y-auto pr-1">
+                  {rows.map((row, i) => (
+                    <li key={row.key} className={`flex items-center gap-3 px-3 py-2 rounded-xl text-sm ${row.mine ? "bg-primary/10 ring-1 ring-primary/30" : i < 3 ? "bg-amber-500/[0.06]" : "bg-foreground/[0.03]"}`}>
+                      <span className="w-5 text-center font-mono font-bold text-foreground/50">
+                        {i === 0 ? <Crown size={15} className="text-amber-500 inline" /> : i < 3 ? <Medal size={15} className={`inline ${i === 1 ? "text-slate-400" : "text-orange-400"}`} /> : i + 1}
+                      </span>
+                      <span className="flex-1 truncate font-bold">{row.name}{row.mine && <span className="ml-1.5 text-[10px] font-bold text-primary">{t("YOU", "KAMU")}</span>}</span>
+                      <span className="text-[10px] text-foreground/40">{row.missions}/{SCORED_MISSION_IDS.length}</span>
+                      <span className="font-mono font-black">{row.total}</span>
+                    </li>
+                  ))}
+                </ol>
+              );
+            })()}
+            <p className="text-[10px] text-foreground/40 mt-3">
+              {showGlobal
+                ? t("Live scores from every player, all six missions (web + VR). Updates every 20 seconds.", "Skor langsung dari semua pemain, keenam misi (web + VR). Diperbarui setiap 20 detik.")
+                : t("Scores are stored on this device.", "Skor disimpan di perangkat ini.")}
+            </p>
           </div>
         </div>
       </div>
