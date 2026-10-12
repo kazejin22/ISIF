@@ -311,8 +311,8 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
       <div className="container mx-auto px-4 py-12 md:py-24 relative z-10 flex flex-col">
         {header}
 
-        <div className={`w-full mx-auto transition-all duration-700 ${result ? "max-w-6xl grid grid-cols-1 lg:grid-cols-[1fr_440px] gap-6 lg:gap-8 items-start" : "max-w-3xl flex flex-col items-center"}`}>
-          {/* LEFT: Upload & Preview */}
+        <div className={`w-full mx-auto flex flex-col transition-all duration-700 ${result ? "max-w-4xl gap-6 md:gap-8" : "max-w-3xl items-center"}`}>
+          {/* TOP: Upload & Preview */}
           <div className="w-full flex flex-col gap-4 md:gap-6">
             <div className="card-fx w-full bg-background/40 backdrop-blur-2xl border border-foreground/[0.08] rounded-[1.5rem] md:rounded-[2rem] p-2 md:p-3 relative overflow-hidden shadow-2xl">
               {!preview ? (
@@ -332,7 +332,7 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
                   <span className="text-foreground/40 text-xs mt-3">{t("Image · Video · Audio", "Gambar · Video · Audio")} — max {MAX_UPLOAD_MB} MB</span>
                 </button>
               ) : (
-                <div className="relative w-full aspect-[4/3] rounded-2xl md:rounded-3xl overflow-hidden bg-black/80 flex items-center justify-center">
+                <div className={`relative w-full rounded-2xl md:rounded-3xl overflow-hidden bg-black/80 flex items-center justify-center ${result ? "aspect-[4/3] sm:aspect-[16/10]" : "aspect-[4/3]"}`}>
                   {kind === "image" && (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -462,31 +462,27 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
             )}
           </div>
 
-          {/* RIGHT: Forensic Dashboard */}
+          {/* BOTTOM: Forensic Dashboard */}
           {result && verdict && (
-            <div className="w-full flex flex-col gap-4 md:gap-5 animate-in slide-in-from-right-8 fade-in duration-700">
-              {/* Verdict Banner */}
-              <div style={{ "--fx-tint": verdict.hex } as React.CSSProperties} className={`card-fx w-full bg-background/40 backdrop-blur-2xl border p-5 md:p-6 rounded-[1.5rem] md:rounded-[2rem] shadow-2xl relative overflow-hidden flex items-center gap-4 md:gap-6 ${verdict.border}`}>
-                <div className={`absolute top-0 right-0 w-32 h-32 opacity-20 blur-[50px] rounded-full pointer-events-none ${verdict.bg}`} />
-                <div className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center shrink-0 shadow-lg text-white ${verdict.bg}`}>
-                  <verdict.Icon size={30} />
-                </div>
-                <div className="min-w-0">
-                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60 mb-1 flex items-center gap-2">
-                    {t("System Verdict · Risk", "Kesimpulan Sistem · Risiko")} {t(result.riskLevel, { Low: "Rendah", Medium: "Sedang", High: "Tinggi" }[result.riskLevel])}
+            <div className="w-full flex flex-col gap-4 md:gap-5 animate-in slide-in-from-bottom-8 fade-in duration-700">
+              {/* Verdict + Gauges */}
+              <div style={{ "--fx-tint": verdict.hex } as React.CSSProperties} className={`card-fx w-full bg-background/40 backdrop-blur-2xl border p-5 md:p-6 rounded-[1.5rem] md:rounded-[2rem] shadow-2xl relative overflow-hidden flex flex-col md:flex-row md:items-center gap-5 md:gap-8 ${verdict.border}`}>
+                <div className={`absolute top-0 right-0 w-40 h-40 opacity-20 blur-[60px] rounded-full pointer-events-none ${verdict.bg}`} />
+                <div className="flex items-center gap-4 md:gap-5 min-w-0 flex-1">
+                  <div className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center shrink-0 shadow-lg text-white ${verdict.bg}`}>
+                    <verdict.Icon size={30} />
                   </div>
-                  <h2 className={`text-xl sm:text-2xl lg:text-3xl font-black font-[family-name:var(--font-orbitron)] tracking-tight ${verdict.text}`}>
-                    {t(...verdict.label)}
-                  </h2>
+                  <div className="min-w-0">
+                    <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60 mb-1">
+                      {t("System Verdict · Risk", "Kesimpulan Sistem · Risiko")} {t(result.riskLevel, { Low: "Rendah", Medium: "Sedang", High: "Tinggi" }[result.riskLevel])}
+                    </div>
+                    <h2 className={`text-xl sm:text-2xl lg:text-3xl font-black font-[family-name:var(--font-orbitron)] tracking-tight wrap-break-word ${verdict.text}`}>
+                      {t(...verdict.label)}
+                    </h2>
+                  </div>
                 </div>
-              </div>
-
-              {/* Gauges */}
-              <div className="grid grid-cols-2 gap-3 md:gap-4">
-                <div className="card-fx bg-background/40 backdrop-blur-2xl border border-foreground/[0.08] rounded-3xl p-4 md:p-5 flex items-center justify-center">
+                <div className="grid grid-cols-2 gap-3 pt-5 border-t border-foreground/[0.08] md:pt-0 md:border-t-0 md:pl-8 md:border-l shrink-0">
                   <GaugeMeter value={result.authenticityScore} label={t("Authenticity", "Keaslian")} color={verdict.hex} />
-                </div>
-                <div className="card-fx bg-background/40 backdrop-blur-2xl border border-foreground/[0.08] rounded-3xl p-4 md:p-5 flex items-center justify-center">
                   <GaugeMeter value={result.confidence} label={t("Evidence Strength", "Kekuatan Bukti")} color="var(--primary)" />
                 </div>
               </div>
@@ -510,52 +506,57 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
                 <p className="text-sm text-foreground/80 leading-relaxed">{result.analysis}</p>
               </div>
 
-              {/* Anomalies */}
-              {result.anomalies.length > 0 && (
-                <div className="card-fx [--fx-tint:#ef4444] [--fx-tint-2:#f97316] bg-red-500/5 backdrop-blur-2xl border border-red-500/20 rounded-3xl p-5 md:p-6">
-                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-500/80 flex items-center gap-2 mb-4">
-                    <Zap size={12} /> {t("Suspicious Findings", "Temuan Mencurigakan")} ({result.anomalies.length})
-                  </div>
-                  <ul className="flex flex-col gap-3">
-                    {result.anomalies.map((a, idx) => (
-                      <li
-                        key={idx}
-                        onMouseEnter={() => a.box && setActiveBox(idx)}
-                        onMouseLeave={() => setActiveBox(null)}
-                        className={`flex items-start gap-3 rounded-xl -mx-2 px-2 py-1 transition-colors ${a.box ? "cursor-pointer" : ""} ${activeBox === idx ? "bg-red-500/10" : ""}`}
-                      >
-                        {a.box && (
-                          <span className="w-5 h-5 rounded-full text-[10px] font-black text-white flex items-center justify-center shrink-0 mt-0.5" style={{ background: SEVERITY_HEX[a.severity] }}>
-                            {idx + 1}
-                          </span>
-                        )}
-                        <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 mt-0.5 ${SEVERITY_STYLE[a.severity]}`}>
-                          {t(a.severity, { strong: "kuat", moderate: "sedang", weak: "lemah" }[a.severity])}
-                        </span>
-                        <div className="text-xs text-foreground/80 leading-relaxed">
-                          {a.finding}
-                          {a.location && <span className="block text-foreground/50 mt-0.5">↳ {a.location}</span>}
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Authenticity signals */}
-              {result.authenticSignals.length > 0 && (
-                <div className="card-fx [--fx-tint:#10b981] [--fx-tint-2:#22d3ee] bg-emerald-500/5 backdrop-blur-2xl border border-emerald-500/20 rounded-3xl p-5 md:p-6">
-                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-500/80 flex items-center gap-2 mb-4">
-                    <CheckCircle2 size={12} /> {t("Signs of Authenticity", "Tanda Keaslian")} ({result.authenticSignals.length})
-                  </div>
-                  <ul className="flex flex-col gap-2.5">
-                    {result.authenticSignals.map((s, idx) => (
-                      <li key={idx} className="flex items-start gap-3 text-xs text-foreground/80 leading-relaxed">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 mt-1.5" />
-                        {s}
-                      </li>
-                    ))}
-                  </ul>
+              {/* Findings: side by side on wide screens when both lists exist */}
+              {(result.anomalies.length > 0 || result.authenticSignals.length > 0) && (
+                <div className={`grid grid-cols-1 gap-4 md:gap-5 items-start ${result.anomalies.length > 0 && result.authenticSignals.length > 0 ? "md:grid-cols-2" : ""}`}>
+                  {/* Anomalies */}
+                  {result.anomalies.length > 0 && (
+                    <div className="card-fx [--fx-tint:#ef4444] [--fx-tint-2:#f97316] bg-red-500/5 backdrop-blur-2xl border border-red-500/20 rounded-3xl p-5 md:p-6">
+                      <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-500/80 flex items-center gap-2 mb-4">
+                        <Zap size={12} /> {t("Suspicious Findings", "Temuan Mencurigakan")} ({result.anomalies.length})
+                      </div>
+                      <ul className="flex flex-col gap-3">
+                        {result.anomalies.map((a, idx) => (
+                          <li
+                            key={idx}
+                            onMouseEnter={() => a.box && setActiveBox(idx)}
+                            onMouseLeave={() => setActiveBox(null)}
+                            className={`flex items-start gap-3 rounded-xl -mx-2 px-2 py-1 transition-colors ${a.box ? "cursor-pointer" : ""} ${activeBox === idx ? "bg-red-500/10" : ""}`}
+                          >
+                            {a.box && (
+                              <span className="w-5 h-5 rounded-full text-[10px] font-black text-white flex items-center justify-center shrink-0 mt-0.5" style={{ background: SEVERITY_HEX[a.severity] }}>
+                                {idx + 1}
+                              </span>
+                            )}
+                            <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 mt-0.5 ${SEVERITY_STYLE[a.severity]}`}>
+                              {t(a.severity, { strong: "kuat", moderate: "sedang", weak: "lemah" }[a.severity])}
+                            </span>
+                            <div className="text-xs text-foreground/80 leading-relaxed">
+                              {a.finding}
+                              {a.location && <span className="block text-foreground/50 mt-0.5">↳ {a.location}</span>}
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+    
+                  {/* Authenticity signals */}
+                  {result.authenticSignals.length > 0 && (
+                    <div className="card-fx [--fx-tint:#10b981] [--fx-tint-2:#22d3ee] bg-emerald-500/5 backdrop-blur-2xl border border-emerald-500/20 rounded-3xl p-5 md:p-6">
+                      <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-500/80 flex items-center gap-2 mb-4">
+                        <CheckCircle2 size={12} /> {t("Signs of Authenticity", "Tanda Keaslian")} ({result.authenticSignals.length})
+                      </div>
+                      <ul className="flex flex-col gap-2.5">
+                        {result.authenticSignals.map((s, idx) => (
+                          <li key={idx} className="flex items-start gap-3 text-xs text-foreground/80 leading-relaxed">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 mt-1.5" />
+                            {s}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               )}
 
