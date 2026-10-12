@@ -168,7 +168,7 @@ export default function MapPage() {
                     onClick={() => select(crime)}
                     className={`card-fx w-full text-left p-4 rounded-2xl border transition-all flex items-start justify-between gap-3 ${
                       selectedCrime.id === crime.id
-                        ? "bg-white/80 dark:bg-white/10 border-primary shadow-[0_4px_20px_rgba(0,243,255,0.2)]"
+                        ? "bg-white/80 dark:bg-white/10 border-primary shadow-[0_4px_20px_color-mix(in_srgb,var(--primary)_20%,transparent)]"
                         : "bg-white/40 dark:bg-black/20 border-white/40 dark:border-white/5 hover:bg-white/60 dark:hover:bg-white/5"
                     }`}
                   >
@@ -201,11 +201,11 @@ export default function MapPage() {
                 <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "currentColor" }} />
                 <YAxis allowDecimals={false} axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "currentColor" }} />
                 <Tooltip
-                  cursor={{ fill: "rgba(0,243,255,0.08)" }}
+                  cursor={{ fill: "color-mix(in srgb, var(--primary) 10%, transparent)" }}
                   contentStyle={{ backgroundColor: "rgba(0,0,0,0.75)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "12px", color: "#fff", fontSize: "12px" }}
-                  itemStyle={{ color: "#00f3ff", fontWeight: "bold" }}
+                  itemStyle={{ color: "var(--primary)", fontWeight: "bold" }}
                 />
-                <Bar dataKey="cases" fill="#00f3ff" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="cases" fill="var(--primary)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

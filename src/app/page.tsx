@@ -13,7 +13,7 @@ const homeStats = [deepfakeStats.fraudAttempts, deepfakeStats.fraudForecast];
 
 const FEATURES: { href: string; Icon: LucideIcon; tint: string; title: [string, string]; body: [string, string]; cta: [string, string] }[] = [
   {
-    href: "/detector", Icon: ScanSearch, tint: "#00f3ff",
+    href: "/detector", Icon: ScanSearch, tint: "var(--primary)",
     title: ["Neural Scanner", "Pemindai Neural"],
     body: ["Upload a photo, video, audio clip or text. AI inspects it and shows the evidence behind its verdict.", "Unggah foto, video, audio, atau teks. AI memeriksanya dan menunjukkan bukti di balik kesimpulannya."],
     cta: ["Scan media", "Pindai media"],
@@ -126,16 +126,16 @@ export default function Home() {
               <Link
                 key={href}
                 href={href}
-                style={{ "--fx-tint": tint } as React.CSSProperties}
+                style={{ "--fx-tint": tint, "--tint": tint } as React.CSSProperties}
                 className="card-fx group relative flex flex-col rounded-3xl border border-foreground/10 bg-background/60 backdrop-blur-xl p-6 overflow-hidden"
               >
                 <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity pointer-events-none" style={{ background: tint }} />
-                <div className="relative w-12 h-12 rounded-2xl flex items-center justify-center mb-5 border" style={{ background: `${tint}1a`, borderColor: `${tint}40`, color: tint }}>
+                <div className="tint-text relative w-12 h-12 rounded-2xl flex items-center justify-center mb-5 border" style={{ background: `color-mix(in srgb, ${tint} 10%, transparent)`, borderColor: `color-mix(in srgb, ${tint} 25%, transparent)` }}>
                   <Icon size={24} />
                 </div>
                 <h3 className="relative text-lg font-bold mb-2"><T en={title[0]} id={title[1]} /></h3>
                 <p className="relative text-sm text-foreground/60 leading-relaxed mb-6 flex-1"><T en={body[0]} id={body[1]} /></p>
-                <span className="relative inline-flex items-center gap-1.5 text-sm font-bold" style={{ color: tint }}>
+                <span className="tint-text relative inline-flex items-center gap-1.5 text-sm font-bold">
                   <T en={cta[0]} id={cta[1]} /> <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                 </span>
               </Link>

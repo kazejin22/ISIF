@@ -59,7 +59,7 @@ export default function CrimeGlobe({
         startLng: selectedCrime.location[1],
         endLat: c.location[0],
         endLng: c.location[1],
-        color: isLight ? ["#3b82f6", "#00f3ff"] : ["#ffffff", "#00f3ff"],
+        color: isLight ? ["#2563eb", "#7c3aed"] : ["#ffffff", "#00f3ff"],
       }));
   }, [selectedCrime, isLight]);
 

@@ -5,6 +5,8 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { Points, PointMaterial } from "@react-three/drei";
 import * as THREE from "three";
 import "@/lib/quietThree";
+import { useTheme } from "next-themes";
+import { useMounted } from "@/lib/useMounted";
 
 const PARTICLE_COUNT = 4000;
 
@@ -24,7 +26,7 @@ function makeParticles() {
 
 let particles: Float32Array | null = null;
 
-function ParticleSwarm() {
+function ParticleSwarm({ color }: { color: string }) {
   const ref = useRef<THREE.Points>(null);
   const [positions] = useState(() => (particles ??= makeParticles()));
 
@@ -40,7 +42,7 @@ function ParticleSwarm() {
       <Points ref={ref} positions={positions} stride={3} frustumCulled={false}>
         <PointMaterial
           transparent
-          color="#00f3ff"
+          color={color}
           size={0.05}
           sizeAttenuation={true}
           depthWrite={false}
@@ -52,10 +54,14 @@ function ParticleSwarm() {
 }
 
 export default function HeroScene() {
+  const mounted = useMounted();
+  const { resolvedTheme } = useTheme();
+  // Neon cyan reads as grey dust on the light background, so light mode uses the blue primary.
+  const color = mounted && resolvedTheme === "light" ? "#2563eb" : "#00f3ff";
   return (
     <div className="absolute inset-0 z-0">
       <Canvas camera={{ position: [0, 0, 8] }}>
-        <ParticleSwarm />
+        <ParticleSwarm color={color} />
       </Canvas>
       {/* Gradient Overlay for blending */}
       <div className="absolute inset-0 bg-gradient-to-b from-background/10 via-background/50 to-background z-10 pointer-events-none" />

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import DeepfakeAnatomy from "@/components/DeepfakeAnatomy";
 import CurriculumList from "@/components/CurriculumList";
-import Reveal from "@/components/learning/Reveal";
+import Reveal from "@/components/Reveal";
 import SectionNav from "@/components/learning/SectionNav";
 import ModuleLibrary from "@/components/learning/ModuleLibrary";
 import { MODULE_COUNT } from "@/data/learningModules";
