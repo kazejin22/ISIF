@@ -711,7 +711,7 @@ export default function Firewall() {
         <>
           <RulesBoard />
           <ExplainPanel outcome={outcome} />
-          <QuitControl onQuit={quit} position={[1.75, 0.85, -2.05]} rotation={[0, -0.6, 0]} scale={1.3} />
+          <QuitControl onQuit={quit} />
           {visible.map((f) => (
             <CardMesh key={f.key} f={f} register={register} onClick={() => (f.phase === "reading" || f.phase === "approach" || f.phase === "incoming") && resolve(f, true)} />
           ))}

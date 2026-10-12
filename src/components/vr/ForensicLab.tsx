@@ -545,7 +545,7 @@ export default function ForensicLab() {
             </Text>
           </group>
 
-          <QuitControl onQuit={quit} position={[-0.8, 1.3, -1.12]} rotation={[0, 0.55, 0]} />
+          <QuitControl onQuit={quit} />
         </>
       )}
 
