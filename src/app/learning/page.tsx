@@ -137,7 +137,7 @@ export default function LearningPage() {
             </div>
 
             {/* Right: Interactive Anatomy (Sticky on Desktop) */}
-            <div className="lg:sticky lg:top-24 flex flex-col bg-foreground/[0.02] border border-foreground/[0.05] rounded-3xl p-4 sm:p-6 md:p-8">
+            <div className="card-fx lg:sticky lg:top-24 flex flex-col bg-foreground/[0.02] border border-foreground/[0.05] rounded-3xl p-4 sm:p-6 md:p-8">
               <div className="mb-5">
                 <h3 className="text-xl font-bold font-[family-name:var(--font-orbitron)] mb-2"><T en="Anatomy of a Fake" id="Anatomi Sebuah Palsu" /></h3>
                 <p className="text-sm text-foreground/50"><T en="Drag the slider (or use the arrow keys) to see the face the way a face-swap model does." id="Geser slider (atau pakai tombol panah) untuk melihat wajah seperti cara model face-swap melihatnya." /></p>
@@ -173,7 +173,8 @@ export default function LearningPage() {
             {learningModules.map((doc) => (
               <div 
                 key={doc.id}
-                className="group flex flex-col justify-between p-6 rounded-3xl bg-background/50 border border-foreground/[0.07] hover:border-primary/40 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 relative overflow-hidden"
+                data-lift
+                className="card-fx group flex flex-col justify-between p-6 rounded-3xl bg-background/50 border border-foreground/[0.07] hover:border-primary/40 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 relative overflow-hidden"
               >
                 <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors pointer-events-none" />
                 
@@ -251,7 +252,7 @@ export default function LearningPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {videos.map((vid) => (
               <div key={vid.id} className="flex flex-col group">
-                <div className="aspect-video w-full rounded-2xl bg-black border border-foreground/[0.08] overflow-hidden relative mb-4 group-hover:border-primary/50 transition-all shadow-md group-hover:shadow-primary/10">
+                <div className="card-fx aspect-video w-full rounded-2xl bg-black border border-foreground/[0.08] overflow-hidden relative mb-4 group-hover:border-primary/50 transition-all shadow-md group-hover:shadow-primary/10">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={`https://img.youtube.com/vi/${vid.id}/hqdefault.jpg`}

@@ -64,7 +64,7 @@ export default function Home() {
               
               <div className="grid grid-cols-2 gap-6 sm:gap-8 mb-8">
                 {homeStats.map((stat, i) => (
-                  <div key={stat.label}>
+                  <div key={stat.label} data-lift className="card-fx rounded-2xl border border-foreground/10 bg-background/60 p-4 sm:p-5">
                     <div className={`text-3xl sm:text-4xl font-black mb-2 ${i === 0 ? "text-secondary" : "text-primary"}`}>{stat.value}</div>
                     <div className="text-sm text-foreground/60"><T en={stat.label} /></div>
                     <a href={stat.href} target="_blank" rel="noopener noreferrer" className="text-[11px] text-foreground/40 hover:text-primary hover:underline">
@@ -79,7 +79,7 @@ export default function Home() {
               </Link>
             </div>
             
-            <Link href="/map" aria-label="Open the global deepfake case map" className="relative rounded-2xl overflow-hidden aspect-square border border-foreground/10 bg-foreground/5 flex items-center justify-center group">
+            <Link href="/map" aria-label="Open the global deepfake case map" className="card-fx relative rounded-2xl overflow-hidden aspect-square border border-foreground/10 bg-foreground/5 flex items-center justify-center group">
                             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/20 via-background to-background opacity-50" />
               <Globe size={120} className="text-primary/40 group-hover:scale-110 group-hover:text-primary transition-all duration-700" />
               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-background/40 backdrop-blur-sm">

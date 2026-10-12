@@ -17,7 +17,7 @@ const casesByYear = Object.entries(
 
 const continents = ["All", ...Array.from(new Set(crimeData.map((c) => c.continent))).sort()];
 
-const panel = "bg-white/60 dark:bg-black/40 lg:bg-white/30 lg:dark:bg-black/20 backdrop-blur-xl border border-white/40 dark:border-white/10 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.1)] dark:shadow-2xl";
+const panel = "card-fx bg-white/60 dark:bg-black/40 lg:bg-white/30 lg:dark:bg-black/20 backdrop-blur-xl border border-white/40 dark:border-white/10 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.1)] dark:shadow-2xl";
 
 export default function MapPage() {
   const [selectedCrime, setSelectedCrime] = useState<CrimeData>(crimeData[0]);
@@ -64,7 +64,7 @@ export default function MapPage() {
 
       {/* Globe — square in flow on mobile, oversized and cropped on desktop */}
       <div className="relative z-10 w-full aspect-square max-w-[640px] mx-auto lg:max-w-none lg:aspect-auto lg:absolute lg:inset-0 lg:overflow-hidden lg:pointer-events-none">
-        <div className="w-full h-full lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:top-[-10vh] lg:w-[120vw] lg:h-[120vw] lg:min-w-[1000px] lg:min-h-[1000px] lg:pointer-events-auto">
+        <div className="w-full h-full lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:top-[10vh] lg:w-[120vw] lg:h-[120vw] lg:min-w-[1000px] lg:min-h-[1000px] lg:pointer-events-auto">
           <CrimeGlobe onMarkerClick={select} selectedCrime={selectedCrime} />
         </div>
       </div>
@@ -92,14 +92,14 @@ export default function MapPage() {
                 <p className="text-slate-700 dark:text-foreground/80 leading-relaxed text-xs">{t(selectedCrime.description)}</p>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 bg-white/40 dark:bg-white/5 rounded-2xl border border-white/40 dark:border-white/10">
+                <div className="card-fx [--fx-tint:#ef4444] p-3 bg-white/40 dark:bg-white/5 rounded-2xl border border-white/40 dark:border-white/10">
                   <div className="text-[10px] text-slate-500 dark:text-foreground/50 font-bold mb-1 uppercase tracking-wider">{t("Category", "Kategori")}</div>
                   <div className="font-bold text-xs flex items-center gap-1.5 text-slate-800 dark:text-white">
                     <AlertTriangle size={12} className="text-red-500 shrink-0" />
                     <span>{t(selectedCrime.type)}</span>
                   </div>
                 </div>
-                <div className="p-3 bg-white/40 dark:bg-white/5 rounded-2xl border border-white/40 dark:border-white/10">
+                <div className="card-fx p-3 bg-white/40 dark:bg-white/5 rounded-2xl border border-white/40 dark:border-white/10">
                   <div className="text-[10px] text-slate-500 dark:text-foreground/50 font-bold mb-1 uppercase tracking-wider">{t("Medium", "Media")}</div>
                   <div className="font-bold text-xs flex items-center gap-1.5 text-slate-800 dark:text-white">
                     <Radio size={12} className="text-primary shrink-0" />
@@ -166,7 +166,7 @@ export default function MapPage() {
                   <button
                     key={crime.id}
                     onClick={() => select(crime)}
-                    className={`w-full text-left p-4 rounded-2xl border transition-all flex items-start justify-between gap-3 ${
+                    className={`card-fx w-full text-left p-4 rounded-2xl border transition-all flex items-start justify-between gap-3 ${
                       selectedCrime.id === crime.id
                         ? "bg-white/80 dark:bg-white/10 border-primary shadow-[0_4px_20px_rgba(0,243,255,0.2)]"
                         : "bg-white/40 dark:bg-black/20 border-white/40 dark:border-white/5 hover:bg-white/60 dark:hover:bg-white/5"

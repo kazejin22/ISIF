@@ -118,7 +118,7 @@ export default function TextDetector() {
     <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] gap-6 lg:gap-8 items-start">
       {/* ── Document panel ── */}
       <div className="flex flex-col gap-4 min-w-0">
-        <div className="rounded-3xl border border-foreground/10 bg-background/60 overflow-hidden">
+        <div className="card-fx rounded-3xl border border-foreground/10 bg-background/60 overflow-hidden">
           {/* Toolbar */}
           <div className="flex flex-wrap items-center gap-2 px-3 sm:px-4 py-2.5 border-b border-foreground/[0.08] bg-foreground/[0.02]">
             {view === "result" ? (
@@ -288,7 +288,7 @@ function ResultPanel({ result }: { result: TextDetectionResult }) {
       )}
 
       {/* Headline */}
-      <div className="rounded-3xl border border-foreground/10 bg-background/40 p-5 sm:p-6">
+      <div className="card-fx rounded-3xl border border-foreground/10 bg-background/40 p-5 sm:p-6">
         <div className="flex items-center gap-5">
           <Donut ai={ai} refined={refined} human={human} />
           <div className="min-w-0">
@@ -329,7 +329,7 @@ function ResultPanel({ result }: { result: TextDetectionResult }) {
         </div>
       )}
 
-      <div className="rounded-3xl border border-foreground/[0.08] bg-background/40 p-5">
+      <div className="card-fx rounded-3xl border border-foreground/[0.08] bg-background/40 p-5">
         <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/50 flex items-center gap-2 mb-2">
           <Sparkles size={12} className="text-primary" /> {t("Analysis", "Analisis")}
         </div>
@@ -387,7 +387,7 @@ function SignalList({ title, items, tone }: { title: string; items: string[]; to
   const Icon = tone === "ai" ? Bot : CheckCircle2;
   const t = useT();
   return (
-    <div className={`border rounded-3xl p-5 ${box}`}>
+    <div className={`card-fx border rounded-3xl p-5 ${box} ${tone === "ai" ? "[--fx-tint:#f97316]" : "[--fx-tint:#10b981]"}`}>
       <div className="text-[10px] font-bold uppercase tracking-[0.2em] flex items-center gap-2 mb-3">
         <Icon size={12} /> {title} ({items.length})
       </div>
@@ -427,7 +427,7 @@ function Meter({ label, value, display, aiAt, humanAt, hint }: { label: string; 
 function FingerprintPanel({ fp }: { fp: Fingerprint }) {
   const t = useT();
   return (
-    <div className="rounded-3xl border border-foreground/[0.08] bg-background/40 p-5">
+    <div className="card-fx rounded-3xl border border-foreground/[0.08] bg-background/40 p-5">
       <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/50 flex items-center gap-2 mb-1">
         <FingerprintIcon size={12} className="text-primary" /> {t("Writing fingerprint", "Sidik jari tulisan")}
       </div>

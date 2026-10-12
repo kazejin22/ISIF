@@ -23,7 +23,7 @@ export default function ChoiceStageView({ stage, onDone }: { stage: ChoiceStage;
               type="button"
               disabled={Boolean(picked)}
               onClick={() => setPicked(o.id)}
-              className={`w-full text-left p-4 sm:p-5 rounded-2xl border transition-all text-sm sm:text-base ${
+              className={`card-fx w-full text-left p-4 sm:p-5 rounded-2xl border transition-all text-sm sm:text-base ${
                 state === "idle" ? "border-foreground/10 bg-background/60 hover:border-primary/50 hover:bg-primary/5" :
                 state === "best" ? "border-emerald-500/60 bg-emerald-500/10" :
                 state === "picked" ? "border-amber-500/60 bg-amber-500/10" :

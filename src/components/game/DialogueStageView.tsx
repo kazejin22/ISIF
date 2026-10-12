@@ -175,7 +175,7 @@ export default function DialogueStageView({ stage, onDone }: { stage: DialogueSt
               <div className={`h-full transition-[width] duration-100 ease-linear ${left < 5 ? "bg-red-500" : "bg-primary"}`} style={{ width: `${(left / stage.secondsPerChoice) * 100}%` }} />
             </div>
             {node.choices.map((c) => (
-              <button key={c.text} type="button" onClick={() => choose(c)} className="w-full text-left p-3.5 rounded-2xl border border-foreground/10 hover:border-primary/50 hover:bg-primary/5 text-sm transition-colors">
+              <button key={c.text} type="button" onClick={() => choose(c)} className="card-fx w-full text-left p-3.5 rounded-2xl border border-foreground/10 hover:border-primary/50 hover:bg-primary/5 text-sm transition-colors">
                 {c.text}
               </button>
             ))}

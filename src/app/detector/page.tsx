@@ -256,7 +256,7 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
         <div className={`w-full mx-auto transition-all duration-700 ${result ? "max-w-6xl grid grid-cols-1 lg:grid-cols-[1fr_440px] gap-6 lg:gap-8 items-start" : "max-w-3xl flex flex-col items-center"}`}>
           {/* LEFT: Upload & Preview */}
           <div className="w-full flex flex-col gap-4 md:gap-6">
-            <div className="w-full bg-background/40 backdrop-blur-2xl border border-foreground/[0.08] rounded-[1.5rem] md:rounded-[2rem] p-2 md:p-3 relative overflow-hidden shadow-2xl">
+            <div className="card-fx w-full bg-background/40 backdrop-blur-2xl border border-foreground/[0.08] rounded-[1.5rem] md:rounded-[2rem] p-2 md:p-3 relative overflow-hidden shadow-2xl">
               {!preview ? (
                 <button
                   type="button"
@@ -320,7 +320,7 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
                       type="button"
                       onClick={() => loadSample(s)}
                       title={t(...s.label)}
-                      className="group relative aspect-square rounded-xl overflow-hidden border border-foreground/10 hover:border-primary/60 transition-colors"
+                      className="card-fx group relative aspect-square rounded-xl overflow-hidden border border-foreground/10 hover:border-primary/60 transition-colors"
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={s.src} alt={t(...s.label)} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
@@ -391,7 +391,7 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
           {result && verdict && (
             <div className="w-full flex flex-col gap-4 md:gap-5 animate-in slide-in-from-right-8 fade-in duration-700">
               {/* Verdict Banner */}
-              <div className={`w-full bg-background/40 backdrop-blur-2xl border p-5 md:p-6 rounded-[1.5rem] md:rounded-[2rem] shadow-2xl relative overflow-hidden flex items-center gap-4 md:gap-6 ${verdict.border}`}>
+              <div style={{ "--fx-tint": verdict.hex } as React.CSSProperties} className={`card-fx w-full bg-background/40 backdrop-blur-2xl border p-5 md:p-6 rounded-[1.5rem] md:rounded-[2rem] shadow-2xl relative overflow-hidden flex items-center gap-4 md:gap-6 ${verdict.border}`}>
                 <div className={`absolute top-0 right-0 w-32 h-32 opacity-20 blur-[50px] rounded-full pointer-events-none ${verdict.bg}`} />
                 <div className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center shrink-0 shadow-lg text-white ${verdict.bg}`}>
                   <verdict.Icon size={30} />
@@ -408,10 +408,10 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
 
               {/* Gauges */}
               <div className="grid grid-cols-2 gap-3 md:gap-4">
-                <div className="bg-background/40 backdrop-blur-2xl border border-foreground/[0.08] rounded-3xl p-4 md:p-5 flex items-center justify-center">
+                <div className="card-fx bg-background/40 backdrop-blur-2xl border border-foreground/[0.08] rounded-3xl p-4 md:p-5 flex items-center justify-center">
                   <GaugeMeter value={result.authenticityScore} label={t("Authenticity", "Keaslian")} color={verdict.hex} />
                 </div>
-                <div className="bg-background/40 backdrop-blur-2xl border border-foreground/[0.08] rounded-3xl p-4 md:p-5 flex items-center justify-center">
+                <div className="card-fx bg-background/40 backdrop-blur-2xl border border-foreground/[0.08] rounded-3xl p-4 md:p-5 flex items-center justify-center">
                   <GaugeMeter value={result.confidence} label={t("Evidence Strength", "Kekuatan Bukti")} color="var(--primary)" />
                 </div>
               </div>
@@ -425,7 +425,7 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
               )}
 
               {/* Analysis */}
-              <div className="bg-background/40 backdrop-blur-2xl border border-foreground/[0.08] rounded-3xl p-5 md:p-6">
+              <div className="card-fx bg-background/40 backdrop-blur-2xl border border-foreground/[0.08] rounded-3xl p-5 md:p-6">
                 <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/50 flex items-center gap-2 mb-3">
                   <Crosshair size={12} className="text-primary" /> {t("Forensic Analysis Report", "Laporan Analisis Forensik")}
                 </div>
@@ -437,7 +437,7 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
 
               {/* Anomalies */}
               {result.anomalies.length > 0 && (
-                <div className="bg-red-500/5 backdrop-blur-2xl border border-red-500/20 rounded-3xl p-5 md:p-6">
+                <div className="card-fx [--fx-tint:#ef4444] [--fx-tint-2:#f97316] bg-red-500/5 backdrop-blur-2xl border border-red-500/20 rounded-3xl p-5 md:p-6">
                   <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-500/80 flex items-center gap-2 mb-4">
                     <Zap size={12} /> {t("Suspicious Findings", "Temuan Mencurigakan")} ({result.anomalies.length})
                   </div>
@@ -459,7 +459,7 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
 
               {/* Authenticity signals */}
               {result.authenticSignals.length > 0 && (
-                <div className="bg-emerald-500/5 backdrop-blur-2xl border border-emerald-500/20 rounded-3xl p-5 md:p-6">
+                <div className="card-fx [--fx-tint:#10b981] [--fx-tint-2:#22d3ee] bg-emerald-500/5 backdrop-blur-2xl border border-emerald-500/20 rounded-3xl p-5 md:p-6">
                   <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-500/80 flex items-center gap-2 mb-4">
                     <CheckCircle2 size={12} /> {t("Signs of Authenticity", "Tanda Keaslian")} ({result.authenticSignals.length})
                   </div>
@@ -475,7 +475,7 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
               )}
 
               {/* Provenance */}
-              <div className="bg-background/40 backdrop-blur-2xl border border-foreground/[0.08] rounded-3xl p-5 md:p-6">
+              <div className="card-fx bg-background/40 backdrop-blur-2xl border border-foreground/[0.08] rounded-3xl p-5 md:p-6">
                 <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/50 flex items-center gap-2 mb-3">
                   <FileSearch size={12} className="text-primary" /> {t("File Metadata", "Metadata File")}
                 </div>

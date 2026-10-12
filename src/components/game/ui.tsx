@@ -4,7 +4,7 @@ import { ArrowRight, CheckCircle2, XCircle } from "lucide-react";
 import type { FeedbackEntry } from "@/game/types";
 import { useT } from "@/lib/i18n";
 
-export const panel = "rounded-3xl border border-foreground/10 bg-background/60 backdrop-blur-xl";
+export const panel = "card-fx rounded-3xl border border-foreground/10 bg-background/60 backdrop-blur-xl";
 
 export function StageIntro({ title, brief, maxPoints }: { title: string; brief: string; maxPoints: number }) {
   const t = useT();
