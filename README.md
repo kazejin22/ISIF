@@ -35,7 +35,8 @@ Open http://localhost:3000.
 | `OPENROUTER_API_KEY` | No | Fallback for **images only** when Gemini is unavailable |
 | `GEMINI_MODELS` | No | Comma-separated override of the Gemini model order |
 | `OPENROUTER_MODELS` | No | Comma-separated override of the OpenRouter fallback models |
-| `DATABASE_URL` | For the online leaderboard | A `postgres://` connection string (Neon, Supabase, Prisma Postgres direct URL…). Without it the leaderboard shows scores saved on the device. |
+| `DATABASE_URL` | For the online leaderboard | A `postgres://` connection string. With Supabase, use the **Transaction pooler** URI (port 6543). Without it the leaderboard shows scores saved on the device. |
+| `DIRECT_URL` | Recommended with Supabase | The **Session pooler** URI (port 5432), used only at build time to create the table. |
 
 ## How the detector works
 
@@ -112,7 +113,7 @@ npx prisma validate
 
 1. Push the repository to GitHub, then on [vercel.com](https://vercel.com) choose **Add New → Project** and import it. The defaults for Next.js are correct.
 2. Under **Settings → Environment Variables**, add `GEMINI_API_KEY` (and optionally `OPENROUTER_API_KEY`).
-3. For the online leaderboard: **Storage → Create Database → Neon (Postgres)** and connect it to the project. This sets `DATABASE_URL`; the next build creates the table.
+3. For the online leaderboard with **Supabase**: in the Supabase dashboard press **Connect**, copy the *Transaction pooler* URI into `DATABASE_URL` and the *Session pooler* URI into `DIRECT_URL` (replace `[YOUR-PASSWORD]` with the database password). The next build creates the table. (Vercel's Supabase or Neon integration sets `POSTGRES_URL` / `POSTGRES_URL_NON_POOLING` instead, which also work.) The Supabase publishable/anon key is not needed: the site talks to Postgres from the server only.
 4. Deploy (or **Redeploy** after adding variables). The site is served over HTTPS, so the VR missions work directly in the Meta Quest Browser.
 
 Notes: uploads are limited to 4.4 MB on Vercel (`next.config.ts`), the detector routes need up to 180 s (`maxDuration`), and the result cache and rate limiter live in memory per function instance.
