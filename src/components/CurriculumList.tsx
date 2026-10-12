@@ -53,41 +53,54 @@ const curriculum = [
 ];
 
 export default function CurriculumList() {
-  const [open, setOpen] = useState<string | null>(null);
+  const [open, setOpen] = useState<string | null>(curriculum[0].id);
   const t = useT();
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-3">
       {curriculum.map((item) => {
         const isOpen = open === item.id;
         return (
-          <div key={item.id} className={`border-b transition-colors ${isOpen ? "border-primary/40" : "border-foreground/[0.05]"}`}>
+          <div
+            key={item.id}
+            className={`card-fx rounded-3xl border transition-colors ${isOpen ? "border-primary/40 bg-primary/[0.04]" : "border-foreground/[0.07] bg-background/40 hover:border-foreground/20"}`}
+          >
             <button
               type="button"
               onClick={() => setOpen(isOpen ? null : item.id)}
               aria-expanded={isOpen}
-              className="group w-full flex gap-4 sm:gap-6 py-5 sm:py-6 text-left"
+              className="group w-full flex items-start gap-4 sm:gap-6 p-5 sm:p-6 text-left"
             >
-              <span className={`text-sm font-mono pt-1 transition-colors ${isOpen ? "text-primary" : "text-primary/50 group-hover:text-primary"}`}>
+              <span
+                aria-hidden
+                className={`text-4xl sm:text-5xl font-black leading-none font-[family-name:var(--font-orbitron)] transition-colors ${isOpen ? "text-primary" : "text-transparent [-webkit-text-stroke:1px_color-mix(in_srgb,var(--foreground)_35%,transparent)] group-hover:[-webkit-text-stroke-color:var(--primary)]"}`}
+              >
                 {item.id}
               </span>
-              <span className="flex flex-col flex-1">
-                <span className={`text-lg font-bold mb-1.5 transition-colors ${isOpen ? "text-foreground" : "text-foreground/80 group-hover:text-foreground"}`}>
+              <span className="flex flex-col flex-1 min-w-0 pt-0.5">
+                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-foreground/40 mb-1">
+                  {t("Chapter", "Bab")} {item.id} · {item.points.length} {t("key points", "poin penting")}
+                </span>
+                <span className={`text-lg sm:text-xl font-bold mb-1 transition-colors ${isOpen ? "text-foreground" : "text-foreground/85 group-hover:text-foreground"}`}>
                   {t(item.title)}
                 </span>
                 <span className="text-sm text-foreground/50 leading-relaxed font-light">{t(item.desc)}</span>
               </span>
-              <ChevronDown size={18} className={`shrink-0 mt-1.5 text-primary transition-transform ${isOpen ? "rotate-180" : ""}`} />
+              <span className={`shrink-0 w-8 h-8 rounded-full border flex items-center justify-center transition-all ${isOpen ? "bg-primary border-primary text-white dark:text-black rotate-180" : "border-foreground/15 text-foreground/60 group-hover:border-primary group-hover:text-primary"}`}>
+                <ChevronDown size={16} />
+              </span>
             </button>
             <div className={`grid transition-all duration-300 ${isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
-              <ul className="overflow-hidden pl-9 sm:pl-12 space-y-2.5">
-                {item.points.map((point) => (
-                  <li key={point} className="flex gap-3 text-sm text-foreground/70 leading-relaxed last:pb-6">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0 mt-2" />
-                    {t(point)}
+              <ol className="overflow-hidden px-5 sm:px-6 sm:pl-[6.5rem] space-y-3">
+                {item.points.map((point, i) => (
+                  <li key={point} className="flex gap-3 text-sm text-foreground/75 leading-relaxed last:pb-6">
+                    <span className="w-6 h-6 rounded-full bg-primary/10 border border-primary/25 text-primary text-[11px] font-bold flex items-center justify-center shrink-0">
+                      {i + 1}
+                    </span>
+                    <span className="pt-0.5">{t(point)}</span>
                   </li>
                 ))}
-              </ul>
+              </ol>
             </div>
           </div>
         );

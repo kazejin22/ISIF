@@ -175,3 +175,14 @@ body {
   :is(a, button).card-fx:hover, .card-fx[data-lift]:hover { transform: none; }
 }
 }
+
+/* Endless horizontal ticker: the track holds the items twice and slides by half. */
+.marquee-track {
+  animation: marquee 40s linear infinite;
+}
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+}

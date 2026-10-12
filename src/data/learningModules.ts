@@ -1,0 +1,66 @@
+// PDF documents in /public/modules, shown in the Learning Hub library.
+
+export const learningModules = [
+  {
+    id: "MOD-01",
+    title: "AI Competency Framework for Students",
+    organization: "UNESCO / Global Standard",
+    description: "Pedagogical guidelines and core competencies needed by students to navigate artificial intelligence critically and safely.",
+    descriptionId: "Pedoman pedagogis dan kompetensi inti yang dibutuhkan pelajar untuk menghadapi kecerdasan buatan secara kritis dan aman.",
+    filename: "/modules/ai-competency-framework.pdf",
+    tag: ["Competency", "Kompetensi"],
+    size: "563 KB",
+  },
+  {
+    id: "MOD-02",
+    title: "AI and Education: Guidance for Policymakers",
+    organization: "Policy & Strategy",
+    description: "Strategic advice for educational leaders on mitigating deepfakes, ethical risks, and algorithmic manipulation in school environments.",
+    descriptionId: "Saran strategis bagi pemimpin pendidikan untuk menekan deepfake, risiko etis, dan manipulasi algoritma di lingkungan sekolah.",
+    filename: "/modules/ai-education-policymakers.pdf",
+    tag: ["Policy", "Kebijakan"],
+    size: "1.1 MB",
+  },
+  {
+    id: "MOD-03",
+    title: "AI Literacy Starter Pack",
+    organization: "Practical Curriculum",
+    description: "Hands-on fundamentals to deconstruct how deep generative models work, fact-checking workflows, and verification hygiene.",
+    descriptionId: "Dasar-dasar praktis untuk memahami cara kerja model generatif, alur cek fakta, dan kebiasaan verifikasi yang baik.",
+    filename: "/modules/ai-literacy-starter-pack.pdf",
+    tag: ["Starter Pack", "Paket Pemula"],
+    size: "1.7 MB",
+  },
+  {
+    id: "MOD-04",
+    title: "A Mapping of Government-Endorsed AI",
+    organization: "Global Governance",
+    description: "A comprehensive comparative study on how international governments formulate laws against deceptive synthetics.",
+    descriptionId: "Studi perbandingan menyeluruh tentang cara pemerintah di berbagai negara menyusun hukum melawan konten sintetis yang menipu.",
+    filename: "/modules/mapping-government-endorsed-ai.pdf",
+    tag: ["Governance", "Tata Kelola"],
+    size: "3.6 MB",
+  },
+  {
+    id: "MOD-05",
+    title: "Recommendation on the Ethics of AI",
+    organization: "UNESCO Ethics Council",
+    description: "The global normative instrument addressing human rights, digital integrity, and accountability in generative systems.",
+    descriptionId: "Instrumen normatif global tentang hak asasi manusia, integritas digital, dan akuntabilitas dalam sistem generatif.",
+    filename: "/modules/ethics-artificial-intelligence.pdf",
+    tag: ["Ethics", "Etika"],
+    size: "374 KB",
+  },
+  {
+    id: "MOD-06",
+    title: "Guidance for Generative AI in Education & Research",
+    organization: "Academic Research",
+    description: "Standards for responsible deployment of AI, intellectual honesty, and combating synthetic misinformation in academia.",
+    descriptionId: "Standar penggunaan AI yang bertanggung jawab, kejujuran akademik, dan cara melawan misinformasi sintetis di dunia akademik.",
+    filename: "/modules/generative-ai-education-research.pdf",
+    tag: ["Research", "Riset"],
+    size: "1.7 MB",
+  },
+] satisfies { id: string; title: string; organization: string; description: string; descriptionId: string; filename: string; tag: [string, string]; size: string }[];
+
+export const MODULE_COUNT = learningModules.length;
