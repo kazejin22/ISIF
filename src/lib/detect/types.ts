@@ -12,6 +12,22 @@ export interface Anomaly {
   box?: [number, number, number, number];
 }
 
+/** What the speaker in a video/audio clip says, as reported by the model. */
+export interface SpeechInfo {
+  speaker: string;
+  quote: string;
+  sensitive: boolean;
+  lipSync: "consistent" | "inconsistent" | "unclear" | "not-visible";
+}
+
+/** Web check of a public figure's quoted claim (Gemini + Google Search). */
+export interface FactCheck {
+  /** fabricated = reported as fake / never said; authentic = confirmed by reliable outlets. */
+  verdict: "fabricated" | "authentic" | "unverified";
+  summary: string;
+  sources: { title: string; url: string }[];
+}
+
 export interface DetectionResult {
   success: true;
   conclusion: Conclusion;
@@ -31,6 +47,8 @@ export interface DetectionResult {
   model: string;
   /** Set when the result came from the cache instead of a fresh model call. */
   cached?: "demo" | "recent";
+  speech?: SpeechInfo;
+  factCheck?: FactCheck;
 }
 
 export interface DetectionError {

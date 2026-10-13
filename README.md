@@ -57,6 +57,15 @@ Both detectors cache results by a SHA-256 of the exact input (in memory, per ser
 npm run demo:results
 ```
 
+### Video and audio: checking the words
+
+A lip-synced or voice-cloned clip of a real person usually looks authentic, so speech is judged separately from the picture. Videos are sampled at 3 frames per second for lip-sync checks, and the model reports who speaks, the key quote, whether it is controversial, and whether the mouth matches the audio (`speech`). When a public figure is quoted, `src/lib/detect/factcheck.ts` asks Gemini with Google Search whether reliable sources confirmed or debunked the quote, using the sources Google actually returned:
+
+- debunked → the verdict becomes DEEPFAKE,
+- mouth/audio mismatch, or a controversial claim that can't be confirmed → a REAL verdict becomes UNCERTAIN,
+
+and the result shows a Fact Check panel with its sources. Every change is explained in the result.
+
 ### Suspicious areas
 
 For images the model also returns a `box_2d` (`[ymin, xmin, ymax, xmax]`, 0-1000) for each anomaly it can locate. The scanner draws these as numbered boxes over the photo, linked to the findings list. Boxes covering more than 40% of the frame are dropped, since they don't point anywhere useful.

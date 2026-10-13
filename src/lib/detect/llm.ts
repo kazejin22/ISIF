@@ -14,7 +14,9 @@ export const OPENROUTER_MODELS = list(process.env.OPENROUTER_MODELS, "openrouter
 const MAX_CALL_MS = 60_000;
 const MIN_CALL_MS = 15_000;
 
-type GeminiPart = { text: string } | { inline_data: { mime_type: string; data: string } };
+type GeminiPart =
+  | { text: string }
+  | { inline_data: { mime_type: string; data: string }; video_metadata?: { fps: number } };
 type OpenRouterPart = { type: "text"; text: string } | { type: "image_url"; image_url: { url: string } };
 
 export interface AnalyzeRequest {
@@ -126,6 +128,64 @@ async function callOpenRouter(model: string, req: AnalyzeRequest, content: OpenR
   const parsed = text ? extractJson(text) : null;
   if (!parsed) throw new ModelError(`${model} returned no usable JSON`, 0);
   return parsed;
+}
+
+export interface GroundedAnswer {
+  raw: Record<string, unknown>;
+  /** Pages Google Search actually returned for the answer (not URLs the model typed). */
+  sources: { title: string; url: string }[];
+  model: string;
+}
+
+/**
+ * One question answered with Google Search grounding. Grounding can't be combined
+ * with a response schema on every model, so the JSON is requested in the prompt.
+ * Returns null when no model could answer in time.
+ */
+export async function askWithSearch(prompt: string, timeoutMs: number, models = TEXT_MODELS): Promise<GroundedAnswer | null> {
+  if (!process.env.GEMINI_API_KEY) return null;
+  const deadline = Date.now() + timeoutMs;
+  // An answer that didn't actually search is kept only as a last resort.
+  let unsourced: GroundedAnswer | null = null;
+  for (const model of models) {
+    const until = exhaustedUntil.get(model);
+    if (until && until > Date.now()) continue;
+    const left = deadline - Date.now();
+    if (left < 5_000) break;
+    try {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY },
+        signal: AbortSignal.timeout(left),
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          tools: [{ google_search: {} }],
+          ...(thinkingConfig(model, "low") && { generationConfig: { thinkingConfig: thinkingConfig(model, "low") } }),
+        }),
+      });
+      if (!res.ok) {
+        if (res.status === 429) exhaustedUntil.set(model, Date.now() + 60_000);
+        console.warn(`[factcheck] ${model} returned ${res.status}`);
+        continue;
+      }
+      const data = await res.json();
+      const candidate = data.candidates?.[0];
+      const text: string = candidate?.content?.parts?.filter((p: { thought?: boolean }) => !p.thought).map((p: { text?: string }) => p.text ?? "").join("") ?? "";
+      const raw = extractJson(text);
+      if (!raw) continue;
+      const chunks: { web?: { uri?: string; title?: string } }[] = candidate?.groundingMetadata?.groundingChunks ?? [];
+      const seen = new Set<string>();
+      const sources = chunks
+        .map((c) => ({ title: c.web?.title ?? "", url: c.web?.uri ?? "" }))
+        .filter((s) => s.url.startsWith("https://") && !seen.has(s.title) && seen.add(s.title))
+        .slice(0, 4);
+      if (sources.length) return { raw, sources, model };
+      unsourced ??= { raw, sources, model };
+    } catch (e) {
+      console.warn(`[factcheck] ${model} failed: ${e instanceof Error ? e.message : e}`);
+    }
+  }
+  return unsourced;
 }
 
 /** Tries Gemini models, then OpenRouter models, returning the first valid parsed JSON result. */

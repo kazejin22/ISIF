@@ -10,7 +10,7 @@ export type MediaKind = "image" | "video" | "audio";
 const CORE_METHOD = `You are a senior digital-media forensics analyst. Your job is to estimate whether a piece of media is authentic, fully AI-generated, or a manipulated deepfake of real media — and to be honest about how sure you can be.
 
 VERDICT DEFINITIONS
-- "REAL": a genuine, unmanipulated capture (normal camera/phone processing, compression, cropping and mild filters still count as REAL).
+- "REAL": a genuine, unmanipulated capture (normal camera/phone processing, compression, cropping and mild filters still count as REAL). For video and audio this includes the speech: real footage with words that were never said is NOT real.
 - "AI-GENERATED": the media was synthesized by a generative model (text-to-image, text-to-video, TTS, etc.).
 - "DEEPFAKE": real footage/photos/recordings of a real person that were altered with AI — face swap, lip-sync, face reenactment, voice cloning of a specific person, or AI inpainting that changes meaning.
 - "UNCERTAIN": the evidence is weak, mixed, or the content type cannot be judged reliably.
@@ -64,7 +64,17 @@ Deepfake (face swap / lip-sync) tells:
 - Flicker or shimmering at the face boundary, jawline, hairline, or when the head turns or a hand passes in front of the face.
 - Unnatural or absent blinking, fixed gaze, expressions that don't match the voice's emotion.
 - Face resolution or color that differs from the neck, ears, and the rest of the frame.
-Authentic signals: natural handheld shake, consistent motion blur, coherent lighting changes, real ambient sound that matches the scene.`;
+Authentic signals: natural handheld shake, consistent motion blur, coherent lighting changes, real ambient sound that matches the scene.
+
+SPEECH FORENSICS — judge the words separately from the picture
+The most common political and celebrity deepfake today is REAL footage (a press conference, interview or speech) with a cloned voice and AI lip-sync that puts new words in the person's mouth. Authentic-looking footage is therefore NOT evidence that the speech is authentic. Whenever someone speaks on camera:
+- Mouth vs. sound: lips must close on m / b / p sounds; jaw opening should follow syllable loudness; watch for mouth movement that is too smooth, mushy, or slightly ahead/behind the audio.
+- Mouth region quality: a mouth/chin area that is softer, sharper, smoother or differently compressed than the eyes and forehead; teeth that blur into a single band; a tongue that never appears.
+- Face vs. mouth: head, eyebrows and eyes frozen or looping while only the mouth moves; expressions that don't match the emotion of the words.
+- Voice vs. room: a dry, studio-clean voice in a large hall or outdoor setting; room tone or background noise that stops between words; abrupt cuts; a voice timbre or accent that drifts.
+- Repost tells: added captions or subtitles, re-uploader watermarks (e.g. TikTok handles), crops and heavy recompression that hide the face.
+- Context: if an identifiable public figure (official, politician, celebrity) says something shocking, insulting, or sharply against their known positions, treat that as a red flag. Unless the mouth/voice evidence is clearly consistent across the whole clip, do NOT answer REAL with high confidence — prefer UNCERTAIN, or DEEPFAKE when you see tells.
+Report what you find in the "speech" field.`;
 
 const AUDIO_CHECKLIST = `AUDIO CHECKLIST (listen, cite timestamps)
 Synthetic / cloned voice tells:
@@ -74,7 +84,8 @@ Synthetic / cloned voice tells:
 - Prosody problems: flat or oddly placed emphasis, emotion that doesn't match the words, identical intonation on repeated phrases.
 - Abrupt spectral changes mid-sentence, clipped word endings, or splice points.
 Authentic signals: natural disfluencies (um, restarts), varied pacing, consistent background environment, overlapping speakers, microphone handling noise.
-Note: you cannot verify whose voice it is. Judge only whether the audio is synthetic or manipulated. Phone-quality or compressed audio lowers confidence; it is not evidence of AI.`;
+Note: you cannot verify whose voice it is. Judge only whether the audio is synthetic or manipulated. Phone-quality or compressed audio lowers confidence; it is not evidence of AI.
+Context: if the recording claims to be a known public figure saying something shocking, insulting, or sharply against their known positions, treat that as a red flag for a cloned voice and lower your confidence in REAL. Report the speaker and the key claim in the "speech" field.`;
 
 const CHECKLISTS: Record<MediaKind, string> = {
   image: IMAGE_CHECKLIST,
@@ -92,7 +103,7 @@ export function buildUserPrompt(kind: MediaKind, provenanceNotes: string[]): str
     : "- No provenance or camera metadata was found (this is common and proves nothing).";
   const boxes = kind === "image"
     ? "\n\nFor every anomaly tied to a visible region, add \"box_2d\": [ymin, xmin, ymax, xmax] — a tight box around that region, in coordinates normalized to 0-1000 of the image height and width. Omit box_2d for findings about the whole image."
-    : "";
+    : "\n\nFill \"speech\": present = whether anyone speaks; speaker = the person's name only if you can confidently recognise a public figure (from the face, voice, captions or on-screen name), otherwise \"\"; quote = the most important thing they say, verbatim in the original language (max 200 characters); sensitive = whether that claim is shocking, insulting, political or controversial; lipSync = your assessment of mouth vs. audio (\"not-visible\" for audio-only or when no mouth is visible).";
   return `Analyze the attached ${kind} following your method.${boxes}\n\nSERVER-EXTRACTED FILE METADATA:\n${meta}`;
 }
 
@@ -119,6 +130,16 @@ export const RESULT_SCHEMA = {
     },
     authenticSignals: { type: "ARRAY", items: { type: "STRING" } },
     analysis: { type: "STRING" },
+    speech: {
+      type: "OBJECT",
+      properties: {
+        present: { type: "BOOLEAN" },
+        speaker: { type: "STRING" },
+        quote: { type: "STRING" },
+        sensitive: { type: "BOOLEAN" },
+        lipSync: { type: "STRING", enum: ["consistent", "inconsistent", "unclear", "not-visible"] },
+      },
+    },
   },
   required: ["mediaDescription", "anomalies", "authenticSignals", "conclusion", "authenticityScore", "confidence", "analysis"],
   propertyOrdering: ["mediaDescription", "anomalies", "authenticSignals", "conclusion", "authenticityScore", "confidence", "analysis"],
@@ -132,5 +153,6 @@ export const RESULT_SCHEMA_TEXT = `{
   "conclusion": "REAL" | "AI-GENERATED" | "DEEPFAKE" | "UNCERTAIN",
   "authenticityScore": integer 0-100,
   "confidence": integer 0-100,
-  "analysis": string
+  "analysis": string,
+  "speech"?: { "present": boolean, "speaker": string, "quote": string, "sensitive": boolean, "lipSync": "consistent" | "inconsistent" | "unclear" | "not-visible" }
 }`;

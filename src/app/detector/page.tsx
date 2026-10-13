@@ -5,6 +5,7 @@ import TextDetector from "@/components/TextDetector";
 import {
   ScanLine, AlertTriangle, RefreshCw, Crosshair, Activity, ShieldAlert, ShieldCheck,
   ShieldQuestion, Zap, Database, UploadCloud, FileAudio, CheckCircle2, Info, FileSearch, XCircle, ScanText, Images,
+  Newspaper, ExternalLink, Mic,
 } from "lucide-react";
 import {
   ACCEPTED_MIME_TYPES, MAX_UPLOAD_MB,
@@ -494,6 +495,60 @@ function MediaScanner({ header }: { header: React.ReactNode }) {
                   <p>{result.adjustment}</p>
                 </div>
               )}
+
+              {/* Speech + web fact-check (video / audio) */}
+              {(result.factCheck || result.speech?.speaker) && (() => {
+                const fc = result.factCheck;
+                const tone = fc?.verdict === "fabricated" ? "[--fx-tint:#ef4444] border-red-500/30 bg-red-500/5"
+                  : fc?.verdict === "authentic" ? "[--fx-tint:#10b981] border-emerald-500/30 bg-emerald-500/5"
+                  : "border-foreground/[0.08] bg-background/40";
+                const badge = fc?.verdict === "fabricated" ? ["bg-red-500", t("Debunked", "Dibantah")]
+                  : fc?.verdict === "authentic" ? ["bg-emerald-500", t("Confirmed", "Terkonfirmasi")]
+                  : ["bg-amber-500", t("Not verified", "Belum terverifikasi")];
+                const lip = result.speech?.lipSync;
+                return (
+                  <div className={`card-fx backdrop-blur-2xl border rounded-3xl p-5 md:p-6 ${tone}`}>
+                    <div className="flex items-center justify-between gap-3 mb-3">
+                      <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/60 flex items-center gap-2">
+                        <Newspaper size={12} className="text-primary" /> {t("Fact Check", "Cek Fakta")}
+                      </div>
+                      <span className={`text-[10px] font-black uppercase tracking-wider text-white px-2 py-0.5 rounded-full ${badge[0]}`}>{badge[1]}</span>
+                    </div>
+                    {result.speech?.speaker && (
+                      <div className="flex items-start gap-2 text-xs text-foreground/70 mb-3">
+                        <Mic size={14} className="shrink-0 mt-0.5 text-primary" />
+                        <p>
+                          <b className="text-foreground/90">{result.speech.speaker}</b>
+                          {result.speech.quote && <> — <span className="italic">“{result.speech.quote}”</span></>}
+                          {lip && lip !== "not-visible" && (
+                            <span className="block mt-1 text-foreground/50">
+                              {t("Lip-sync", "Gerak bibir")}: {lip === "consistent" ? t("matches the audio", "cocok dengan suara") : lip === "inconsistent" ? t("does not match the audio", "tidak cocok dengan suara") : t("unclear", "tidak jelas")}
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                    )}
+                    <p className="text-sm text-foreground/80 leading-relaxed">
+                      {fc?.summary || t(
+                        "No fact-check or reliable news report about this statement was found. Check official channels before believing or sharing it.",
+                        "Tidak ditemukan cek fakta atau berita tepercaya tentang pernyataan ini. Cek kanal resmi sebelum memercayai atau membagikannya.",
+                      )}
+                    </p>
+                    {fc && fc.sources.length > 0 && (
+                      <ul className="mt-3 flex flex-wrap gap-2">
+                        {fc.sources.map((s) => (
+                          <li key={s.url}>
+                            <a href={s.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full border border-foreground/15 hover:border-primary/60 hover:text-primary transition-colors">
+                              {s.title || t("Source", "Sumber")} <ExternalLink size={11} />
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    <p className="text-[10px] text-foreground/40 mt-3">{t("Searched with Google Search through Gemini.", "Dicari dengan Google Search melalui Gemini.")}</p>
+                  </div>
+                );
+              })()}
 
               {/* Analysis */}
               <div className="card-fx bg-background/40 backdrop-blur-2xl border border-foreground/[0.08] rounded-3xl p-5 md:p-6">

@@ -7,9 +7,15 @@ import { ACCEPTED_MIME_TYPES, MAX_UPLOAD_MB, type DetectionResponse } from "@/li
 import { rateLimit } from "@/lib/rateLimit";
 import { getCached, hashOf, setCached } from "@/lib/detect/cache";
 import { languageInstruction, localizeResult, msg, parseLang } from "@/lib/detect/localize";
+import { applySpeechEvidence, checkClaim, parseSpeech } from "@/lib/detect/factcheck";
 
 // Video analysis can take a while on the model side.
 export const maxDuration = 180;
+
+// Lip-sync checks need more than Gemini's default 1 frame per second.
+const VIDEO_FPS = 3;
+// Time kept free after the main analysis for the web fact-check of a quoted claim.
+const FACT_CHECK_MS = 30_000;
 
 function fail(error: string, status: number, headers?: HeadersInit) {
   return NextResponse.json<DetectionResponse>({ success: false, error }, { status, headers });
@@ -22,6 +28,7 @@ function mediaKindOf(mime: string): MediaKind {
 }
 
 export async function POST(request: Request) {
+  const started = Date.now();
   const lang = parseLang(new URL(request.url).searchParams.get("lang"));
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0].trim() || request.headers.get("x-real-ip") || "local";
   const limit = rateLimit(`detect:${ip}`, 8, 60_000);
@@ -64,16 +71,32 @@ export async function POST(request: Request) {
   try {
     const { raw, model } = await analyzeWithFallback({
       system: buildSystemPrompt(kind),
-      geminiParts: [{ inline_data: { mime_type: mime, data: base64 } }, { text: userPrompt }],
+      geminiParts: [
+        kind === "video"
+          ? { inline_data: { mime_type: mime, data: base64 }, video_metadata: { fps: VIDEO_FPS } }
+          : { inline_data: { mime_type: mime, data: base64 } },
+        { text: userPrompt },
+      ],
       // OpenRouter's free models only accept images.
       openRouterContent: kind === "image"
         ? [{ type: "image_url", image_url: { url: `data:${mime};base64,${base64}` } }, { type: "text", text: userPrompt }]
         : undefined,
       schema: RESULT_SCHEMA,
       schemaText: RESULT_SCHEMA_TEXT,
-      budgetMs: (maxDuration - 15) * 1000,
+      budgetMs: (maxDuration - 15) * 1000 - (kind === "image" ? 0 : FACT_CHECK_MS),
     });
-    const result = localizeResult(normalizeResult(raw, model, provenance), lang);
+    let result = normalizeResult(raw, model, provenance);
+
+    // Video/audio: check the words, not just the picture.
+    if (kind !== "image") {
+      const speech = parseSpeech(raw);
+      const timeLeft = (maxDuration - 8) * 1000 - (Date.now() - started);
+      const factCheck = speech?.speaker && speech.quote && timeLeft > 8_000
+        ? await checkClaim(speech, lang, Math.min(FACT_CHECK_MS, timeLeft))
+        : null;
+      result = applySpeechEvidence(result, speech, factCheck, lang);
+    }
+    result = localizeResult(result, lang);
     setCached("media", hash, result);
     return NextResponse.json<DetectionResponse>(result);
   } catch (e) {
