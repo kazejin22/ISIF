@@ -29,7 +29,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "AIVENTURE - AI & Deepfake Learning",
+  title: "AIVENTURE",
   description: "Learning platform about the dangers of AI and deepfakes.",
 };
 
